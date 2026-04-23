@@ -360,6 +360,8 @@ git commit -m "refactor: move frontend para apps/web/"
 
 Configurar `apps/web/package.json` e ajustar imports.
 
+**⚠️ Ordem importante:** execute **Task A4 (packages/shared) antes desta task**. O `package.json` aqui declara `@olympia/shared` como dependência via `workspace:*`, e sem o pacote existente o `pnpm install` falha com "No matching version". Se já executou A3 antes de A4, rode `pnpm install` de novo ao fim de A4.
+
 **Files:**
 
 - Create: `apps/web/package.json`
@@ -656,12 +658,13 @@ git commit -m "feat: scaffold @olympia/shared com schemas Zod de auth e org"
 
 ## Task A5: Scaffold `apps/api` skeleton
 
-Só estrutura + `package.json` + tsconfig. Implementação vem nas fases B+.
+Estrutura + `package.json` + tsconfig + ESLint + `.env` loader. Implementação vem nas fases B+.
 
 **Files:**
 
 - Create: `apps/api/package.json`
 - Create: `apps/api/tsconfig.json`
+- Create: `apps/api/eslint.config.js`
 - Create: `apps/api/src/.gitkeep`
 
 - [ ] **Step 1: Create `apps/api/package.json`**
@@ -673,16 +676,16 @@ Só estrutura + `package.json` + tsconfig. Implementação vem nas fases B+.
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "dev:worker": "tsx watch src/worker.ts",
+    "dev": "tsx --env-file=../../.env watch src/server.ts",
+    "dev:worker": "tsx --env-file=../../.env watch src/worker.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
-    "start:worker": "node dist/worker.js",
+    "start": "node --env-file=../../.env dist/server.js",
+    "start:worker": "node --env-file=../../.env dist/worker.js",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx src/db/migrate.ts",
+    "db:migrate": "tsx --env-file=../../.env src/db/migrate.ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
@@ -727,22 +730,45 @@ Só estrutura + `package.json` + tsconfig. Implementação vem nas fases B+.
 }
 ```
 
-- [ ] **Step 3: Create placeholder**
+- [ ] **Step 3: Create `apps/api/eslint.config.js`**
+
+```javascript
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
+import globals from "globals";
+
+export default [
+  { ignores: ["dist/**", "src/db/migrations/**"] },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    languageOptions: {
+      globals: { ...globals.node },
+      parserOptions: { project: "./tsconfig.json" },
+    },
+    rules: {
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    },
+  },
+];
+```
+
+- [ ] **Step 4: Create placeholder**
 
 ```bash
 mkdir -p apps/api/src && touch apps/api/src/.gitkeep
 ```
 
-- [ ] **Step 4: Install**
+- [ ] **Step 5: Install**
 
 Run: `pnpm install`
 Expected: resolve deps do api. Nenhum lint/typecheck ainda pq src/ tá vazio.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
 git add apps/api/ pnpm-lock.yaml
-git commit -m "chore: scaffold apps/api skeleton (deps + tsconfig)"
+git commit -m "chore: scaffold apps/api skeleton (deps + tsconfig + eslint)"
 ```
 
 ## Task A6: Mover tooling + Prettier config pra raiz
@@ -782,12 +808,23 @@ apps/*/dist/
 
 - [ ] **Step 3: Verificar Husky**
 
+O `package.json` da raiz já declara `"prepare": "husky"` (Task A3), e o `pnpm install` roda o script automaticamente. Se o diretório `.husky/` ainda não existir (monorepo novo ou primeira install falhou), execute:
+
+```bash
+pnpm exec husky init
+```
+
+Isso cria `.husky/pre-commit` com o template padrão. Depois garanta o conteúdo correto:
+
 Run: `cat .husky/pre-commit`
-Expected: `pnpm lint-staged` ou similar. Se não existir, criar:
+Expected: deve conter `pnpm lint-staged`. Se não, sobrescreva:
 
 ```bash
 echo 'pnpm lint-staged' > .husky/pre-commit
+chmod +x .husky/pre-commit
 ```
+
+Teste rápido: `git commit --allow-empty -m "test"` numa branch descartável — o hook deve disparar `lint-staged` (sem erros pois não há arquivos staged).
 
 - [ ] **Step 4: Rodar format check**
 
@@ -800,6 +837,20 @@ Expected: PASS ou mostrar arquivos a formatar. Se houver, rode `pnpm format` e v
 git add .prettierrc .prettierignore .husky/
 git commit -m "chore: configura prettier e husky na raiz do monorepo"
 ```
+
+### ✅ Checkpoint Fase A
+
+Antes de ir pra Fase B, confirme:
+
+```bash
+pnpm install                          # sem erros
+pnpm -w turbo run build --dry=json    # lista todas as tasks sem falhar
+pnpm --filter @olympia/web typecheck  # tsc limpo
+pnpm --filter @olympia/web test -- --run  # testes da Fase 1 passando
+pnpm --filter @olympia/web build      # build produz apps/web/dist/
+```
+
+Se algum passo falhar, pare e corrija antes de seguir. A Fase B assume que o monorepo está funcional.
 
 ---
 
@@ -991,16 +1042,16 @@ export const hasMicrosoftSSO = Boolean(
 );
 ```
 
-- [ ] **Step 2: Criar link do .env pra apps/api**
+- [ ] **Step 2: Carregamento do `.env`**
 
-No monorepo, API lê `.env` da raiz via `process.env` (Turbo + dotenv-flow). Garantir que config local não vaza:
+Todos os scripts em `apps/api/package.json` usam `tsx --env-file=../../.env` ou `node --env-file=...` (configurado na Task A5). Isso garante que `process.env` tá populado antes do Zod validar. Nada a fazer aqui — confirmar que não há `.env` local em `apps/api/`:
 
-Run: `ls -la apps/api/.env*` (esperado: vazio)
+Run: `ls -la apps/api/.env* 2>/dev/null` (esperado: vazio ou "no such file")
 
 - [ ] **Step 3: Validar boot**
 
 ```bash
-cd apps/api && pnpm exec tsx -e "import('./src/config.ts').then(m => console.log(m.config))"
+pnpm --filter @olympia/api exec tsx --env-file=../../.env -e "import('./src/config.ts').then(m => console.log(m.config))"
 ```
 
 Expected: loga objeto com env válido.
@@ -1157,6 +1208,17 @@ git add apps/api/src/app.ts apps/api/src/server.ts apps/api/src/modules/
 git commit -m "feat(api): fastify buildApp com cors e /health"
 ```
 
+### ✅ Checkpoint Fase B
+
+```bash
+docker compose ps                     # postgres, redis, mailpit rodando
+pnpm --filter @olympia/api typecheck  # tsc limpo
+pnpm --filter @olympia/api build      # produz apps/api/dist/
+curl http://localhost:3333/health     # {"status":"ok"}
+```
+
+Confirme também que os logs Pino estão saindo no formato dev-friendly. Se algo falhar, pare.
+
 ---
 
 # Fase C — Database & Better Auth core
@@ -1287,43 +1349,51 @@ export type Auth = typeof auth;
 
 - [ ] **Step 2: Create `apps/api/src/auth/plugin.ts`**
 
+**Nota pro implementer:** ANTES de escrever esse código, cheque se `better-auth/node` ou `better-auth/integrations/fastify` exporta um helper oficial (docs Better Auth: https://www.better-auth.com). Se sim, use o helper. O código abaixo é fallback robusto que funciona sem helper, baseado em Fastify 5 + Better Auth 1.2.
+
 ```typescript
 import type { FastifyPluginAsync } from "fastify";
 import { auth } from "./instance.js";
 
+function toWebHeaders(headers: Record<string, string | string[] | undefined>): Headers {
+  const out = new Headers();
+  for (const [k, v] of Object.entries(headers)) {
+    if (v === undefined) continue;
+    if (Array.isArray(v)) out.set(k, v.join(", "));
+    else out.set(k, v);
+  }
+  return out;
+}
+
 export const authPlugin: FastifyPluginAsync = async (app) => {
-  app.route({
-    method: ["GET", "POST"],
-    url: "/api/auth/*",
-    handler: async (req, reply) => {
-      const url = new URL(req.url, `${req.protocol}://${req.hostname}:${req.port ?? ""}`);
-      const headers = new Headers();
-      for (const [k, v] of Object.entries(req.headers)) {
-        if (typeof v === "string") headers.set(k, v);
-        else if (Array.isArray(v)) headers.set(k, v.join(","));
-      }
-      const fetchReq = new Request(url.toString(), {
-        method: req.method,
-        headers,
-        body: req.method !== "GET" && req.method !== "HEAD" ? JSON.stringify(req.body) : undefined,
-      });
+  // Better Auth precisa do body raw; evita double-parse por Fastify
+  app.addContentTypeParser("application/json", { parseAs: "string" }, (_req, body, done) =>
+    done(null, body),
+  );
 
-      const res = await auth.handler(fetchReq);
+  app.all("/api/auth/*", async (req, reply) => {
+    const url = new URL(req.url, `${req.protocol}://${req.headers.host ?? "localhost"}`);
+    const webRequest = new Request(url.toString(), {
+      method: req.method,
+      headers: toWebHeaders(req.headers),
+      body:
+        req.method === "GET" || req.method === "HEAD"
+          ? undefined
+          : (req.body as string | undefined),
+    });
 
-      reply.status(res.status);
-      for (const [k, v] of res.headers.entries()) reply.header(k, v);
-      return reply.send(await res.text());
-    },
+    const response = await auth.handler(webRequest);
+    reply.status(response.status);
+    response.headers.forEach((value, key) => reply.header(key, value));
+    reply.send(await response.text());
   });
 
   app.decorateRequest("auth", null);
   app.addHook("preHandler", async (req) => {
-    const headers = new Headers();
-    for (const [k, v] of Object.entries(req.headers)) {
-      if (typeof v === "string") headers.set(k, v);
-    }
-    const session = await auth.api.getSession({ headers });
-    // @ts-expect-error — decorated
+    const session = await auth.api.getSession({
+      headers: toWebHeaders(req.headers),
+    });
+    // @ts-expect-error — decorated acima
     req.auth = session;
   });
 };
@@ -1564,6 +1634,17 @@ Expected: PASS. Se falhar com "no tables", verifica que `olympia_test` existe (`
 git add apps/api/vitest.config.ts apps/api/src/test/ apps/api/src/db/test-utils.ts apps/api/src/auth/auth.integration.test.ts
 git commit -m "test(api): integração do fluxo signup+login do better auth"
 ```
+
+### ✅ Checkpoint Fase C
+
+```bash
+pnpm --filter @olympia/api db:migrate          # migrations aplicadas
+pnpm --filter @olympia/api typecheck
+pnpm --filter @olympia/api test -- --run       # testes de integração verdes
+pnpm --filter @olympia/api test:coverage -- --run 2>/dev/null || true
+```
+
+Na ausência de `test:coverage`, o último comando não bloqueia. O crítico: migrations aplicam limpo num banco vazio (destrua e recrie o volume pra garantir).
 
 ---
 
@@ -2037,6 +2118,18 @@ git add apps/api/src/auth/auth.integration.test.ts
 git commit -m "test(api): fluxo e2e signup → verify email → login"
 ```
 
+### ✅ Checkpoint Fase D
+
+```bash
+pnpm --filter @olympia/api build                # worker e server compilam
+pnpm --filter @olympia/api test -- --run        # todos os testes verdes
+# Teste manual do worker:
+pnpm --filter @olympia/api dev:worker           # em terminal separado
+# Dispare um signup e confirme que o email aparece em http://localhost:8025 (MailPit)
+```
+
+Se o MailPit não recebe emails, verifique `SMTP_HOST`, `SMTP_PORT` no `.env` e que `enqueueEmail` está sendo chamado nas callbacks do Better Auth.
+
 ---
 
 # Fase E — SSO + Magic Link
@@ -2204,6 +2297,18 @@ git add apps/api/src/auth/instance.ts apps/api/src/auth/auth.integration.test.ts
 git commit -m "feat(api): magic link plugin via bullmq"
 ```
 
+### ✅ Checkpoint Fase E
+
+```bash
+pnpm --filter @olympia/api typecheck
+pnpm --filter @olympia/api test -- --run
+# Smoke test manual: subir o server e tentar hit nos endpoints SSO
+pnpm --filter @olympia/api dev
+curl -I http://localhost:3333/api/auth/sign-in/social?provider=google   # 302 pro google
+```
+
+Endpoints de SSO devem redirecionar (302) mesmo sem credenciais reais — só valide que a rota existe. O fluxo completo de SSO será testado manualmente na Fase G.
+
 ---
 
 # Fase F — Organizations + Invitations
@@ -2336,25 +2441,40 @@ Igual ao F2 — Better Auth cobre aceitar/recusar. Endpoint agregador pra listar
 
 - [ ] **Step 1: Create `apps/api/src/modules/invitations/routes.ts`**
 
+Better Auth pode ou não expor `listUserInvitations` na versão atual. Implementer: tente `auth.api.listUserInvitations(...)` primeiro; se não existir, caia no fallback Drizzle abaixo.
+
 ```typescript
 import type { FastifyPluginAsync } from "fastify";
-import { auth } from "../../auth/instance.js";
+import { eq, and, gt } from "drizzle-orm";
+import { db } from "../../db/client.js";
+import { invitation } from "../../db/schema/auth.js";
 
 export const invitationRoutes: FastifyPluginAsync = async (app) => {
   app.get("/api/invitations/me", async (req, reply) => {
     // @ts-expect-error — decorated
     const session = req.auth;
-    if (!session) return reply.code(401).send({ error: "unauthorized" });
-
-    const headers = new Headers();
-    for (const [k, v] of Object.entries(req.headers)) {
-      if (typeof v === "string") headers.set(k, v);
+    if (!session?.user?.email) {
+      return reply.code(401).send({ error: "unauthorized" });
     }
-    const invites = await auth.api.listUserInvitations({ headers });
+
+    // Fallback Drizzle: lista invites pendentes pro email do user logado
+    const invites = await db
+      .select()
+      .from(invitation)
+      .where(
+        and(
+          eq(invitation.email, session.user.email),
+          eq(invitation.status, "pending"),
+          gt(invitation.expiresAt, new Date()),
+        ),
+      );
+
     return reply.send(invites);
   });
 };
 ```
+
+**Nota:** o nome da tabela/colunas (`invitation`, `email`, `status`, `expiresAt`) deve bater com o schema gerado pelo Better Auth CLI na Task F1. Se divergir, ajuste os imports de `./schema/auth.js` ou `./schema/organization.js` dependendo de onde o CLI pôs a tabela.
 
 - [ ] **Step 2: Registrar em `app.ts`**
 
@@ -2476,6 +2596,179 @@ git add apps/api/src/modules/invitations/invitations.integration.test.ts
 git commit -m "test(api): fluxo e2e de convite de organization"
 ```
 
+## Task F5: Test — atualização de role + remoção de membro
+
+**Files:**
+
+- Create: `apps/api/src/modules/organizations/members.integration.test.ts`
+
+- [ ] **Step 1: Create `members.integration.test.ts`**
+
+```typescript
+import { describe, expect, it, vi } from "vitest";
+import { buildApp } from "../../app.js";
+
+const capturedEmails: any[] = [];
+vi.mock("../../queues/email.queue.js", () => ({
+  enqueueEmail: vi.fn(async (job) => {
+    capturedEmails.push(job);
+    return { id: "stub" };
+  }),
+  emailQueue: { add: vi.fn() },
+  EMAIL_QUEUE_NAME: "email",
+}));
+
+async function signupAndVerify(app: any, email: string, password = "password123") {
+  await app.inject({
+    method: "POST",
+    url: "/api/auth/sign-up/email",
+    payload: { name: email.split("@")[0], email, password },
+  });
+  const job = capturedEmails.find((j) => j.type === "verifyEmail" && j.to === email);
+  const token = new URL(job.verifyUrl).searchParams.get("token");
+  await app.inject({ method: "GET", url: `/api/auth/verify-email?token=${token}` });
+  const login = await app.inject({
+    method: "POST",
+    url: "/api/auth/sign-in/email",
+    payload: { email, password },
+  });
+  const cookies = login.headers["set-cookie"] as string | string[];
+  return Array.isArray(cookies) ? cookies.join("; ") : cookies;
+}
+
+describe("organization members", () => {
+  it("owner promove member → admin, depois remove", async () => {
+    capturedEmails.length = 0;
+    const app = buildApp();
+
+    const ownerCookie = await signupAndVerify(app, "owner2@test.com");
+    const createOrg = await app.inject({
+      method: "POST",
+      url: "/api/auth/organization/create",
+      headers: { cookie: ownerCookie },
+      payload: { name: "Beta", slug: "beta" },
+    });
+    const orgId = createOrg.json().id ?? createOrg.json().data?.id;
+
+    // convida e aceita
+    await app.inject({
+      method: "POST",
+      url: "/api/auth/organization/invite-member",
+      headers: { cookie: ownerCookie },
+      payload: { email: "member2@test.com", role: "member" },
+    });
+    const inviteJob = capturedEmails.find((j) => j.type === "orgInvite");
+    const inviteId = new URL(inviteJob.inviteUrl).pathname.split("/").pop();
+
+    const memberCookie = await signupAndVerify(app, "member2@test.com");
+    await app.inject({
+      method: "POST",
+      url: "/api/auth/organization/accept-invitation",
+      headers: { cookie: memberCookie },
+      payload: { invitationId: inviteId },
+    });
+
+    // descobre o memberId via listMembers
+    const list = await app.inject({
+      method: "GET",
+      url: "/api/auth/organization/list-members",
+      headers: { cookie: ownerCookie },
+    });
+    const members = list.json().data ?? list.json();
+    const membro = members.find((m: any) => m.user?.email === "member2@test.com");
+    expect(membro).toBeDefined();
+
+    // owner promove a admin
+    const update = await app.inject({
+      method: "POST",
+      url: "/api/auth/organization/update-member-role",
+      headers: { cookie: ownerCookie },
+      payload: { memberId: membro.id, role: "admin", organizationId: orgId },
+    });
+    expect(update.statusCode).toBe(200);
+
+    // owner remove
+    const remove = await app.inject({
+      method: "POST",
+      url: "/api/auth/organization/remove-member",
+      headers: { cookie: ownerCookie },
+      payload: { memberIdOrEmail: "member2@test.com", organizationId: orgId },
+    });
+    expect(remove.statusCode).toBe(200);
+
+    await app.close();
+  });
+
+  it("member NÃO pode remover outro member", async () => {
+    capturedEmails.length = 0;
+    const app = buildApp();
+
+    const ownerCookie = await signupAndVerify(app, "owner3@test.com");
+    const createOrg = await app.inject({
+      method: "POST",
+      url: "/api/auth/organization/create",
+      headers: { cookie: ownerCookie },
+      payload: { name: "Gamma", slug: "gamma" },
+    });
+    const orgId = createOrg.json().id ?? createOrg.json().data?.id;
+
+    // adiciona member A
+    await app.inject({
+      method: "POST",
+      url: "/api/auth/organization/invite-member",
+      headers: { cookie: ownerCookie },
+      payload: { email: "membera@test.com", role: "member" },
+    });
+    const inviteA = capturedEmails.find(
+      (j) => j.type === "orgInvite" && j.to === "membera@test.com",
+    );
+    const inviteAId = new URL(inviteA.inviteUrl).pathname.split("/").pop();
+    const memberACookie = await signupAndVerify(app, "membera@test.com");
+    await app.inject({
+      method: "POST",
+      url: "/api/auth/organization/accept-invitation",
+      headers: { cookie: memberACookie },
+      payload: { invitationId: inviteAId },
+    });
+
+    // member A tenta remover owner
+    const tryRemove = await app.inject({
+      method: "POST",
+      url: "/api/auth/organization/remove-member",
+      headers: { cookie: memberACookie },
+      payload: { memberIdOrEmail: "owner3@test.com", organizationId: orgId },
+    });
+    expect([401, 403]).toContain(tryRemove.statusCode);
+
+    await app.close();
+  });
+});
+```
+
+**⚠️ Nota pro implementer:** as rotas `update-member-role`, `remove-member`, `list-members` podem ter paths ou shapes ligeiramente diferentes dependendo da versão do Better Auth organization plugin. Se um endpoint retornar 404, consulte `node_modules/better-auth/dist/plugins/organization/index.d.ts` pra descobrir o path correto antes de corrigir o teste.
+
+- [ ] **Step 2: Rodar teste**
+
+Run: `pnpm --filter @olympia/api test -- --run members`
+Expected: PASS.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add apps/api/src/modules/organizations/members.integration.test.ts
+git commit -m "test(api): role update e remoção de membro com autorização"
+```
+
+### ✅ Checkpoint Fase F
+
+```bash
+pnpm --filter @olympia/api typecheck
+pnpm --filter @olympia/api test -- --run
+pnpm --filter @olympia/api build
+```
+
+Todos os testes de organizations + invitations + members devem passar. Se um teste do Better Auth organization plugin falhar por shape de argumento diferente, ajuste antes de seguir pra Fase G.
+
 ---
 
 # Fase G — Frontend auth integration
@@ -2488,6 +2781,8 @@ git commit -m "test(api): fluxo e2e de convite de organization"
 
 - [ ] **Step 1: Create `apps/web/src/lib/auth.ts`**
 
+**Convenção:** páginas usam `authClient.*` direto (não destructure métodos como `verifyEmail`, `sendVerificationEmail` — não existem como top-level export em todas as versões do Better Auth). Só destructure o estritamente confiável: `useSession`, `signIn`, `signOut`, `signUp`.
+
 ```typescript
 import { createAuthClient } from "better-auth/react";
 import { organizationClient, magicLinkClient } from "better-auth/client/plugins";
@@ -2497,16 +2792,8 @@ export const authClient = createAuthClient({
   plugins: [organizationClient(), magicLinkClient()],
 });
 
-export const {
-  signIn,
-  signOut,
-  signUp,
-  useSession,
-  forgetPassword,
-  resetPassword,
-  verifyEmail,
-  organization,
-} = authClient;
+export const { useSession, signIn, signOut, signUp } = authClient;
+export const organization = authClient.organization;
 ```
 
 - [ ] **Step 2: Typecheck**
@@ -2749,44 +3036,76 @@ git commit -m "feat(web): SignupPage integrada"
 
 - [ ] **Step 1: Create `VerifyEmailPage.tsx`**
 
+Usa form com input de email pro reenvio (usuário não verificado pode estar sem sessão se abriu o link em outro browser). Email pré-preenchido via `useSession()` se disponível.
+
 ```tsx
 import { useSearchParams, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
-import { authClient } from "../../lib/auth";
+import { authClient, useSession } from "../../lib/auth";
 
 export function VerifyEmailPage() {
   const [params] = useSearchParams();
+  const { data: session } = useSession();
   const navigate = useNavigate();
   const [state, setState] = useState<"idle" | "verifying" | "error" | "sent">(
     params.get("token") ? "verifying" : "idle",
   );
+  const [email, setEmail] = useState(session?.user?.email ?? "");
 
   useEffect(() => {
     const token = params.get("token");
     if (!token) return;
-    authClient.verifyEmail({ query: { token } }).then(({ error }) => {
-      if (error) setState("error");
-      else navigate("/dashboard");
+    // endpoint GET /api/auth/verify-email?token=...&callbackURL=...
+    fetch(`/api/auth/verify-email?token=${encodeURIComponent(token)}&callbackURL=/dashboard`, {
+      credentials: "include",
+    }).then((res) => {
+      if (res.ok || res.redirected) navigate("/dashboard");
+      else setState("error");
     });
   }, [params, navigate]);
 
-  async function resend() {
-    // chama sendVerificationEmail via Better Auth client
-    await authClient.sendVerificationEmail({ email: "" /* from session */ });
+  async function resend(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email) return;
+    await fetch("/api/auth/send-verification-email", {
+      method: "POST",
+      credentials: "include",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email, callbackURL: "/dashboard" }),
+    });
     setState("sent");
   }
 
-  if (state === "verifying") return <div>Verificando...</div>;
-  if (state === "error") return <div>Link inválido ou expirado.</div>;
+  if (state === "verifying") return <div className="p-8">Verificando...</div>;
+  if (state === "error") return <div className="p-8">Link inválido ou expirado.</div>;
+
   return (
-    <div>
+    <div className="mx-auto max-w-md p-8">
       <h1>Verifique seu email</h1>
       <p>Enviamos um link pro seu email. Clique pra ativar a conta.</p>
-      <button onClick={resend}>Reenviar</button>
+      {state === "sent" ? (
+        <p>Email reenviado.</p>
+      ) : (
+        <form onSubmit={resend} className="mt-4 flex gap-2">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="seu@email.com"
+            required
+            className="flex-1 rounded border px-2 py-1"
+          />
+          <button type="submit" className="rounded border px-4 py-1">
+            Reenviar
+          </button>
+        </form>
+      )}
     </div>
   );
 }
 ```
+
+**Nota:** se o Better Auth client expuser `authClient.verifyEmail({ query: { token } })` e `authClient.sendVerificationEmail({ email, callbackURL })` diretamente, use eles em vez do `fetch` raw — resultado é o mesmo, apenas mais tipado.
 
 - [ ] **Step 2: Create `ForgotPasswordPage.tsx`**
 
@@ -2820,6 +3139,23 @@ Expected: PASS.
 git add apps/web/src/app/pages/VerifyEmailPage.tsx apps/web/src/app/pages/ForgotPasswordPage.tsx apps/web/src/app/pages/ResetPasswordPage.tsx apps/web/src/app/pages/MagicLinkPage.tsx apps/web/src/app/routes.tsx
 git commit -m "feat(web): páginas verify-email, forgot/reset password, magic-link"
 ```
+
+### ✅ Checkpoint Fase G
+
+```bash
+pnpm --filter @olympia/web typecheck
+pnpm --filter @olympia/web test -- --run      # testes da Fase 1 continuam verdes
+pnpm --filter @olympia/web build
+# smoke E2E manual:
+pnpm -w dev                                    # sobe API e Web juntos
+# em outro terminal / browser:
+# 1. signup novo email → recebe email no MailPit (http://localhost:8025)
+# 2. clica no link de verify → login funciona
+# 3. forgot password → link chega → reset funciona
+# 4. magic link → link chega → login funciona
+```
+
+Se qualquer passo manual falhar, pare e corrija antes de ir pra H.
 
 ---
 
@@ -2887,6 +3223,13 @@ git commit -m "feat(web): OrgOnboardingPage"
 import { useEffect, useState } from "react";
 import { organization, useSession } from "../../lib/auth";
 import { useNavigate } from "react-router";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "../components/ui/dropdown-menu";
 
 type Org = { id: string; name: string; slug: string };
 
@@ -2952,6 +3295,13 @@ git commit -m "feat(web): OrgSwitcher no header do MainLayout"
 
 - Create: `apps/web/src/app/pages/InvitationPage.tsx`
 - Modify: `apps/web/src/app/routes.tsx`
+
+**⚠️ Nota pro implementer:** o código abaixo usa `authClient.organization.getInvitation({ query: { id } })` e `organization.acceptInvitation({ invitationId: id })`. Antes de implementar, confirme a **shape exata** desses argumentos na versão instalada do Better Auth (`better-auth/react`):
+
+1. Abra `node_modules/better-auth/dist/plugins/organization/client.d.ts` (ou similar) e veja a assinatura.
+2. Possíveis variantes dependendo da versão: `getInvitation({ id })` vs `getInvitation({ query: { id } })`; `acceptInvitation({ invitationId })` vs `acceptInvitation({ id })`.
+3. Se a API diferir, ajuste as chamadas **mantendo o mesmo fluxo** (três branches: sem sessão → signup, email bate → aceita, email não bate → tela de troca).
+4. Fallback se `getInvitation` não existir no client: chame o endpoint REST direto via `fetch("/api/auth/organization/get-invitation?id=" + id, { credentials: "include" })` e parseie o JSON.
 
 - [ ] **Step 1: Create `InvitationPage.tsx`**
 
@@ -3167,6 +3517,22 @@ Substituir por:
 git add apps/web/src/app/ README.md
 git commit -m "chore(web): remove gate mock via localStorage + atualiza docs"
 ```
+
+### ✅ Checkpoint Fase H
+
+```bash
+pnpm --filter @olympia/web typecheck
+pnpm --filter @olympia/web test -- --run
+pnpm --filter @olympia/web build
+# E2E manual completo:
+# 1. Signup owner → verify → org onboarding → OrgSwitcher aparece
+# 2. Owner convida email B (MailPit recebe) → clica link → accept flow
+# 3. Owner convida email C → email C não tem conta ainda → signup redirect → aceita
+# 4. Logar como email D (não convidado) e tentar url de convite → tela "email diverge"
+# 5. Criar segunda org → OrgSwitcher alterna entre elas
+```
+
+Todos os 5 cenários precisam funcionar antes de Fase I. Cada um exercita um branch distinto do fluxo multi-tenant.
 
 ---
 
