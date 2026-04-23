@@ -51,19 +51,19 @@ localStorage.setItem("olympia_onboarding", "invited");
 
 ## Scripts
 
-| Comando             | Ação                                |
-| ------------------- | ----------------------------------- |
-| `pnpm dev`          | Servidor de desenvolvimento com HMR |
-| `pnpm build`        | Build de produção em `dist/`        |
-| `pnpm preview`      | Serve o build local pra revisão     |
-| `pnpm lint`         | ESLint em todo o projeto            |
-| `pnpm lint:fix`     | ESLint com auto-fix                 |
-| `pnpm typecheck`    | `tsc --noEmit`                      |
-| `pnpm format`       | Prettier `--write` em tudo          |
-| `pnpm format:check` | Prettier `--check` (CI)             |
-| `pnpm test`         | Vitest watch mode                   |
-| `pnpm test:ui`      | Vitest com UI no browser            |
-| `pnpm test --run`   | Vitest single run (CI)              |
+| Comando              | Ação                                |
+| -------------------- | ----------------------------------- |
+| `pnpm dev`           | Servidor de desenvolvimento com HMR |
+| `pnpm build`         | Build de produção em `dist/`        |
+| `pnpm preview`       | Serve o build local pra revisão     |
+| `pnpm lint`          | ESLint em todo o projeto            |
+| `pnpm lint:fix`      | ESLint com auto-fix                 |
+| `pnpm typecheck`     | `tsc --noEmit`                      |
+| `pnpm format`        | Prettier `--write` em tudo          |
+| `pnpm format:check`  | Prettier `--check` (CI)             |
+| `pnpm test`          | Vitest watch mode                   |
+| `pnpm test:ui`       | Vitest com UI no browser            |
+| `pnpm test -- --run` | Vitest single run (CI)              |
 
 ## Estrutura
 

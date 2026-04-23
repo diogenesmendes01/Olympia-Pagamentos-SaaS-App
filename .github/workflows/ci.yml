@@ -33,6 +33,6 @@ jobs:
           case "${{ matrix.task }}" in
             lint) pnpm lint ;;
             typecheck) pnpm typecheck ;;
-            test) pnpm test --run ;;
+            test) pnpm test -- --run ;;
             build) pnpm build ;;
           esac
