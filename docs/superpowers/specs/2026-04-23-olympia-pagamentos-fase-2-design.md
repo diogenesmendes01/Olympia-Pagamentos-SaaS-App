@@ -153,6 +153,8 @@ Se qualquer obrigatório falta, servidor não sobe e loga o campo. `.env.example
 - **`schema/organization.ts`** — tabelas do plugin organization: `organization`, `member`, `invitation`
 - **`migrations/`** — SQL gerado por `drizzle-kit generate`, versionado. Script raiz `pnpm db:migrate` aplica
 
+**Fonte dos schemas do Better Auth:** as tabelas em `schema/auth.ts` e `schema/organization.ts` são geradas via `npx @better-auth/cli generate --output src/db/schema/`. O CLI lê a config de `auth/instance.ts` e emite Drizzle schema coerente com o que Better Auth espera em runtime. A saída é commitada e vira source of truth — não escreve à mão contra docs do plugin (diverge silenciosamente em upgrades). Quando mudar config do Better Auth (novo plugin, novo campo), roda o CLI de novo, roda `drizzle-kit generate` pra produzir migration, revisa e commita.
+
 ### Better Auth (`auth/`)
 
 - **`instance.ts`** — `betterAuth({ database: drizzleAdapter(db), ... })` com:
@@ -205,8 +207,10 @@ Pino com `pino-pretty` em dev e JSON estruturado em prod. Redaction pra `req.hea
 Vitest + Fastify `app.inject()`. Três categorias:
 
 - **Unit** — validação Zod, helpers puros (sem DB)
-- **Integration** — rotas full com Postgres de teste (DB `olympia_test` no mesmo container). `TRUNCATE` no `beforeEach` (Better Auth usa transactions internamente; não dá pra aninhar)
+- **Integration** — rotas full contra **DB dedicado `olympia_test`** no mesmo container Postgres do dev. `DATABASE_URL` de teste é variável separada no `.env` (`DATABASE_URL_TEST`), commitada no `.env.example`
 - **Auth flow** — signup → verify email → login → invite → accept, end-to-end via `inject()`, com transport stubado capturando emails em array in-memory
+
+**Reset entre testes:** `TRUNCATE` das tabelas no `beforeEach` em vez de transactions (Better Auth usa transactions internamente, não aninha). Helper `resetDb()` em `src/db/test-utils.ts` emite um único `TRUNCATE TABLE user, session, account, verification, organization, member, invitation RESTART IDENTITY CASCADE` — `CASCADE` resolve ordem de FKs sem precisar listar manualmente. Migrations rodam uma vez antes da suíte via `globalSetup` do Vitest.
 
 ## Seção 3 — Frontend (`apps/web`)
 
@@ -246,7 +250,10 @@ Exporta `signIn`, `signUp`, `signOut`, `useSession`, `organization`. `@olympia/s
 - **`/forgot-password`** — form envia email
 - **`/reset-password`** — lê token da query string, valida, aplica nova senha
 - **`/magic-link`** — form de email + estado "enviado"
-- **`/invitation/:id`** — público (token assinado); se já tem sessão, aceita e troca `activeOrganizationId`; se não, manda pra `/signup?invitation=:id`
+- **`/invitation/:id`** — público (token assinado). Três branches:
+  - sem sessão → redireciona pra `/signup?invitation=:id` (preenche email do convite no form, bloqueia edição); após signup+verify, aceita automaticamente
+  - com sessão **e** email do usuário bate com o do convite → aceita, seta `activeOrganizationId`, redireciona pra `/dashboard`
+  - com sessão **mas** email divergente → mostra página com mensagem "Este convite é pra `invite@example.com`. Faça logout e entre com essa conta, ou peça um novo convite." + botão "Sair e entrar com `invite@example.com`" (chama `signOut` + redireciona pra `/login?email=invite@example.com`). Não deixa aceitar com conta errada — convite é vinculado ao email
 
 Rota `/login` existente ganha botões "Continuar com Google" e "Continuar com Microsoft" + link pra magic link.
 
@@ -255,6 +262,15 @@ Rota `/login` existente ganha botões "Continuar com Google" e "Continuar com Mi
 - **`/onboarding/organization`** — usuário vindo de SSO sem org cria uma (nome + slug gerado + CNPJ opcional). Entra no `MainLayout` após
 - **`/users`** (mockada na Fase 1) passa a chamar `organization.listMembers()` + `organization.inviteMember()`. Tabela mostra invites pendentes + membros ativos. Dropdown pra mudar role/remover (só owner/admin)
 - **`/settings/organization`** — rename + slug + transferência de ownership + delete org (destrutivo, só owner, confirmação por nome)
+
+### Header — switcher de organização
+
+`MainLayout` ganha um `OrgSwitcher` no header (dropdown ao lado do avatar) que:
+
+- Lista organizações do usuário via `organization.list()`
+- Marca a `activeOrganizationId` atual
+- Ao trocar, chama `organization.setActive({ organizationId })` e força re-fetch de dados org-scoped da página atual (via `router.revalidate()` ou reload leve)
+- Mostra link "Criar nova organização" no rodapé do dropdown → `/onboarding/organization?mode=additional`
 
 ### Data fetching
 
