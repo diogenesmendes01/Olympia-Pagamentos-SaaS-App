@@ -808,7 +808,7 @@ apps/*/dist/
 
 - [ ] **Step 3: Verificar Husky**
 
-O `package.json` da raiz já declara `"prepare": "husky"` (Task A3), e o `pnpm install` roda o script automaticamente. Se o diretório `.husky/` ainda não existir (monorepo novo ou primeira install falhou), execute:
+O `package.json` da raiz já declara `"prepare": "husky"` (Task A1), e o `pnpm install` roda o script automaticamente. Se o diretório `.husky/` ainda não existir (monorepo novo ou primeira install falhou), execute:
 
 ```bash
 pnpm exec husky init
@@ -1214,7 +1214,7 @@ git commit -m "feat(api): fastify buildApp com cors e /health"
 docker compose ps                     # postgres, redis, mailpit rodando
 pnpm --filter @olympia/api typecheck  # tsc limpo
 pnpm --filter @olympia/api build      # produz apps/api/dist/
-curl http://localhost:3333/health     # {"status":"ok"}
+curl http://localhost:3000/health     # {"status":"ok"}
 ```
 
 Confirme também que os logs Pino estão saindo no formato dev-friendly. Se algo falhar, pare.
@@ -2304,7 +2304,7 @@ pnpm --filter @olympia/api typecheck
 pnpm --filter @olympia/api test -- --run
 # Smoke test manual: subir o server e tentar hit nos endpoints SSO
 pnpm --filter @olympia/api dev
-curl -I http://localhost:3333/api/auth/sign-in/social?provider=google   # 302 pro google
+curl -I http://localhost:3000/api/auth/sign-in/social?provider=google   # 302 pro google
 ```
 
 Endpoints de SSO devem redirecionar (302) mesmo sem credenciais reais — só valide que a rota existe. O fluxo completo de SSO será testado manualmente na Fase G.
@@ -3736,12 +3736,12 @@ Cada task acima produz ao menos 1 commit. Total esperado: ~35-40 commits na Fase
 Ordem recomendada de execução (dependências):
 
 ```
-A1 → A2 → A3 → A4 → A5 → A6
+A1 → A2 → A4 → A3 → A5 → A6       # A4 antes de A3 (packages/shared precede apps/web)
 B1 → B2 → B3 → B4
 C1 → C2 → C3 → C4
 D1 → D2 → D3 → D4 → D5
 E1 → E2 → E3
-F1 → F2 → F3 → F4
+F1 → F2 → F3 → F4 → F5
 G1 → G2 → G3 → G4 → G5
 H1 → H2 → H3 → H4 → H5 → H6
 I1 → I2 → I3
