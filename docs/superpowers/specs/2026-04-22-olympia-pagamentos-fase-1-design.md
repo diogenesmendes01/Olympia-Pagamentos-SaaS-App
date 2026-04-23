@@ -62,6 +62,8 @@ Olympia-Pagamentos-SaaS-App/
 
 **Arquivos faltantes:** `index.html`, `src/main.tsx`, `tsconfig.json`, `tsconfig.node.json`, `.gitignore`.
 
+**Conteúdo de `src/imports/`:** pasta `pasted_text/` com dois arquivos — `olympia-visuals-copy.md` e `olympia-erp-design-rules.md`. Ambos permanecem onde estão; nada é descartado.
+
 ---
 
 ## 3. Stack tecnológico
@@ -74,7 +76,7 @@ Preservado do Figma Make (escolha validada):
 | Framework | React | 18.3.1 |
 | Linguagem | TypeScript | latest 5.x |
 | Estilo | Tailwind CSS v4 (plugin `@tailwindcss/vite`) | 4.1.12 |
-| Componentes | shadcn/ui (Radix primitives) | versões do Figma Make |
+| Componentes | shadcn/ui (Radix primitives) | versões exatas do `package.json` de entrada — não atualizar durante o porte |
 | Roteamento | React Router | 7.13.0 |
 | Ícones | lucide-react | 0.487.0 |
 | Animação | motion (Framer Motion) | 12.23.24 |
@@ -330,6 +332,8 @@ test("renderiza landing page em /", () => {
 });
 ```
 
+`App.tsx` já monta o `RouterProvider` (confirmado no export do Figma Make), então `<App />` pode ser renderizado diretamente no teste — não é preciso envolver com `MemoryRouter`.
+
 Fase 2+ adiciona cobertura real.
 
 ---
@@ -368,7 +372,7 @@ Antes de declarar a Fase 1 completa, executar e confirmar:
 - [ ] Visita manual via Playwright/webapp-testing a cada rota:
   - `/` (Landing) renderiza sem erro no console
   - `/login` renderiza
-  - Com `localStorage.setItem("olympia_auth", "true")`:
+  - Com `localStorage.setItem("olympia_auth", "true")` — o gate `olympia_auth` **já está implementado** em `src/app/routes.tsx` no loader do `MainLayout` e do `/login`, portanto essa chave é suficiente pra destravar as rotas autenticadas:
     - `/dashboard`, `/receivables`, `/payables`, `/invoices`, `/users`, `/reports`, `/integrations`, `/settings`, `/profile` renderizam
   - Sidebar navega entre páginas
   - Header (search, notificações, user menu) abre e fecha
