@@ -13,12 +13,11 @@ import {
   CreditCard,
   Zap,
 } from "lucide-react";
-import { payables, type Payable } from "../data/mockData";
+import { payables } from "../data/mockData";
 import { toast } from "sonner";
 import {
   PRIMARY as P,
   PRIMARY_HOVER as PH,
-  GOLD as G,
   SUCCESS,
   SUCCESS_BG,
   WARNING,
@@ -116,7 +115,9 @@ export function PayablesPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={() => setShowBatch(true)}
+            onClick={() => {
+              setShowBatch(true);
+            }}
             className="flex items-center gap-1.5 rounded-xl bg-white px-3 py-2 transition-colors"
             style={{ border: "1px solid #E2E8F0" }}
           >
@@ -136,7 +137,9 @@ export function PayablesPage() {
             </span>
           </button>
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setShowModal(true);
+            }}
             className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-white transition-all"
             style={{
               background: P,
@@ -259,7 +262,9 @@ export function PayablesPage() {
             <input
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
               placeholder="Buscar fornecedor, ID, descrição..."
               className="flex-1 bg-transparent focus:outline-none"
               style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#374151" }}
@@ -268,7 +273,9 @@ export function PayablesPage() {
           <div className="flex gap-2">
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+              }}
               className="rounded-xl border bg-white px-3 py-2 focus:outline-none"
               style={{
                 fontFamily: "'Inter', sans-serif",
@@ -292,7 +299,9 @@ export function PayablesPage() {
             </select>
             <select
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              onChange={(e) => {
+                setCategoryFilter(e.target.value);
+              }}
               className="rounded-xl border bg-white px-3 py-2 focus:outline-none"
               style={{
                 fontFamily: "'Inter', sans-serif",
@@ -351,9 +360,11 @@ export function PayablesPage() {
                 <th className="px-4 py-3">
                   <input
                     type="checkbox"
-                    onChange={(e) =>
-                      setSelected(e.target.checked ? new Set(filtered.map((p) => p.id)) : new Set())
-                    }
+                    onChange={(e) => {
+                      setSelected(
+                        e.target.checked ? new Set(filtered.map((p) => p.id)) : new Set(),
+                      );
+                    }}
                     className="rounded"
                   />
                 </th>
@@ -400,7 +411,9 @@ export function PayablesPage() {
                       <input
                         type="checkbox"
                         checked={selected.has(pay.id)}
-                        onChange={() => toggleSelect(pay.id)}
+                        onChange={() => {
+                          toggleSelect(pay.id);
+                        }}
                         className="rounded"
                       />
                     </td>
@@ -560,7 +573,9 @@ export function PayablesPage() {
                     <td className="px-4 py-3.5">
                       <div className="relative">
                         <button
-                          onClick={() => setOpenMenu(openMenu === pay.id ? null : pay.id)}
+                          onClick={() => {
+                            setOpenMenu(openMenu === pay.id ? null : pay.id);
+                          }}
                           className="rounded-lg p-1.5 hover:bg-slate-100"
                         >
                           <MoreHorizontal className="h-4 w-4" style={{ color: "#94A3B8" }} />
@@ -681,7 +696,9 @@ export function PayablesPage() {
                 Nova Conta a Pagar
               </h3>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                }}
                 className="rounded-xl p-1.5 hover:bg-slate-100"
               >
                 <XCircle className="h-5 w-5" style={{ color: "#94A3B8" }} />
@@ -808,7 +825,9 @@ export function PayablesPage() {
             </div>
             <div className="flex gap-3 px-6 pb-6">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                }}
                 className="flex-1 rounded-xl border py-2.5 hover:bg-slate-50"
                 style={{
                   fontFamily: "'Inter', sans-serif",
@@ -860,7 +879,9 @@ export function PayablesPage() {
                 Pagamento em Lote
               </h3>
               <button
-                onClick={() => setShowBatch(false)}
+                onClick={() => {
+                  setShowBatch(false);
+                }}
                 className="rounded-xl p-1.5 hover:bg-slate-100"
               >
                 <XCircle className="h-5 w-5" style={{ color: "#94A3B8" }} />
@@ -953,7 +974,9 @@ export function PayablesPage() {
             </div>
             <div className="flex gap-3 px-6 pb-6">
               <button
-                onClick={() => setShowBatch(false)}
+                onClick={() => {
+                  setShowBatch(false);
+                }}
                 className="flex-1 rounded-xl border py-2.5 hover:bg-slate-50"
                 style={{
                   fontFamily: "'Inter', sans-serif",

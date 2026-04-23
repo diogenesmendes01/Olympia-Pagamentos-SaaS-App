@@ -21,18 +21,15 @@ import {
   ShoppingCart,
   Copy,
   Bell,
-  Unlock,
   Link2,
 } from "lucide-react";
 import { integrations } from "../data/mockData";
 import { toast } from "sonner";
 import {
   PRIMARY as P,
-  PRIMARY_HOVER as PH,
   GOLD as G,
   SUCCESS,
   SUCCESS_BG,
-  SUCCESS_BORDER,
   WARNING,
   WARNING_BG,
 } from "../styles/tokens";
@@ -159,7 +156,9 @@ export function IntegrationsPage() {
                 </span>
               ))}
               <button
-                onClick={() => setOpenBanks(true)}
+                onClick={() => {
+                  setOpenBanks(true);
+                }}
                 className="flex items-center gap-1 rounded-lg px-2 py-0.5 text-xs"
                 style={{ background: `rgba(200,169,107,0.15)`, color: "#C8A96B" }}
               >
@@ -302,7 +301,9 @@ export function IntegrationsPage() {
                 Conectar via Open Finance
               </h3>
               <button
-                onClick={() => setOpenBanks(false)}
+                onClick={() => {
+                  setOpenBanks(false);
+                }}
                 className="rounded-xl p-1.5 hover:bg-slate-100"
                 style={{ color: "#94A3B8", fontSize: 18 }}
               >

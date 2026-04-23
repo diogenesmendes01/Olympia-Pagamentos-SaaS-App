@@ -8,10 +8,7 @@ import {
   ArrowLeft,
   Plus,
   Trash2,
-  Crown,
   Zap,
-  ChevronDown,
-  X,
   Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -84,10 +81,15 @@ export function OwnerOnboarding({ onComplete }: Props) {
 
   const progress = ((step - 1) / (STEPS.length - 1)) * 100;
 
-  const addInvite = () => setInvites((v) => [...v, { email: "", role: "Financeiro" }]);
-  const removeInvite = (i: number) => setInvites((v) => v.filter((_, idx) => idx !== i));
-  const updateInvite = (i: number, key: "email" | "role", val: string) =>
+  const addInvite = () => {
+    setInvites((v) => [...v, { email: "", role: "Financeiro" }]);
+  };
+  const removeInvite = (i: number) => {
+    setInvites((v) => v.filter((_, idx) => idx !== i));
+  };
+  const updateInvite = (i: number, key: "email" | "role", val: string) => {
     setInvites((v) => v.map((inv, idx) => (idx === i ? { ...inv, [key]: val } : inv)));
+  };
 
   const connectBank = async (name: string) => {
     setConnecting(name);
@@ -184,7 +186,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
             {STEPS.map((s) => (
               <button
                 key={s.n}
-                onClick={() => step > s.n && setStep(s.n as Step)}
+                onClick={() => {
+                  if (step > s.n) setStep(s.n as Step);
+                }}
                 className="flex-1 rounded-t-xl py-2.5 text-center transition-all"
                 style={{
                   background: step === s.n ? "white" : "transparent",
@@ -353,7 +357,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
                     onFocus={onF}
                     onBlur={onB}
                     value={company.nome}
-                    onChange={(e) => setCompany((c) => ({ ...c, nome: e.target.value }))}
+                    onChange={(e) => {
+                      setCompany((c) => ({ ...c, nome: e.target.value }));
+                    }}
                   />
                 </div>
                 <div>
@@ -376,7 +382,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
                     onBlur={onB}
                     placeholder="Opcional"
                     value={company.fantasia}
-                    onChange={(e) => setCompany((c) => ({ ...c, fantasia: e.target.value }))}
+                    onChange={(e) => {
+                      setCompany((c) => ({ ...c, fantasia: e.target.value }));
+                    }}
                   />
                 </div>
                 <div>
@@ -398,7 +406,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
                     onFocus={onF}
                     onBlur={onB}
                     value={company.cnpj}
-                    onChange={(e) => setCompany((c) => ({ ...c, cnpj: e.target.value }))}
+                    onChange={(e) => {
+                      setCompany((c) => ({ ...c, cnpj: e.target.value }));
+                    }}
                   />
                 </div>
                 <div>
@@ -420,7 +430,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
                     onFocus={onF}
                     onBlur={onB}
                     value={company.segmento}
-                    onChange={(e) => setCompany((c) => ({ ...c, segmento: e.target.value }))}
+                    onChange={(e) => {
+                      setCompany((c) => ({ ...c, segmento: e.target.value }));
+                    }}
                   >
                     <option value="">Selecione…</option>
                     {SEGMENTS.map((s) => (
@@ -449,7 +461,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
                     onFocus={onF}
                     onBlur={onB}
                     value={company.tamanho}
-                    onChange={(e) => setCompany((c) => ({ ...c, tamanho: e.target.value }))}
+                    onChange={(e) => {
+                      setCompany((c) => ({ ...c, tamanho: e.target.value }));
+                    }}
                   >
                     <option value="">Selecione…</option>
                     {SIZES.map((s) => (
@@ -478,7 +492,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
                     onFocus={onF}
                     onBlur={onB}
                     value={company.faturamento}
-                    onChange={(e) => setCompany((c) => ({ ...c, faturamento: e.target.value }))}
+                    onChange={(e) => {
+                      setCompany((c) => ({ ...c, faturamento: e.target.value }));
+                    }}
                   >
                     <option value="">Selecione…</option>
                     {[
@@ -526,7 +542,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
                     onBlur={onB}
                     placeholder={`email${i + 1}@empresa.com.br`}
                     value={inv.email}
-                    onChange={(e) => updateInvite(i, "email", e.target.value)}
+                    onChange={(e) => {
+                      updateInvite(i, "email", e.target.value);
+                    }}
                   />
                   <select
                     className="rounded-xl border px-3 py-2.5 focus:outline-none"
@@ -539,7 +557,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
                       minWidth: 130,
                     }}
                     value={inv.role}
-                    onChange={(e) => updateInvite(i, "role", e.target.value)}
+                    onChange={(e) => {
+                      updateInvite(i, "role", e.target.value);
+                    }}
                   >
                     {ROLES.map((r) => (
                       <option key={r}>{r}</option>
@@ -547,7 +567,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
                   </select>
                   {invites.length > 1 && (
                     <button
-                      onClick={() => removeInvite(i)}
+                      onClick={() => {
+                        removeInvite(i);
+                      }}
                       className="flex-shrink-0 rounded-xl p-2 hover:bg-slate-100"
                     >
                       <Trash2 className="h-4 w-4" style={{ color: "#94A3B8" }} />
@@ -610,7 +632,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
                   return (
                     <button
                       key={bank.name}
-                      onClick={() => !connected && connectBank(bank.name)}
+                      onClick={() => {
+                        if (!connected) void connectBank(bank.name);
+                      }}
                       disabled={isConnecting}
                       className="flex items-center gap-3 rounded-2xl border-2 p-3 text-left transition-all"
                       style={{
@@ -751,7 +775,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
           <div>
             {step > 1 && step < 5 && (
               <button
-                onClick={() => setStep((s) => (s - 1) as Step)}
+                onClick={() => {
+                  setStep((s) => (s - 1) as Step);
+                }}
                 className="flex items-center gap-1.5 rounded-xl border px-4 py-2 hover:bg-slate-50"
                 style={{
                   borderColor: "#E2E8F0",
@@ -767,7 +793,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
           <div className="flex gap-2">
             {step < 5 && step >= 3 && (
               <button
-                onClick={() => setStep((s) => (s + 1) as Step)}
+                onClick={() => {
+                  setStep((s) => (s + 1) as Step);
+                }}
                 className="rounded-xl border px-4 py-2"
                 style={{
                   borderColor: "#E2E8F0",
@@ -781,7 +809,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
             )}
             {step < 5 ? (
               <button
-                onClick={() => setStep((s) => (s + 1) as Step)}
+                onClick={() => {
+                  setStep((s) => (s + 1) as Step);
+                }}
                 className="flex items-center gap-1.5 rounded-xl px-5 py-2 text-white"
                 style={{
                   background: P,

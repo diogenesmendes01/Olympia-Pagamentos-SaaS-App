@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Plus,
   Search,
@@ -12,7 +12,6 @@ import {
   Trash2,
   Bell,
   RefreshCw,
-  ArrowDownCircle,
   CheckCircle,
   Clock,
   XCircle,
@@ -31,7 +30,6 @@ import {
   WARNING_BG,
   DANGER,
   DANGER_BG,
-  DANGER_BORDER,
 } from "../styles/tokens";
 
 const fmt = (v: number) =>
@@ -55,6 +53,29 @@ const methodConfig: Record<Receivable["metodo"], { label: string; color: string;
   ted: { label: "TED", color: "#B07A1A", bg: "#FDF8EE" },
   link: { label: "Link", color: "#B0246A", bg: "#FFF0F7" },
 };
+
+// Extracted out of component to avoid react-hooks/static-components violation
+function BtnPrimary({
+  children,
+  onClick,
+  className = "",
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-white transition-all ${className}`}
+      style={{ background: P, fontFamily: "'Inter', sans-serif", fontSize: 12.5, fontWeight: 700 }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = PH)}
+      onMouseLeave={(e) => (e.currentTarget.style.background = P)}
+    >
+      {children}
+    </button>
+  );
+}
 
 export function ReceivablesPage() {
   const [search, setSearch] = useState("");
@@ -85,21 +106,13 @@ export function ReceivablesPage() {
 
   const toggleSelect = (id: string) => {
     const s = new Set(selected);
-    s.has(id) ? s.delete(id) : s.add(id);
+    if (s.has(id)) {
+      s.delete(id);
+    } else {
+      s.add(id);
+    }
     setSelected(s);
   };
-
-  const BtnPrimary = ({ children, onClick, className = "" }: any) => (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-white transition-all ${className}`}
-      style={{ background: P, fontFamily: "'Inter', sans-serif", fontSize: 12.5, fontWeight: 700 }}
-      onMouseEnter={(e) => (e.currentTarget.style.background = PH)}
-      onMouseLeave={(e) => (e.currentTarget.style.background = P)}
-    >
-      {children}
-    </button>
-  );
 
   return (
     <div className="space-y-5 p-5 lg:p-6">
@@ -131,7 +144,11 @@ export function ReceivablesPage() {
               Exportar
             </span>
           </button>
-          <BtnPrimary onClick={() => setShowModal(true)}>
+          <BtnPrimary
+            onClick={() => {
+              setShowModal(true);
+            }}
+          >
             <Plus className="h-3.5 w-3.5" />
             Nova Cobrança
           </BtnPrimary>
@@ -216,7 +233,9 @@ export function ReceivablesPage() {
             <input
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
               placeholder="Buscar por cliente, ID ou descrição..."
               className="flex-1 bg-transparent focus:outline-none"
               style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#374151" }}
@@ -250,7 +269,9 @@ export function ReceivablesPage() {
               <select
                 key={i}
                 value={sel.value}
-                onChange={(e) => sel.onChange(e.target.value)}
+                onChange={(e) => {
+                  sel.onChange(e.target.value);
+                }}
                 className="rounded-xl border bg-white px-3 py-2 focus:outline-none"
                 style={{
                   fontFamily: "'Inter', sans-serif",
@@ -304,9 +325,11 @@ export function ReceivablesPage() {
                 <th className="px-4 py-3">
                   <input
                     type="checkbox"
-                    onChange={(e) =>
-                      setSelected(e.target.checked ? new Set(filtered.map((r) => r.id)) : new Set())
-                    }
+                    onChange={(e) => {
+                      setSelected(
+                        e.target.checked ? new Set(filtered.map((r) => r.id)) : new Set(),
+                      );
+                    }}
                     className="rounded"
                   />
                 </th>
@@ -351,7 +374,9 @@ export function ReceivablesPage() {
                       <input
                         type="checkbox"
                         checked={selected.has(rec.id)}
-                        onChange={() => toggleSelect(rec.id)}
+                        onChange={() => {
+                          toggleSelect(rec.id);
+                        }}
                         className="rounded"
                       />
                     </td>
@@ -488,7 +513,9 @@ export function ReceivablesPage() {
                     <td className="px-4 py-3.5">
                       <div className="relative">
                         <button
-                          onClick={() => setOpenMenu(openMenu === rec.id ? null : rec.id)}
+                          onClick={() => {
+                            setOpenMenu(openMenu === rec.id ? null : rec.id);
+                          }}
                           className="rounded-lg p-1.5 hover:bg-slate-100"
                         >
                           <MoreHorizontal className="h-4 w-4" style={{ color: "#94A3B8" }} />
@@ -589,7 +616,9 @@ export function ReceivablesPage() {
                 Nova Cobrança
               </h3>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                }}
                 className="rounded-xl p-1.5 hover:bg-slate-100"
               >
                 <XCircle className="h-5 w-5" style={{ color: "#94A3B8" }} />
@@ -749,7 +778,9 @@ export function ReceivablesPage() {
             </div>
             <div className="flex gap-3 px-6 pb-6">
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                }}
                 className="flex-1 rounded-xl border py-2.5 hover:bg-slate-50"
                 style={{
                   fontFamily: "'Inter', sans-serif",

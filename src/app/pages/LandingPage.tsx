@@ -19,7 +19,6 @@ import {
   TrendingUp,
   Clock,
   RefreshCw,
-  Bell,
   Building2,
   Lock,
   ChevronLeft,
@@ -28,8 +27,6 @@ import {
   BadgeCheck,
   PhoneCall,
   Users,
-  Globe,
-  Receipt,
 } from "lucide-react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 
@@ -37,7 +34,6 @@ import { ImageWithFallback } from "../components/figma/ImageWithFallback";
    BRAND TOKENS
 ══════════════════════════════════════════════════ */
 const P = "#1F3A5F";
-const PH = "#274872";
 const G = "#C8A96B";
 const GH = "#B8943A";
 const IV = "#F4EFE6";
@@ -175,16 +171,25 @@ function TypingHeadline() {
   useEffect(() => {
     if (phase === "l1") {
       if (txt1.length < LINE1.length) {
-        const t = setTimeout(() => setTxt1(LINE1.slice(0, txt1.length + 1)), 32);
-        return () => clearTimeout(t);
+        const t = setTimeout(() => {
+          setTxt1(LINE1.slice(0, txt1.length + 1));
+        }, 32);
+        return () => {
+          clearTimeout(t);
+        };
       } else {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional typewriter state machine, Figma Make generated
         setPhase("l2");
       }
     }
     if (phase === "l2") {
       if (txt2.length < LINE2.length) {
-        const t = setTimeout(() => setTxt2(LINE2.slice(0, txt2.length + 1)), 28);
-        return () => clearTimeout(t);
+        const t = setTimeout(() => {
+          setTxt2(LINE2.slice(0, txt2.length + 1));
+        }, 28);
+        return () => {
+          clearTimeout(t);
+        };
       } else {
         setPhase("done");
       }
@@ -229,8 +234,12 @@ function useScrollReveal() {
       },
       { threshold: 0.12 },
     );
-    document.querySelectorAll(".ol-reveal").forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
+    document.querySelectorAll(".ol-reveal").forEach((el) => {
+      obs.observe(el);
+    });
+    return () => {
+      obs.disconnect();
+    };
   });
 }
 
@@ -283,7 +292,9 @@ function StatNum({ end, suffix = "" }: { end: number; suffix?: string }) {
       { threshold: 0.5 },
     );
     if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+    };
   }, [end]);
   return (
     <span ref={ref}>
@@ -309,7 +320,9 @@ function StepConnector() {
       { threshold: 0.3 },
     );
     if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+    };
   }, []);
   return (
     <svg
@@ -346,9 +359,13 @@ export function LandingPage() {
   useScrollReveal();
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 50);
+    const h = () => {
+      setScrolled(window.scrollY > 50);
+    };
     window.addEventListener("scroll", h);
-    return () => window.removeEventListener("scroll", h);
+    return () => {
+      window.removeEventListener("scroll", h);
+    };
   }, []);
 
   /* ── Data ── */
@@ -516,7 +533,9 @@ export function LandingPage() {
               </button>
               <button
                 className="rounded-lg p-2 hover:bg-white/10 lg:hidden"
-                onClick={() => setMobileOpen(!mobileOpen)}
+                onClick={() => {
+                  setMobileOpen(!mobileOpen);
+                }}
               >
                 {mobileOpen ? (
                   <X className="h-5 w-5" style={{ color: scrolled ? P : "#fff" }} />
@@ -639,7 +658,9 @@ export function LandingPage() {
                     <ArrowRight className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => setVideoOpen(true)}
+                    onClick={() => {
+                      setVideoOpen(true);
+                    }}
                     className="ol-btn-glass flex items-center gap-2.5 rounded-xl px-6 py-4 text-base font-semibold"
                     style={{ fontFamily: "'Inter', sans-serif", fontSize: 15 }}
                   >
@@ -1451,9 +1472,9 @@ export function LandingPage() {
               {/* Nav */}
               <div className="mt-7 flex items-center justify-center gap-4">
                 <button
-                  onClick={() =>
-                    setSlide((s) => (s - 1 + testimonials.length) % testimonials.length)
-                  }
+                  onClick={() => {
+                    setSlide((s) => (s - 1 + testimonials.length) % testimonials.length);
+                  }}
                   className="flex h-10 w-10 items-center justify-center rounded-full border transition-all hover:border-[#C8A96B]"
                   style={{ borderColor: "#E2E8F0" }}
                 >
@@ -1463,7 +1484,9 @@ export function LandingPage() {
                   {testimonials.map((_, i) => (
                     <button
                       key={i}
-                      onClick={() => setSlide(i)}
+                      onClick={() => {
+                        setSlide(i);
+                      }}
                       className="rounded-full transition-all duration-300"
                       style={{
                         width: i === slide ? 26 : 8,
@@ -1474,7 +1497,9 @@ export function LandingPage() {
                   ))}
                 </div>
                 <button
-                  onClick={() => setSlide((s) => (s + 1) % testimonials.length)}
+                  onClick={() => {
+                    setSlide((s) => (s + 1) % testimonials.length);
+                  }}
                   className="flex h-10 w-10 items-center justify-center rounded-full border transition-all hover:border-[#C8A96B]"
                   style={{ borderColor: "#E2E8F0" }}
                 >
@@ -1918,7 +1943,9 @@ export function LandingPage() {
                   }}
                 >
                   <button
-                    onClick={() => setFaqOpen(faqOpen === i ? null : i)}
+                    onClick={() => {
+                      setFaqOpen(faqOpen === i ? null : i);
+                    }}
                     className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-slate-50"
                   >
                     <span
@@ -2015,7 +2042,9 @@ export function LandingPage() {
                 Criar conta grátis agora <ArrowRight className="h-4 w-4" />
               </button>
               <button
-                onClick={() => setVideoOpen(true)}
+                onClick={() => {
+                  setVideoOpen(true);
+                }}
                 className="ol-btn-glass inline-flex items-center justify-center gap-2.5 rounded-xl px-7 py-4 text-base font-semibold"
                 style={{ fontFamily: "'Inter', sans-serif", fontSize: 15 }}
               >
@@ -2228,7 +2257,9 @@ export function LandingPage() {
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
             style={{ backdropFilter: "blur(6px)" }}
-            onClick={() => setVideoOpen(false)}
+            onClick={() => {
+              setVideoOpen(false);
+            }}
           >
             <div
               className="relative w-full max-w-3xl overflow-hidden rounded-3xl"
@@ -2236,10 +2267,14 @@ export function LandingPage() {
                 border: `1.5px solid rgba(200,169,107,0.35)`,
                 boxShadow: `0 40px 80px rgba(0,0,0,0.6)`,
               }}
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
             >
               <button
-                onClick={() => setVideoOpen(false)}
+                onClick={() => {
+                  setVideoOpen(false);
+                }}
                 className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full"
                 style={{ background: "rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.2)" }}
               >

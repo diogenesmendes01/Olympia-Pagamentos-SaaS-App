@@ -399,7 +399,9 @@ export function LoginPage() {
                       <input
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                        }}
                         required
                         className="w-full rounded-xl border px-4 py-3 transition-all focus:outline-none"
                         style={{
@@ -448,7 +450,9 @@ export function LoginPage() {
                         <input
                           type={showPass ? "text" : "password"}
                           value={password}
-                          onChange={(e) => setPassword(e.target.value)}
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                          }}
                           required
                           className="w-full rounded-xl border px-4 py-3 pr-11 transition-all focus:outline-none"
                           style={{
@@ -470,7 +474,9 @@ export function LoginPage() {
                         />
                         <button
                           type="button"
-                          onClick={() => setShowPass(!showPass)}
+                          onClick={() => {
+                            setShowPass(!showPass);
+                          }}
                           className="absolute top-1/2 right-3.5 -translate-y-1/2"
                         >
                           {showPass ? (
@@ -548,7 +554,9 @@ export function LoginPage() {
                     <input
                       type="text"
                       value={mfaCode}
-                      onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      onChange={(e) => {
+                        setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                      }}
                       maxLength={6}
                       autoFocus
                       className="w-full rounded-xl border px-4 py-4 text-center tracking-widest transition-all focus:outline-none"
@@ -586,7 +594,9 @@ export function LoginPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setMfaStep(false)}
+                      onClick={() => {
+                        setMfaStep(false);
+                      }}
                       className="w-full py-2"
                       style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#64748B" }}
                     >
@@ -637,13 +647,16 @@ export function LoginPage() {
                         label: "CNPJ da Empresa",
                         placeholder: "00.000.000/0001-00",
                         value: cnpj,
-                        onChange: (v: string) => setCnpj(formatCNPJ(v)),
+                        onChange: (v: string) => {
+                          setCnpj(formatCNPJ(v));
+                        },
                         type: "text",
                       },
                       {
                         label: "Razão Social",
                         placeholder: "Sua Empresa Ltda",
                         value: "",
+                        // eslint-disable-next-line @typescript-eslint/no-empty-function -- demo UI noop
                         onChange: () => {},
                         type: "text",
                       },
@@ -651,6 +664,7 @@ export function LoginPage() {
                         label: "E-mail Corporativo",
                         placeholder: "voce@empresa.com.br",
                         value: "",
+                        // eslint-disable-next-line @typescript-eslint/no-empty-function -- demo UI noop
                         onChange: () => {},
                         type: "email",
                       },
@@ -658,6 +672,7 @@ export function LoginPage() {
                         label: "Senha",
                         placeholder: "Mínimo 8 caracteres",
                         value: "",
+                        // eslint-disable-next-line @typescript-eslint/no-empty-function -- demo UI noop
                         onChange: () => {},
                         type: "password",
                       },
@@ -679,7 +694,9 @@ export function LoginPage() {
                           type={f.type}
                           placeholder={f.placeholder}
                           value={f.value}
-                          onChange={(e) => f.onChange(e.target.value)}
+                          onChange={(e) => {
+                            f.onChange(e.target.value);
+                          }}
                           className="w-full rounded-xl border px-4 py-2.5 transition-all focus:outline-none"
                           style={{
                             fontFamily: "'Inter', sans-serif",

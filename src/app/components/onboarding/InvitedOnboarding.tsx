@@ -5,10 +5,6 @@ import {
   ArrowLeft,
   Eye,
   EyeOff,
-  Shield,
-  Lock,
-  User,
-  Phone,
   Bell,
   FileText,
   DollarSign,
@@ -25,10 +21,7 @@ import {
   SUCCESS_BG,
   SUCCESS_BORDER,
   DANGER,
-  DANGER_BG,
-  DANGER_BORDER,
   WARNING,
-  WARNING_BG,
   PRIMARY_SOFT,
 } from "../../styles/tokens";
 
@@ -204,7 +197,9 @@ export function InvitedOnboarding({ onComplete }: Props) {
               <button
                 key={s.n}
                 disabled={step <= s.n}
-                onClick={() => step > s.n && setStep(s.n as Step)}
+                onClick={() => {
+                  if (step > s.n) setStep(s.n as Step);
+                }}
                 className="flex-1 rounded-t-xl py-2.5 transition-all"
                 style={{ background: step === s.n ? "white" : "transparent" }}
               >
@@ -349,7 +344,9 @@ export function InvitedOnboarding({ onComplete }: Props) {
                   background: accepted ? SUCCESS_BG : "#F8FAFC",
                   border: `2px solid ${accepted ? SUCCESS : "#E2E8F0"}`,
                 }}
-                onClick={() => setAccepted(!accepted)}
+                onClick={() => {
+                  setAccepted(!accepted);
+                }}
               >
                 <div
                   className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-md"
@@ -414,12 +411,18 @@ export function InvitedOnboarding({ onComplete }: Props) {
                     style={{ ...inputSty, borderColor: "#CBD5E1", paddingRight: 40 }}
                     placeholder="Mínimo 8 caracteres"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                    }}
                     onFocus={onF}
-                    onBlur={(e) => onB(e)}
+                    onBlur={(e) => {
+                      onB(e);
+                    }}
                   />
                   <button
-                    onClick={() => setShowPwd(!showPwd)}
+                    onClick={() => {
+                      setShowPwd(!showPwd);
+                    }}
                     className="absolute top-1/2 right-3 -translate-y-1/2"
                   >
                     {showPwd ? (
@@ -477,12 +480,18 @@ export function InvitedOnboarding({ onComplete }: Props) {
                     }}
                     placeholder="Repita a senha"
                     value={confirm}
-                    onChange={(e) => setConfirm(e.target.value)}
+                    onChange={(e) => {
+                      setConfirm(e.target.value);
+                    }}
                     onFocus={onF}
-                    onBlur={(e) => onB(e, pwdMismatch)}
+                    onBlur={(e) => {
+                      onB(e, pwdMismatch);
+                    }}
                   />
                   <button
-                    onClick={() => setShowConf(!showConf)}
+                    onClick={() => {
+                      setShowConf(!showConf);
+                    }}
                     className="absolute top-1/2 right-3 -translate-y-1/2"
                   >
                     {showConf ? (
@@ -616,9 +625,13 @@ export function InvitedOnboarding({ onComplete }: Props) {
                     style={{ ...inputSty, borderColor: "#CBD5E1" }}
                     placeholder={f.placeholder}
                     value={profile[f.key]}
-                    onChange={(e) => setProfile((p) => ({ ...p, [f.key]: e.target.value }))}
+                    onChange={(e) => {
+                      setProfile((p) => ({ ...p, [f.key]: e.target.value }));
+                    }}
                     onFocus={onF}
-                    onBlur={(e) => onB(e)}
+                    onBlur={(e) => {
+                      onB(e);
+                    }}
                   />
                 </div>
               ))}
@@ -756,7 +769,9 @@ export function InvitedOnboarding({ onComplete }: Props) {
           <div>
             {step > 1 && step < 4 && (
               <button
-                onClick={() => setStep((s) => (s - 1) as Step)}
+                onClick={() => {
+                  setStep((s) => (s - 1) as Step);
+                }}
                 className="flex items-center gap-1.5 rounded-xl border px-4 py-2 hover:bg-slate-50"
                 style={{
                   borderColor: "#E2E8F0",
@@ -773,7 +788,9 @@ export function InvitedOnboarding({ onComplete }: Props) {
             {step < 4 ? (
               <button
                 disabled={step === 1 && !accepted}
-                onClick={() => setStep((s) => (s + 1) as Step)}
+                onClick={() => {
+                  setStep((s) => (s + 1) as Step);
+                }}
                 className="flex items-center gap-1.5 rounded-xl px-5 py-2 text-white transition-all"
                 style={{
                   background: step === 1 && !accepted ? "#CBD5E1" : P,

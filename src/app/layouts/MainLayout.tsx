@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router";
 import {
   LayoutDashboard,
@@ -80,7 +80,7 @@ export function MainLayout() {
   const handleLogout = () => {
     localStorage.removeItem("olympia_auth");
     toast.success("Sessão encerrada com sucesso");
-    navigate("/login");
+    void navigate("/login");
   };
 
   return (
@@ -147,7 +147,12 @@ export function MainLayout() {
               PAGAMENTOS
             </p>
           </div>
-          <button className="ml-auto lg:hidden" onClick={() => setSidebarOpen(false)}>
+          <button
+            className="ml-auto lg:hidden"
+            onClick={() => {
+              setSidebarOpen(false);
+            }}
+          >
             <X className="h-4 w-4" style={{ color: C.sidebarText }} />
           </button>
         </div>
@@ -206,7 +211,9 @@ export function MainLayout() {
               <NavLink
                 key={item.path}
                 to={item.path}
-                onClick={() => setSidebarOpen(false)}
+                onClick={() => {
+                  setSidebarOpen(false);
+                }}
                 className="relative mb-0.5 flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all"
                 style={{
                   background: active ? C.sidebarActive : "transparent",
@@ -305,7 +312,9 @@ export function MainLayout() {
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
+          onClick={() => {
+            setSidebarOpen(false);
+          }}
         />
       )}
 
@@ -318,7 +327,9 @@ export function MainLayout() {
         >
           <button
             className="rounded-lg p-2 hover:bg-slate-100 lg:hidden"
-            onClick={() => setSidebarOpen(true)}
+            onClick={() => {
+              setSidebarOpen(true);
+            }}
           >
             <Menu className="h-5 w-5" style={{ color: "#64748B" }} />
           </button>
@@ -498,7 +509,7 @@ export function MainLayout() {
                       key={item.label}
                       onClick={() => {
                         setUserMenuOpen(false);
-                        navigate(item.label === "Meu Perfil" ? "/profile" : "/settings");
+                        void navigate(item.label === "Meu Perfil" ? "/profile" : "/settings");
                       }}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-slate-50"
                     >

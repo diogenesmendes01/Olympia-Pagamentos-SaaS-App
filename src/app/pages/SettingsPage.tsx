@@ -16,7 +16,6 @@ import {
   Sun,
   Monitor,
   Fingerprint,
-  Key,
   Upload,
 } from "lucide-react";
 import { currentUser } from "../data/mockData";
@@ -92,7 +91,9 @@ export function SettingsPage() {
             return (
               <button
                 key={s.id}
-                onClick={() => setActiveSection(s.id)}
+                onClick={() => {
+                  setActiveSection(s.id);
+                }}
                 className="mb-0.5 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-all"
                 style={{ background: activeSection === s.id ? "#EEF2F9" : "transparent" }}
               >
@@ -280,21 +281,27 @@ export function SettingsPage() {
                       sub: "Alertas, faturas e relatórios",
                       icon: Mail,
                       checked: emailNotif,
-                      toggle: () => setEmailNotif(!emailNotif),
+                      toggle: () => {
+                        setEmailNotif(!emailNotif);
+                      },
                     },
                     {
                       label: "WhatsApp Business",
                       sub: "Cobranças, lembretes e confirmações",
                       icon: MessageSquare,
                       checked: whatsappNotif,
-                      toggle: () => setWhatsappNotif(!whatsappNotif),
+                      toggle: () => {
+                        setWhatsappNotif(!whatsappNotif);
+                      },
                     },
                     {
                       label: "SMS",
                       sub: "Alertas críticos e autenticação",
                       icon: Smartphone,
                       checked: smsNotif,
-                      toggle: () => setSmsNotif(!smsNotif),
+                      toggle: () => {
+                        setSmsNotif(!smsNotif);
+                      },
                     },
                   ].map((n) => (
                     <div
@@ -350,7 +357,9 @@ export function SettingsPage() {
                 </h3>
                 <select
                   value={reminderDays}
-                  onChange={(e) => setReminderDays(e.target.value)}
+                  onChange={(e) => {
+                    setReminderDays(e.target.value);
+                  }}
                   className="mb-4 w-full rounded-xl border px-4 py-2.5 focus:outline-none"
                   style={{
                     fontFamily: "'Inter', sans-serif",
@@ -475,7 +484,9 @@ export function SettingsPage() {
                         name="mfa"
                         value={m.id}
                         checked={mfaType === m.id}
-                        onChange={() => setMfaType(m.id)}
+                        onChange={() => {
+                          setMfaType(m.id);
+                        }}
                         className="sr-only"
                       />
                       <div
@@ -684,21 +695,27 @@ export function SettingsPage() {
                       {
                         label: "Emitir NF-e/NFS-e automaticamente ao confirmar pagamento",
                         checked: autoNF,
-                        toggle: () => setAutoNF(!autoNF),
+                        toggle: () => {
+                          setAutoNF(!autoNF);
+                        },
                       },
                       {
                         label: "Conciliação automática via Open Finance",
                         checked: autoReconcile,
-                        toggle: () => setAutoReconcile(!autoReconcile),
+                        toggle: () => {
+                          setAutoReconcile(!autoReconcile);
+                        },
                       },
                       {
                         label: "Escalonamento automático: email → WhatsApp → SMS",
                         checked: true,
+                        // eslint-disable-next-line @typescript-eslint/no-empty-function -- demo UI noop toggle
                         toggle: () => {},
                       },
                       {
                         label: "Protesto automático após 15 dias de atraso",
                         checked: false,
+                        // eslint-disable-next-line @typescript-eslint/no-empty-function -- demo UI noop toggle
                         toggle: () => {},
                       },
                     ].map((item) => (
@@ -754,7 +771,9 @@ export function SettingsPage() {
                 ].map((t) => (
                   <button
                     key={t.id}
-                    onClick={() => setTheme(t.id)}
+                    onClick={() => {
+                      setTheme(t.id);
+                    }}
                     className="flex flex-col items-center gap-2 rounded-2xl border-2 p-4 transition-all"
                     style={{
                       borderColor: theme === t.id ? P : "#E2E8F0",
@@ -910,7 +929,9 @@ export function SettingsPage() {
                     </label>
                     <select
                       value={f.value}
-                      onChange={(e) => f.onChange(e.target.value)}
+                      onChange={(e) => {
+                        f.onChange(e.target.value);
+                      }}
                       className="w-full rounded-xl border px-4 py-2.5 focus:outline-none"
                       style={{
                         fontFamily: "'Inter', sans-serif",

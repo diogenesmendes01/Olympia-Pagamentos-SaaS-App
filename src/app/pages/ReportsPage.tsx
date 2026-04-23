@@ -3,7 +3,6 @@ import {
   Download,
   FileText,
   TrendingUp,
-  TrendingDown,
   ChevronRight,
   BarChart3,
   DollarSign,
@@ -23,8 +22,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  AreaChart,
-  Area,
 } from "recharts";
 import { cashFlowChartData, dreData, agingData } from "../data/mockData";
 import {
@@ -48,7 +45,7 @@ const fmt = (v: number) =>
   }).format(Math.abs(v));
 
 const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     return (
       <div
         className="rounded-2xl bg-white p-3.5 shadow-xl"
@@ -122,7 +119,9 @@ export function ReportsPage() {
         <div className="flex gap-2">
           <select
             value={period}
-            onChange={(e) => setPeriod(e.target.value)}
+            onChange={(e) => {
+              setPeriod(e.target.value);
+            }}
             className="rounded-xl border bg-white px-3 py-2 focus:outline-none"
             style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, borderColor: "#E2E8F0" }}
           >
@@ -155,7 +154,9 @@ export function ReportsPage() {
           {reportTypes.map((r) => (
             <button
               key={r.id}
-              onClick={() => setActiveReport(r.id)}
+              onClick={() => {
+                setActiveReport(r.id);
+              }}
               className="mb-0.5 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-all"
               style={{ background: activeReport === r.id ? "#EEF2F9" : "transparent" }}
             >

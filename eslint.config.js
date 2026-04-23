@@ -40,6 +40,26 @@ export default tseslint.config(
       "react-refresh/only-export-components": "off",
     },
   },
+  // Figma Make generated code — loosen rules that fire pervasively due to
+  // untyped mock data, recharts any-typed callbacks, shadcn patterns, and
+  // async event handlers without explicit void wrapping.
+  // Revisit when proper TypeScript types are added (Task 11+).
+  {
+    files: ["src/app/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/no-unnecessary-condition": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+    },
+  },
   {
     files: ["vite.config.ts", "vitest.config.ts"],
     languageOptions: {

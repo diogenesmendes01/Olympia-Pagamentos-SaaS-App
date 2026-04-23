@@ -10,16 +10,13 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  AlertTriangle,
   Trash2,
   ArrowRight,
   ArrowLeft,
-  Receipt,
   MoreHorizontal,
   Mail,
   MessageCircle,
   Printer,
-  ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { invoices as mockInvoices, type Invoice, type InvoiceItem } from "../data/mockData";
@@ -60,7 +57,7 @@ const statusConfig: Record<
 };
 
 // ─── Invoice creation wizard ──────────────────────────────────────────────────
-interface WizardItem extends InvoiceItem {}
+type WizardItem = InvoiceItem;
 
 interface WizardData {
   // step 1
@@ -131,6 +128,7 @@ function InvoiceWizard({
     await new Promise((r) => setTimeout(r, 1200));
     setSaving(false);
     const newInv: Invoice = {
+      // eslint-disable-next-line react-hooks/purity -- Math.random in submit handler (not render), Figma Make generated
       id: `INV-${2607 + Math.floor(Math.random() * 100)}`,
       numero: String(2607),
       cliente: data.cliente || "Cliente Demo",
@@ -146,7 +144,8 @@ function InvoiceWizard({
       tipo: data.tipo,
       chaveAcesso: asDraft
         ? undefined
-        : `3526041234567800019055001000002607${Math.floor(Math.random() * 1e10)}`,
+        : // eslint-disable-next-line react-hooks/purity -- Math.random in submit handler (not render), Figma Make generated
+          `3526041234567800019055001000002607${Math.floor(Math.random() * 1e10)}`,
       items: data.items,
     };
     onSave(newInv);
@@ -273,7 +272,9 @@ function InvoiceWizard({
                   ].map((opt) => (
                     <button
                       key={opt.val}
-                      onClick={() => setData((d) => ({ ...d, tipo: opt.val }))}
+                      onClick={() => {
+                        setData((d) => ({ ...d, tipo: opt.val }));
+                      }}
                       className="rounded-xl border-2 p-4 text-left transition-all"
                       style={{
                         borderColor: data.tipo === opt.val ? P : "#E2E8F0",
@@ -326,7 +327,9 @@ function InvoiceWizard({
                     onBlur={onBlur}
                     placeholder="Nome ou Razão Social"
                     value={data.cliente}
-                    onChange={(e) => setData((d) => ({ ...d, cliente: e.target.value }))}
+                    onChange={(e) => {
+                      setData((d) => ({ ...d, cliente: e.target.value }));
+                    }}
                   />
                 </div>
                 <div>
@@ -349,7 +352,9 @@ function InvoiceWizard({
                     onBlur={onBlur}
                     placeholder="00.000.000/0001-00"
                     value={data.cnpj}
-                    onChange={(e) => setData((d) => ({ ...d, cnpj: e.target.value }))}
+                    onChange={(e) => {
+                      setData((d) => ({ ...d, cnpj: e.target.value }));
+                    }}
                   />
                 </div>
                 <div>
@@ -373,7 +378,9 @@ function InvoiceWizard({
                     onBlur={onBlur}
                     placeholder="financeiro@cliente.com.br"
                     value={data.email}
-                    onChange={(e) => setData((d) => ({ ...d, email: e.target.value }))}
+                    onChange={(e) => {
+                      setData((d) => ({ ...d, email: e.target.value }));
+                    }}
                   />
                 </div>
                 <div>
@@ -396,7 +403,9 @@ function InvoiceWizard({
                     onFocus={onFocus}
                     onBlur={onBlur}
                     value={data.vencimento}
-                    onChange={(e) => setData((d) => ({ ...d, vencimento: e.target.value }))}
+                    onChange={(e) => {
+                      setData((d) => ({ ...d, vencimento: e.target.value }));
+                    }}
                   />
                 </div>
               </div>
@@ -422,7 +431,9 @@ function InvoiceWizard({
                   onBlur={onBlur}
                   placeholder="Descreva o serviço ou produto…"
                   value={data.descricao}
-                  onChange={(e) => setData((d) => ({ ...d, descricao: e.target.value }))}
+                  onChange={(e) => {
+                    setData((d) => ({ ...d, descricao: e.target.value }));
+                  }}
                 />
               </div>
             </div>
@@ -493,7 +504,9 @@ function InvoiceWizard({
                     style={{ fontFamily: "'Inter', sans-serif", borderColor: "#CBD5E1" }}
                     placeholder="Descrição do item"
                     value={item.descricao}
-                    onChange={(e) => updateItem(item.id, "descricao", e.target.value)}
+                    onChange={(e) => {
+                      updateItem(item.id, "descricao", e.target.value);
+                    }}
                   />
                   <input
                     type="number"
@@ -501,7 +514,9 @@ function InvoiceWizard({
                     className="w-full rounded-lg border px-2 py-1.5 text-center text-sm focus:outline-none"
                     style={{ fontFamily: "'Inter', sans-serif", borderColor: "#CBD5E1" }}
                     value={item.qtd}
-                    onChange={(e) => updateItem(item.id, "qtd", Number(e.target.value))}
+                    onChange={(e) => {
+                      updateItem(item.id, "qtd", Number(e.target.value));
+                    }}
                   />
                   <input
                     type="number"
@@ -510,7 +525,9 @@ function InvoiceWizard({
                     className="w-full rounded-lg border px-2 py-1.5 text-sm focus:outline-none"
                     style={{ fontFamily: "'Inter', sans-serif", borderColor: "#CBD5E1" }}
                     value={item.unitario}
-                    onChange={(e) => updateItem(item.id, "unitario", Number(e.target.value))}
+                    onChange={(e) => {
+                      updateItem(item.id, "unitario", Number(e.target.value));
+                    }}
                   />
                   <span
                     style={{
@@ -522,7 +539,12 @@ function InvoiceWizard({
                   >
                     {fmt(item.total)}
                   </span>
-                  <button onClick={() => removeItem(item.id)} disabled={data.items.length === 1}>
+                  <button
+                    onClick={() => {
+                      removeItem(item.id);
+                    }}
+                    disabled={data.items.length === 1}
+                  >
                     <Trash2
                       className="h-4 w-4"
                       style={{ color: data.items.length === 1 ? "#E2E8F0" : DANGER }}
@@ -896,7 +918,9 @@ function InvoiceWizard({
           <div>
             {step > 1 && (
               <button
-                onClick={() => setStep((s) => s - 1)}
+                onClick={() => {
+                  setStep((s) => s - 1);
+                }}
                 className="flex items-center gap-1.5 rounded-xl border px-4 py-2 hover:bg-slate-50"
                 style={{
                   borderColor: "#E2E8F0",
@@ -927,7 +951,9 @@ function InvoiceWizard({
             )}
             {step < 3 ? (
               <button
-                onClick={() => setStep((s) => s + 1)}
+                onClick={() => {
+                  setStep((s) => s + 1);
+                }}
                 className="flex items-center gap-1.5 rounded-xl px-5 py-2 text-white"
                 style={{
                   background: P,
@@ -1315,7 +1341,9 @@ export function InvoicesPage() {
             </span>
           </button>
           <button
-            onClick={() => setShowWizard(true)}
+            onClick={() => {
+              setShowWizard(true);
+            }}
             className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-white"
             style={{
               background: P,
@@ -1385,7 +1413,9 @@ export function InvoicesPage() {
             <input
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
               placeholder="Buscar cliente, ID, descrição…"
               className="flex-1 bg-transparent focus:outline-none"
               style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#374151" }}
@@ -1393,7 +1423,9 @@ export function InvoicesPage() {
           </div>
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+            }}
             className="rounded-xl border bg-white px-3 py-2 focus:outline-none"
             style={{
               fontFamily: "'Inter', sans-serif",
@@ -1597,7 +1629,9 @@ export function InvoicesPage() {
                     <td className="px-4 py-3.5">
                       <div className="relative">
                         <button
-                          onClick={() => setOpenMenu(openMenu === inv.id ? null : inv.id)}
+                          onClick={() => {
+                            setOpenMenu(openMenu === inv.id ? null : inv.id);
+                          }}
                           className="rounded-lg p-1.5 hover:bg-slate-100"
                         >
                           <MoreHorizontal className="h-4 w-4" style={{ color: "#94A3B8" }} />
@@ -1706,14 +1740,23 @@ export function InvoicesPage() {
 
       {showWizard && (
         <InvoiceWizard
-          onClose={() => setShowWizard(false)}
+          onClose={() => {
+            setShowWizard(false);
+          }}
           onSave={(inv) => {
             setList((l) => [inv, ...l]);
             setShowWizard(false);
           }}
         />
       )}
-      {detailInv && <InvoiceDetail inv={detailInv} onClose={() => setDetailInv(null)} />}
+      {detailInv && (
+        <InvoiceDetail
+          inv={detailInv}
+          onClose={() => {
+            setDetailInv(null);
+          }}
+        />
+      )}
     </div>
   );
 }

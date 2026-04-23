@@ -5,7 +5,6 @@ import {
   Shield,
   CheckCircle,
   XCircle,
-  Clock,
   MoreHorizontal,
   Mail,
   Smartphone,
@@ -29,7 +28,6 @@ import {
   SUCCESS_BG,
   DANGER,
   DANGER_BG,
-  WARNING,
 } from "../styles/tokens";
 import { users, auditLog } from "../data/mockData";
 import { toast } from "sonner";
@@ -58,30 +56,6 @@ export function UsersPage() {
       u.role.toLowerCase().includes(search.toLowerCase()),
   );
 
-  const sessions = [
-    {
-      device: 'MacBook Pro 16" (Safari)',
-      ip: "177.52.34.12",
-      location: "São Paulo, SP",
-      time: "Agora",
-      current: true,
-    },
-    {
-      device: "iPhone 15 Pro (App iOS)",
-      ip: "189.32.54.21",
-      location: "São Paulo, SP",
-      time: "2h atrás",
-      current: false,
-    },
-    {
-      device: "Windows PC (Chrome)",
-      ip: "201.18.45.67",
-      location: "Campinas, SP",
-      time: "Ontem 14:32",
-      current: false,
-    },
-  ];
-
   return (
     <div className="space-y-5 p-5 lg:p-6">
       {/* Header */}
@@ -102,7 +76,9 @@ export function UsersPage() {
           </p>
         </div>
         <button
-          onClick={() => setShowInvite(true)}
+          onClick={() => {
+            setShowInvite(true);
+          }}
           className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-white transition-all"
           style={{
             background: P,
@@ -183,7 +159,9 @@ export function UsersPage() {
           ).map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id);
+              }}
               className="px-5 py-3.5 transition-colors"
               style={{
                 fontFamily: "'Inter', sans-serif",
@@ -210,7 +188,9 @@ export function UsersPage() {
                 <input
                   type="text"
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                  }}
                   placeholder="Buscar por nome, e-mail ou perfil..."
                   className="flex-1 bg-transparent focus:outline-none"
                   style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#374151" }}
@@ -360,7 +340,9 @@ export function UsersPage() {
                     </div>
                     <div className="relative">
                       <button
-                        onClick={() => setOpenMenu(openMenu === user.id ? null : user.id)}
+                        onClick={() => {
+                          setOpenMenu(openMenu === user.id ? null : user.id);
+                        }}
                         className="rounded-lg p-1.5 hover:bg-slate-100"
                       >
                         <MoreHorizontal className="h-4 w-4" style={{ color: "#94A3B8" }} />
@@ -767,7 +749,9 @@ export function UsersPage() {
                 Convidar Usuário
               </h3>
               <button
-                onClick={() => setShowInvite(false)}
+                onClick={() => {
+                  setShowInvite(false);
+                }}
                 className="rounded-xl p-1.5 hover:bg-slate-100"
               >
                 <XCircle className="h-5 w-5" style={{ color: "#94A3B8" }} />
@@ -790,7 +774,9 @@ export function UsersPage() {
                 <input
                   type="email"
                   value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
+                  onChange={(e) => {
+                    setInviteEmail(e.target.value);
+                  }}
                   placeholder="usuario@empresa.com.br"
                   className="w-full rounded-xl border px-4 py-2.5 transition-all focus:outline-none"
                   style={{
@@ -824,7 +810,9 @@ export function UsersPage() {
                 </label>
                 <select
                   value={inviteRole}
-                  onChange={(e) => setInviteRole(e.target.value)}
+                  onChange={(e) => {
+                    setInviteRole(e.target.value);
+                  }}
                   className="w-full rounded-xl border px-4 py-2.5 focus:outline-none"
                   style={{
                     fontFamily: "'Inter', sans-serif",
@@ -870,7 +858,9 @@ export function UsersPage() {
                 </label>
                 <select
                   value={inviteExpiry}
-                  onChange={(e) => setInviteExpiry(e.target.value)}
+                  onChange={(e) => {
+                    setInviteExpiry(e.target.value);
+                  }}
                   className="w-full rounded-xl border px-4 py-2.5 focus:outline-none"
                   style={{
                     fontFamily: "'Inter', sans-serif",
@@ -903,7 +893,9 @@ export function UsersPage() {
             </div>
             <div className="flex gap-3 px-6 pb-6">
               <button
-                onClick={() => setShowInvite(false)}
+                onClick={() => {
+                  setShowInvite(false);
+                }}
                 className="flex-1 rounded-xl border py-2.5 hover:bg-slate-50"
                 style={{
                   fontFamily: "'Inter', sans-serif",

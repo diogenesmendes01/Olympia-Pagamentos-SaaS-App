@@ -2,13 +2,11 @@ import { useState } from "react";
 import {
   User,
   Mail,
-  Phone,
   Building2,
   Shield,
   Bell,
   Monitor,
   Camera,
-  Lock,
   Eye,
   EyeOff,
   CheckCircle,
@@ -29,7 +27,6 @@ import {
   GOLD as G,
   SUCCESS,
   SUCCESS_BG,
-  SUCCESS_BORDER,
   DANGER,
   DANGER_BG,
   DANGER_BORDER,
@@ -147,11 +144,11 @@ export function ProfilePage() {
   const [mfaEnabled, setMfaEnabled] = useState(true);
   const [notifs, setNotifs] = useState<Record<string, boolean>>(() => {
     const map: Record<string, boolean> = {};
-    notifGroups.forEach((g) =>
+    notifGroups.forEach((g) => {
       g.items.forEach((i) => {
         map[i.key] = i.val;
-      }),
-    );
+      });
+    });
     return map;
   });
 
@@ -189,7 +186,9 @@ export function ProfilePage() {
         <textarea
           disabled={!editMode}
           value={form[key]}
-          onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+          onChange={(e) => {
+            setForm((f) => ({ ...f, [key]: e.target.value }));
+          }}
           rows={3}
           className="w-full resize-none rounded-xl border px-4 py-2.5 transition-all focus:outline-none"
           style={{
@@ -207,7 +206,9 @@ export function ProfilePage() {
           type={type}
           disabled={!editMode}
           value={form[key]}
-          onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+          onChange={(e) => {
+            setForm((f) => ({ ...f, [key]: e.target.value }));
+          }}
           className="w-full rounded-xl border px-4 py-2.5 transition-all focus:outline-none"
           style={{
             fontFamily: "'Inter', sans-serif",
@@ -326,7 +327,9 @@ export function ProfilePage() {
               return (
                 <button
                   key={t.id}
-                  onClick={() => setTab(t.id)}
+                  onClick={() => {
+                    setTab(t.id);
+                  }}
                   className="relative flex w-full items-center gap-3 px-4 py-3 text-left transition-all"
                   style={{
                     background: active ? PRIMARY_SOFT : "transparent",
@@ -385,7 +388,9 @@ export function ProfilePage() {
                 </div>
                 {!editMode ? (
                   <button
-                    onClick={() => setEditMode(true)}
+                    onClick={() => {
+                      setEditMode(true);
+                    }}
                     className="flex items-center gap-2 rounded-xl border px-4 py-2 transition-colors hover:bg-slate-50"
                     style={{ borderColor: "#E2E8F0" }}
                   >
@@ -403,7 +408,9 @@ export function ProfilePage() {
                 ) : (
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setEditMode(false)}
+                      onClick={() => {
+                        setEditMode(false);
+                      }}
                       className="rounded-xl border px-3 py-2 hover:bg-slate-50"
                       style={{
                         fontFamily: "'Inter', sans-serif",
@@ -525,17 +532,23 @@ export function ProfilePage() {
                     {
                       label: "Senha atual",
                       show: showOldPass,
-                      toggle: () => setShowOldPass(!showOldPass),
+                      toggle: () => {
+                        setShowOldPass(!showOldPass);
+                      },
                     },
                     {
                       label: "Nova senha",
                       show: showNewPass,
-                      toggle: () => setShowNewPass(!showNewPass),
+                      toggle: () => {
+                        setShowNewPass(!showNewPass);
+                      },
                     },
                     {
                       label: "Confirmar nova senha",
                       show: showNewPass,
-                      toggle: () => setShowNewPass(!showNewPass),
+                      toggle: () => {
+                        setShowNewPass(!showNewPass);
+                      },
                     },
                   ].map((f) => (
                     <div key={f.label}>
@@ -853,7 +866,9 @@ export function ProfilePage() {
                           </p>
                         </div>
                         <button
-                          onClick={() => setNotifs((n) => ({ ...n, [item.key]: !n[item.key] }))}
+                          onClick={() => {
+                            setNotifs((n) => ({ ...n, [item.key]: !n[item.key] }));
+                          }}
                           className="relative h-5.5 w-10 flex-shrink-0 rounded-full transition-all"
                           style={{
                             width: 40,

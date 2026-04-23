@@ -81,7 +81,7 @@ export const alerts = [
   },
 ];
 
-export type Receivable = {
+export interface Receivable {
   id: string;
   cliente: string;
   cnpj: string;
@@ -93,7 +93,7 @@ export type Receivable = {
   metodo: "pix" | "boleto" | "cartao" | "ted" | "link";
   nfEmitida: boolean;
   parcelas?: number;
-};
+}
 
 export const receivables: Receivable[] = [
   {
@@ -242,7 +242,7 @@ export const receivables: Receivable[] = [
   },
 ];
 
-export type Payable = {
+export interface Payable {
   id: string;
   fornecedor: string;
   cnpj: string;
@@ -253,7 +253,7 @@ export type Payable = {
   status: "pago" | "pendente" | "vencido" | "agendado" | "aprovacao";
   metodo: "pix" | "boleto" | "ted" | "debito";
   aprovacao: "aprovado" | "pendente" | "rejeitado" | "automatico";
-};
+}
 
 export const payables: Payable[] = [
   {
@@ -654,15 +654,15 @@ export const agingData = [
   { faixa: "Vencido +30d", valor: 3800, qtd: 1 },
 ];
 
-export type InvoiceItem = {
+export interface InvoiceItem {
   id: string;
   descricao: string;
   qtd: number;
   unitario: number;
   total: number;
-};
+}
 
-export type Invoice = {
+export interface Invoice {
   id: string;
   numero: string;
   cliente: string;
@@ -678,7 +678,7 @@ export type Invoice = {
   tipo: "nfe" | "nfse";
   chaveAcesso?: string;
   items: InvoiceItem[];
-};
+}
 
 export const invoices: Invoice[] = [
   {

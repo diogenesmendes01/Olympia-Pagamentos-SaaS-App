@@ -23,7 +23,6 @@ import {
   AlertTriangle,
   CheckCircle,
   Info,
-  Bell,
   RefreshCw,
   Plus,
   Send,
@@ -56,7 +55,6 @@ import {
   INFO_BG,
   INFO_BORDER,
   CHART_SUCCESS,
-  CHART_PRIMARY,
   CHART_COMPARE,
 } from "../styles/tokens";
 
@@ -71,7 +69,7 @@ const fmtFull = (v: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
 
 const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     return (
       <div
         className="rounded-2xl bg-white p-3.5 shadow-xl"
@@ -387,7 +385,9 @@ export function DashboardPage() {
               {["3m", "6m", "12m"].map((p) => (
                 <button
                   key={p}
-                  onClick={() => setPeriod(p)}
+                  onClick={() => {
+                    setPeriod(p);
+                  }}
                   className="rounded-lg px-3 py-1 transition-all"
                   style={{
                     fontFamily: "'Inter', sans-serif",
