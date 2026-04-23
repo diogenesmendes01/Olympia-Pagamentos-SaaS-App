@@ -9,7 +9,6 @@ export default [
   {
     languageOptions: {
       globals: { ...globals.node },
-      parserOptions: { project: "./tsconfig.json" },
     },
     rules: {
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
