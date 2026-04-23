@@ -8,6 +8,7 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
+    // Legacy Figma-Make code em src/app/** não passa com a versão strict herdada de @olympia/tsconfig/base.json.
     "noUncheckedIndexedAccess": false,
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "baseUrl": ".",
