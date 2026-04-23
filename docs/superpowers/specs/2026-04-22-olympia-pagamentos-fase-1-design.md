@@ -35,6 +35,7 @@ Olympia Pagamentos é um SaaS financeiro brasileiro (contas a receber, contas a 
 Export do Figma Make foi descompactado em `src/`. O estado atual tem problemas que precisam ser corrigidos:
 
 **Estrutura atual:**
+
 ```
 Olympia-Pagamentos-SaaS-App/
 ├── .git/
@@ -50,6 +51,7 @@ Olympia-Pagamentos-SaaS-App/
 ```
 
 **Problemas identificados no `package.json` inicial:**
+
 - `react` e `react-dom` estão em `peerDependencies` com `optional: true` (não instalam)
 - Só tem script `build` — falta `dev`, `preview`, `lint`, `typecheck`, `test`, `format`
 - Sem `typescript`, sem `@types/react*`
@@ -70,30 +72,30 @@ Olympia-Pagamentos-SaaS-App/
 
 Preservado do Figma Make (escolha validada):
 
-| Camada | Tecnologia | Versão |
-|---|---|---|
-| Bundler | Vite | 6.3.5 |
-| Framework | React | 18.3.1 |
-| Linguagem | TypeScript | latest 5.x |
-| Estilo | Tailwind CSS v4 (plugin `@tailwindcss/vite`) | 4.1.12 |
-| Componentes | shadcn/ui (Radix primitives) | versões exatas do `package.json` de entrada — não atualizar durante o porte |
-| Roteamento | React Router | 7.13.0 |
-| Ícones | lucide-react | 0.487.0 |
-| Animação | motion (Framer Motion) | 12.23.24 |
-| Toasts | sonner | 2.0.3 |
-| Charts | recharts | 2.15.2 |
-| Forms | react-hook-form | 7.55.0 |
-| CVA / utils | class-variance-authority, clsx, tailwind-merge | latest |
+| Camada      | Tecnologia                                     | Versão                                                                      |
+| ----------- | ---------------------------------------------- | --------------------------------------------------------------------------- |
+| Bundler     | Vite                                           | 6.3.5                                                                       |
+| Framework   | React                                          | 18.3.1                                                                      |
+| Linguagem   | TypeScript                                     | latest 5.x                                                                  |
+| Estilo      | Tailwind CSS v4 (plugin `@tailwindcss/vite`)   | 4.1.12                                                                      |
+| Componentes | shadcn/ui (Radix primitives)                   | versões exatas do `package.json` de entrada — não atualizar durante o porte |
+| Roteamento  | React Router                                   | 7.13.0                                                                      |
+| Ícones      | lucide-react                                   | 0.487.0                                                                     |
+| Animação    | motion (Framer Motion)                         | 12.23.24                                                                    |
+| Toasts      | sonner                                         | 2.0.3                                                                       |
+| Charts      | recharts                                       | 2.15.2                                                                      |
+| Forms       | react-hook-form                                | 7.55.0                                                                      |
+| CVA / utils | class-variance-authority, clsx, tailwind-merge | latest                                                                      |
 
 ### Adições (tooling)
 
-| Propósito | Pacotes |
-|---|---|
-| Lint | `eslint`, `@eslint/js`, `typescript-eslint`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `globals` |
-| Formatação | `prettier`, `prettier-plugin-tailwindcss` |
-| Git hooks | `husky`, `lint-staged` |
-| Testes | `vitest`, `@vitest/ui`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jsdom` |
-| Tipos | `typescript`, `@types/react`, `@types/react-dom`, `@types/node` |
+| Propósito  | Pacotes                                                                                                               |
+| ---------- | --------------------------------------------------------------------------------------------------------------------- |
+| Lint       | `eslint`, `@eslint/js`, `typescript-eslint`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `globals`    |
+| Formatação | `prettier`, `prettier-plugin-tailwindcss`                                                                             |
+| Git hooks  | `husky`, `lint-staged`                                                                                                |
+| Testes     | `vitest`, `@vitest/ui`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jsdom` |
+| Tipos      | `typescript`, `@types/react`, `@types/react-dom`, `@types/node`                                                       |
 
 **Gerenciador de pacotes:** pnpm (sinalizado pelo `pnpm.overrides` já presente).
 
@@ -176,6 +178,7 @@ Olympia-Pagamentos-SaaS-App/
 ## 5. Transformações do `package.json`
 
 **Remover** de `dependencies`:
+
 ```
 @emotion/react, @emotion/styled,
 @mui/icons-material, @mui/material,
@@ -185,14 +188,17 @@ react-popper, react-responsive-masonry, react-slick
 ```
 
 **Mover** de `peerDependencies` → `dependencies`:
+
 ```
 react@18.3.1, react-dom@18.3.1
 ```
+
 Remove a seção `peerDependenciesMeta.optional`.
 
 **Adicionar** em `devDependencies`: lista completa na seção 3.
 
 **Scripts alvo:**
+
 ```json
 {
   "dev": "vite",
@@ -210,6 +216,7 @@ Remove a seção `peerDependenciesMeta.optional`.
 ```
 
 **lint-staged:**
+
 ```json
 "lint-staged": {
   "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
@@ -222,9 +229,11 @@ Remove a seção `peerDependenciesMeta.optional`.
 ## 6. Configurações concretas
 
 ### `index.html`
+
 Na raiz. Title "Olympia Pagamentos", favicon em `public/`, carrega `/src/main.tsx` como módulo ES.
 
 ### `src/main.tsx`
+
 ```tsx
 import "./styles/index.css";
 import { StrictMode } from "react";
@@ -232,11 +241,14 @@ import { createRoot } from "react-dom/client";
 import App from "./app/App";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode><App /></StrictMode>
+  <StrictMode>
+    <App />
+  </StrictMode>,
 );
 ```
 
 ### `tsconfig.json`
+
 - `target: ES2022`
 - `lib: ["ES2022", "DOM", "DOM.Iterable"]`
 - `module: ESNext`, `moduleResolution: bundler`
@@ -246,9 +258,11 @@ createRoot(document.getElementById("root")!).render(
 - `paths: { "@/*": ["./src/*"] }` (alinhado ao `alias` do `vite.config.ts`)
 
 ### `tsconfig.node.json`
+
 Para `vite.config.ts` / `vitest.config.ts` (tipos de Node).
 
 ### `eslint.config.js` (flat)
+
 - `@eslint/js.configs.recommended`
 - `typescript-eslint.configs.strictTypeChecked` + `stylisticTypeChecked`
 - `eslint-plugin-react-hooks/recommended`
@@ -258,6 +272,7 @@ Para `vite.config.ts` / `vitest.config.ts` (tipos de Node).
 - Ignores: `dist/`, `node_modules/`, `coverage/`, `public/`
 
 ### `.prettierrc.json`
+
 ```json
 {
   "semi": true,
@@ -270,21 +285,26 @@ Para `vite.config.ts` / `vitest.config.ts` (tipos de Node).
 ```
 
 ### `vitest.config.ts`
+
 ```ts
 import { defineConfig, mergeConfig } from "vitest/config";
 import viteConfig from "./vite.config";
 
-export default mergeConfig(viteConfig, defineConfig({
-  test: {
-    environment: "jsdom",
-    globals: true,
-    setupFiles: ["./src/test/setup.ts"],
-    css: true,
-  },
-}));
+export default mergeConfig(
+  viteConfig,
+  defineConfig({
+    test: {
+      environment: "jsdom",
+      globals: true,
+      setupFiles: ["./src/test/setup.ts"],
+      css: true,
+    },
+  }),
+);
 ```
 
 ### `src/test/setup.ts`
+
 ```ts
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
@@ -294,23 +314,28 @@ afterEach(() => cleanup());
 ```
 
 ### `.github/workflows/ci.yml`
+
 - Trigger: push em `main`, PRs pra `main`
 - Jobs paralelos: `lint`, `typecheck`, `test`, `build`
 - Cada job: `setup-node@v4` com `cache: pnpm`, `pnpm install --frozen-lockfile`, rodar script correspondente
 - Node 20, pnpm 9
 
 ### `.husky/pre-commit`
+
 ```
 pnpm lint-staged
 ```
 
 ### `.gitignore`
+
 Padrão Node + Vite + pnpm: `node_modules/`, `dist/`, `.env*`, `coverage/`, `.vite/`, `.DS_Store`, etc.
 
 ### `.editorconfig`
+
 UTF-8, LF, 2 espaços, `insert_final_newline`, `trim_trailing_whitespace`.
 
 ### `.nvmrc`
+
 ```
 20
 ```
@@ -387,15 +412,15 @@ Antes de declarar a Fase 1 completa, executar e confirmar:
 
 ## 10. Decisões explícitas (não-óbvias)
 
-| Decisão | Alternativa considerada | Motivo |
-|---|---|---|
-| Manter `src/app/` do Figma Make intacto | Achatar tudo em `src/` | Re-importar do Figma Make fica trivial; evita rename em cascata |
-| Preto-em-branco no Prettier (`printWidth: 100`, `semi: true`) | Config mais agressiva | Minimiza diff ao rodar `prettier --write` pela primeira vez |
-| `no-console: warn` (não erro) | `error` | Durante porte + dev cedo, `console.log` é ferramenta legítima |
-| Smoke test único na Fase 1 | Suíte completa desde já | Não há lógica testável ainda — mock estático |
-| Sem `@vitest/coverage-v8` agora | Adicionar já | Barulho no `package.json` sem payoff antes da Fase 2 |
-| Commits diretos em `main` | Feature branches + PRs | Dev solo, projeto novo — fricção sem valor |
-| Conventional Commits em português | Inglês | Público-alvo e mensagens de erro do produto são pt-BR |
+| Decisão                                                       | Alternativa considerada | Motivo                                                          |
+| ------------------------------------------------------------- | ----------------------- | --------------------------------------------------------------- |
+| Manter `src/app/` do Figma Make intacto                       | Achatar tudo em `src/`  | Re-importar do Figma Make fica trivial; evita rename em cascata |
+| Preto-em-branco no Prettier (`printWidth: 100`, `semi: true`) | Config mais agressiva   | Minimiza diff ao rodar `prettier --write` pela primeira vez     |
+| `no-console: warn` (não erro)                                 | `error`                 | Durante porte + dev cedo, `console.log` é ferramenta legítima   |
+| Smoke test único na Fase 1                                    | Suíte completa desde já | Não há lógica testável ainda — mock estático                    |
+| Sem `@vitest/coverage-v8` agora                               | Adicionar já            | Barulho no `package.json` sem payoff antes da Fase 2            |
+| Commits diretos em `main`                                     | Feature branches + PRs  | Dev solo, projeto novo — fricção sem valor                      |
+| Conventional Commits em português                             | Inglês                  | Público-alvo e mensagens de erro do produto são pt-BR           |
 
 ---
 

@@ -19,21 +19,27 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     Component: LoginPage,
-    loader: () => { if (isAuthenticated()) return redirect("/dashboard"); return null; },
+    loader: () => {
+      if (isAuthenticated()) return redirect("/dashboard");
+      return null;
+    },
   },
   {
     Component: MainLayout,
-    loader: () => { if (!isAuthenticated()) return redirect("/login"); return null; },
+    loader: () => {
+      if (!isAuthenticated()) return redirect("/login");
+      return null;
+    },
     children: [
-      { path: "dashboard",    Component: DashboardPage },
-      { path: "receivables",  Component: ReceivablesPage },
-      { path: "payables",     Component: PayablesPage },
-      { path: "invoices",     Component: InvoicesPage },
-      { path: "users",        Component: UsersPage },
-      { path: "reports",      Component: ReportsPage },
+      { path: "dashboard", Component: DashboardPage },
+      { path: "receivables", Component: ReceivablesPage },
+      { path: "payables", Component: PayablesPage },
+      { path: "invoices", Component: InvoicesPage },
+      { path: "users", Component: UsersPage },
+      { path: "reports", Component: ReportsPage },
       { path: "integrations", Component: IntegrationsPage },
-      { path: "settings",     Component: SettingsPage },
-      { path: "profile",      Component: ProfilePage },
+      { path: "settings", Component: SettingsPage },
+      { path: "profile", Component: ProfilePage },
     ],
   },
   { path: "*", loader: () => redirect("/"), Component: () => null },

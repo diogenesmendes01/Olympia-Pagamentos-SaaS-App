@@ -29,6 +29,7 @@
 Sem esses arquivos, qualquer próximo commit já vaza `node_modules/` e normaliza finais de linha de forma inconsistente.
 
 **Files:**
+
 - Create: `.gitignore`
 - Create: `.editorconfig`
 - Create: `.nvmrc`
@@ -116,6 +117,7 @@ git commit -m "chore: adiciona .gitignore, .editorconfig, .nvmrc"
 Vite expects `package.json`, `vite.config.ts`, `postcss.config.mjs` at repo root. The Figma Make export put them inside `src/`.
 
 **Files:**
+
 - Move: `src/package.json` → `package.json`
 - Move: `src/vite.config.ts` → `vite.config.ts`
 - Move: `src/postcss.config.mjs` → `postcss.config.mjs`
@@ -164,6 +166,7 @@ git commit -m "chore: move configs de build pra raiz do projeto"
 Fix multiple issues in one commit: put `react`/`react-dom` in `dependencies`, add proper scripts, add TS devDeps. Do **not** touch unused deps yet (Task 4 handles those).
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Replace `package.json` contents**
@@ -288,6 +291,7 @@ git commit -m "build: corrige package.json (react deps, scripts dev/preview/buil
 Remove the 11 deps audited and confirmed as never-imported. Pure `package.json` edit (deps aren't installed yet).
 
 **Files:**
+
 - Modify: `package.json`
 
 - [ ] **Step 1: Remove these entries from `dependencies` in `package.json`**
@@ -336,6 +340,7 @@ git commit -m "chore: remove dependências não utilizadas"
 Project references setup: `tsconfig.json` is root (references app + node), `tsconfig.app.json` builds app code, `tsconfig.node.json` builds Vite/Vitest config files. This is the modern Vite + TS pattern.
 
 **Files:**
+
 - Create: `tsconfig.json`
 - Create: `tsconfig.app.json`
 - Create: `tsconfig.node.json`
@@ -345,10 +350,7 @@ Project references setup: `tsconfig.json` is root (references app + node), `tsco
 ```json
 {
   "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
 }
 ```
 
@@ -436,6 +438,7 @@ git commit -m "build: adiciona tsconfig.json + tsconfig.node.json"
 Vite needs an `index.html` at repo root with a script tag pointing at the module entry, and a `src/main.tsx` that bootstraps React.
 
 **Files:**
+
 - Create: `index.html`
 - Create: `src/main.tsx`
 
@@ -448,7 +451,10 @@ Vite needs an `index.html` at repo root with a script tag pointing at the module
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Olympia Pagamentos</title>
-    <meta name="description" content="SaaS de gestão financeira — contas a receber, contas a pagar, notas fiscais e relatórios." />
+    <meta
+      name="description"
+      content="SaaS de gestão financeira — contas a receber, contas a pagar, notas fiscais e relatórios."
+    />
   </head>
   <body>
     <div id="root"></div>
@@ -501,6 +507,7 @@ git commit -m "feat: adiciona index.html e src/main.tsx"
 Move `ATTRIBUTIONS.md` from `src/` to root and create a minimal `README.md` stub. The fuller README comes in Task 15 after everything works.
 
 **Files:**
+
 - Move: `src/ATTRIBUTIONS.md` → `ATTRIBUTIONS.md`
 - Create: `README.md`
 
@@ -536,6 +543,7 @@ git commit -m "chore: adiciona README.md e move ATTRIBUTIONS.md pra raiz"
 First real `pnpm install`. This generates `pnpm-lock.yaml` — commit it separately so the diff is isolated.
 
 **Files:**
+
 - Create: `pnpm-lock.yaml` (generated)
 
 - [ ] **Step 1: Install**
@@ -563,6 +571,7 @@ pnpm build
 Expected: `dist/` directory appears with assets. If TypeScript errors appear here that block the build, fix them **within this task** (they're pre-existing issues that must be resolved before any lint is useful).
 
 Common fix patterns:
+
 - Missing `@/` alias resolution → check `tsconfig.app.json` `paths`
 - Missing `React` import in `.tsx` files → `jsx: "react-jsx"` should make this unnecessary; verify `tsconfig.app.json`
 - Any type error in Figma Make code → add the narrowest possible `// @ts-expect-error: Figma Make generated` with a short note, and open a follow-up in memory as a small task for later
@@ -582,6 +591,7 @@ git commit -m "build: instala dependências e gera pnpm-lock.yaml"
 Add ESLint, Prettier, and their configs as a single cohesive setup. No linting runs yet — just install + config. Normalization happens in Task 10.
 
 **Files:**
+
 - Create: `eslint.config.js`
 - Create: `.prettierrc.json`
 - Create: `.prettierignore`
@@ -627,14 +637,8 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
-      "@typescript-eslint/consistent-type-imports": [
-        "warn",
-        { prefer: "type-imports" },
-      ],
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "@typescript-eslint/consistent-type-imports": ["warn", { prefer: "type-imports" }],
       "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },
@@ -698,6 +702,7 @@ git commit -m "build: adiciona ESLint 9 (flat config) e Prettier"
 Two separate commits — Prettier first (formatting ruído), then ESLint auto-fixes (semantic fixups). Isolating both keeps future `git blame` useful.
 
 **Files:**
+
 - Modify: `src/**/*.{ts,tsx,css,md,json}` (formatting only)
 
 - [ ] **Step 1: Run Prettier on everything**
@@ -758,6 +763,7 @@ git commit -m "chore: corrige avisos do eslint --fix"
 Pre-commit hook runs lint-staged on staged files. Push-hook-free for now.
 
 **Files:**
+
 - Create: `.husky/pre-commit`
 - Modify: `package.json` (add `lint-staged` config)
 
@@ -825,6 +831,7 @@ git commit -m "build: adiciona husky + lint-staged"
 Install test deps, create `vitest.config.ts`, create `src/test/setup.ts`. No tests yet — that's Task 13.
 
 **Files:**
+
 - Create: `vitest.config.ts`
 - Create: `src/test/setup.ts`
 
@@ -890,6 +897,7 @@ git commit -m "test: adiciona infraestrutura Vitest + Testing Library"
 One test that validates the whole stack is wired. Written TDD-style: red first, then already-green because App already exists.
 
 **Files:**
+
 - Create: `src/app/App.test.tsx`
 
 - [ ] **Step 1: Write the test (it should pass immediately since App already renders the landing page)**
@@ -916,6 +924,7 @@ pnpm test --run
 ```
 
 Expected: **1 passed**. If it fails:
+
 - **"window is not defined"** → setupFiles wasn't picked up; re-check `vitest.config.ts` path
 - **"Cannot find module"** → `@/` alias not resolving in Vitest; confirm `vitest.config.ts` merges `viteConfig` correctly
 - **"useNavigate() may be used only in the context of a <Router>"** → `App` is supposed to own `RouterProvider`; re-check `src/app/App.tsx`
@@ -935,6 +944,7 @@ git commit -m "test: adiciona smoke test do App"
 Four parallel jobs: lint, typecheck, test, build. Cached pnpm store.
 
 **Files:**
+
 - Create: `.github/workflows/ci.yml`
 
 - [ ] **Step 1: Create the workflow**
@@ -1002,11 +1012,12 @@ git commit -m "ci: adiciona GitHub Actions workflow (lint + typecheck + test + b
 Now the project is actually runnable — README can be honest.
 
 **Files:**
+
 - Modify: `README.md`
 
 - [ ] **Step 1: Replace `README.md` contents**
 
-```markdown
+````markdown
 # Olympia Pagamentos
 
 SaaS de gestão financeira — contas a receber, contas a pagar, notas fiscais e relatórios.
@@ -1034,6 +1045,7 @@ SaaS de gestão financeira — contas a receber, contas a pagar, notas fiscais e
 pnpm install
 pnpm dev
 ```
+````
 
 Abra `http://localhost:5173`.
 
@@ -1060,19 +1072,19 @@ localStorage.setItem("olympia_onboarding", "invited");
 
 ## Scripts
 
-| Comando | Ação |
-|---|---|
-| `pnpm dev` | Servidor de desenvolvimento com HMR |
-| `pnpm build` | Build de produção em `dist/` |
-| `pnpm preview` | Serve o build local pra revisão |
-| `pnpm lint` | ESLint em todo o projeto |
-| `pnpm lint:fix` | ESLint com auto-fix |
-| `pnpm typecheck` | `tsc --noEmit` |
-| `pnpm format` | Prettier `--write` em tudo |
-| `pnpm format:check` | Prettier `--check` (CI) |
-| `pnpm test` | Vitest watch mode |
-| `pnpm test:ui` | Vitest com UI no browser |
-| `pnpm test --run` | Vitest single run (CI) |
+| Comando             | Ação                                |
+| ------------------- | ----------------------------------- |
+| `pnpm dev`          | Servidor de desenvolvimento com HMR |
+| `pnpm build`        | Build de produção em `dist/`        |
+| `pnpm preview`      | Serve o build local pra revisão     |
+| `pnpm lint`         | ESLint em todo o projeto            |
+| `pnpm lint:fix`     | ESLint com auto-fix                 |
+| `pnpm typecheck`    | `tsc --noEmit`                      |
+| `pnpm format`       | Prettier `--write` em tudo          |
+| `pnpm format:check` | Prettier `--check` (CI)             |
+| `pnpm test`         | Vitest watch mode                   |
+| `pnpm test:ui`      | Vitest com UI no browser            |
+| `pnpm test --run`   | Vitest single run (CI)              |
 
 ## Estrutura
 
@@ -1117,14 +1129,15 @@ build: ...
 - **Fase 4** — Contas a Pagar
 - **Fase 5** — Relatórios + Dashboard com dados reais
 - **Fase 6** — Integrações + Settings avançados + billing do SaaS
-```
+
+````
 
 - [ ] **Step 2: Commit**
 
 ```bash
 git add README.md
 git commit -m "docs: README com instruções de setup e scripts"
-```
+````
 
 ---
 
@@ -1165,10 +1178,12 @@ sleep 5
 Use `webapp-testing` (Playwright) to visit each route and confirm no console errors. Route checklist:
 
 **Public:**
+
 - [ ] `/` — Landing page renders with Olympia branding
 - [ ] `/login` — Login form visible
 
 **Authenticated (set `localStorage.setItem("olympia_auth", "true")` first):**
+
 - [ ] `/dashboard` — Dashboard with sidebar + header
 - [ ] `/receivables` — Contas a Receber table
 - [ ] `/payables` — Contas a Pagar table
@@ -1180,6 +1195,7 @@ Use `webapp-testing` (Playwright) to visit each route and confirm no console err
 - [ ] `/profile` — Perfil
 
 **Interactive elements (at least sanity-tap on one page):**
+
 - [ ] Sidebar navigation works (click one nav item, URL changes, page renders)
 - [ ] Header search input is focusable
 - [ ] Notifications dropdown opens and closes
@@ -1187,6 +1203,7 @@ Use `webapp-testing` (Playwright) to visit each route and confirm no console err
 - [ ] Logout button returns to `/login` and clears `olympia_auth`
 
 **Onboarding (separate test):**
+
 - [ ] `localStorage.setItem("olympia_onboarding", "owner")` → reload `/dashboard` → OwnerOnboarding overlay appears
 - [ ] Completing it (click through) removes the overlay
 
@@ -1209,6 +1226,7 @@ Then check the Actions tab — all four matrix jobs (`lint`, `typecheck`, `test`
 - [ ] **Step 7: Phase 1 done**
 
 No commit for this task. Declare Phase 1 complete and surface the result to the user with:
+
 - Summary of what changed
 - Link to the live dev URL
 - Next step: Phase 2 (backend + auth + multi-tenancy)
@@ -1218,21 +1236,27 @@ No commit for this task. Declare Phase 1 complete and surface the result to the 
 ## Troubleshooting appendix
 
 ### Tailwind v4 specifics
+
 The `@tailwindcss/vite` plugin handles Tailwind compilation directly. The `postcss.config.mjs` in this repo is kept but likely unused — do not delete (harmless and future-proof).
 
 ### React Router 7 in test env
+
 React Router 7's `createBrowserRouter` requires a DOM. `jsdom` provides it. If test hangs or errors, ensure `vitest.config.ts` has `environment: "jsdom"`.
 
 ### Husky on Windows
+
 Git Bash runs `.husky/pre-commit` fine. If it fails with "command not found" for `pnpm`, ensure pnpm is in PATH for the Git Bash session.
 
 ### TypeScript + `strictTypeChecked` + Figma Make code
+
 The Figma Make export wasn't written with strict linting in mind. Expect some fixups in Task 10. Prefer:
+
 1. Narrow type fixes (replace `any` with `unknown`, add type guards)
 2. `// eslint-disable-next-line <rule> -- <why>` for specific lines we don't want to refactor
 3. Only disable a rule globally if it's producing nothing but noise (document why in `eslint.config.js`)
 
 ### "No TypeScript errors but lint reports type issues"
+
 `typescript-eslint` uses `strictTypeChecked` rules that go beyond `tsc`. This is intentional. Fix or suppress per above.
 
 ---
@@ -1240,6 +1264,7 @@ The Figma Make export wasn't written with strict linting in mind. Expect some fi
 ## Success signal
 
 Phase 1 is done when:
+
 - All 16 tasks are checked off
 - CI is green on `main`
 - Dev server renders all 11 routes without console errors
