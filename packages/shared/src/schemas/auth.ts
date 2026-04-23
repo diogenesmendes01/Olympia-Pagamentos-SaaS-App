@@ -20,7 +20,7 @@ export const forgotPasswordSchema = z.object({
 });
 
 export const resetPasswordSchema = z.object({
-  token: z.string().min(1),
+  token: z.string().min(1, "Token obrigatório"),
   password: passwordSchema,
 });
 
