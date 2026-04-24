@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight } from "lucide-react";
 import { toast } from "sonner";
-import { organization } from "../../lib/auth";
+import { authClient, organization } from "../../lib/auth";
 import {
   createOrgSchema,
   type CreateOrgInput,
@@ -36,13 +36,13 @@ export function OrgOnboardingPage() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
     getFieldState,
     formState: { errors, isSubmitting },
   } = form;
 
-  const nameValue = watch("name");
+  const nameValue = useWatch({ control, name: "name" });
 
   useEffect(() => {
     const slugState = getFieldState("slug");
@@ -66,6 +66,9 @@ export function OrgOnboardingPage() {
         return;
       }
       await organization.setActive({ organizationId: data.id });
+      // Força refetch da sessão pra RequireAuth enxergar activeOrganizationId
+      // no próximo render — evita flash de redirect pra /onboarding/organization.
+      await authClient.getSession({ query: { disableCookieCache: true } });
       navigate("/dashboard");
     } catch {
       toast.error("Erro de conexão. Tente novamente.");
