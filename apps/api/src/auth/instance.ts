@@ -43,6 +43,15 @@ export const auth = betterAuth({
           },
         }
       : {}),
+    ...(config.MICROSOFT_CLIENT_ID && config.MICROSOFT_CLIENT_SECRET
+      ? {
+          microsoft: {
+            clientId: config.MICROSOFT_CLIENT_ID,
+            clientSecret: config.MICROSOFT_CLIENT_SECRET,
+            tenantId: "common",
+          },
+        }
+      : {}),
   },
   advanced: {
     cookiePrefix: "olympia",
