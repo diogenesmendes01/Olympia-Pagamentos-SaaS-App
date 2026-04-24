@@ -7,6 +7,7 @@ import { InvoicesPage } from "./pages/InvoicesPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MagicLinkPage } from "./pages/MagicLinkPage";
+import { OrgOnboardingPage } from "./pages/OrgOnboardingPage";
 import { PayablesPage } from "./pages/PayablesPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ReceivablesPage } from "./pages/ReceivablesPage";
@@ -17,6 +18,7 @@ import { SignupPage } from "./pages/SignupPage";
 import { UsersPage } from "./pages/UsersPage";
 import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 import { RequireAuth } from "./guards/RequireAuth";
+import { RequireSession } from "./guards/RequireSession";
 
 export const router = createBrowserRouter([
   { path: "/", Component: LandingPage },
@@ -26,6 +28,12 @@ export const router = createBrowserRouter([
   { path: "/forgot-password", Component: ForgotPasswordPage },
   { path: "/reset-password", Component: ResetPasswordPage },
   { path: "/magic-link", Component: MagicLinkPage },
+  {
+    element: <RequireSession />,
+    children: [
+      { path: "/onboarding/organization", Component: OrgOnboardingPage },
+    ],
+  },
   {
     element: <RequireAuth />,
     children: [
