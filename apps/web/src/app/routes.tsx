@@ -1,23 +1,31 @@
 import { createBrowserRouter, redirect } from "react-router";
 import { MainLayout } from "./layouts/MainLayout";
+import { DashboardPage } from "./pages/DashboardPage";
+import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import { IntegrationsPage } from "./pages/IntegrationsPage";
+import { InvoicesPage } from "./pages/InvoicesPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
-import { SignupPage } from "./pages/SignupPage";
-import { DashboardPage } from "./pages/DashboardPage";
-import { ReceivablesPage } from "./pages/ReceivablesPage";
+import { MagicLinkPage } from "./pages/MagicLinkPage";
 import { PayablesPage } from "./pages/PayablesPage";
-import { InvoicesPage } from "./pages/InvoicesPage";
-import { UsersPage } from "./pages/UsersPage";
-import { ReportsPage } from "./pages/ReportsPage";
-import { IntegrationsPage } from "./pages/IntegrationsPage";
-import { SettingsPage } from "./pages/SettingsPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { ReceivablesPage } from "./pages/ReceivablesPage";
+import { ReportsPage } from "./pages/ReportsPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
+import { SettingsPage } from "./pages/SettingsPage";
+import { SignupPage } from "./pages/SignupPage";
+import { UsersPage } from "./pages/UsersPage";
+import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 import { RequireAuth } from "./guards/RequireAuth";
 
 export const router = createBrowserRouter([
   { path: "/", Component: LandingPage },
   { path: "/login", Component: LoginPage },
   { path: "/signup", Component: SignupPage },
+  { path: "/verify-email", Component: VerifyEmailPage },
+  { path: "/forgot-password", Component: ForgotPasswordPage },
+  { path: "/reset-password", Component: ResetPasswordPage },
+  { path: "/magic-link", Component: MagicLinkPage },
   {
     element: <RequireAuth />,
     children: [
