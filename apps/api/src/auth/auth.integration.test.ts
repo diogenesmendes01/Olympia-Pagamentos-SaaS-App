@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { buildApp } from "../app.js";
 
+type SessionBody = {
+  user: { email: string };
+};
+
 describe("auth — email/password", () => {
   it("signup + login + session", async () => {
     const app = buildApp();
@@ -32,7 +36,7 @@ describe("auth — email/password", () => {
       headers: { cookie: Array.isArray(cookie) ? cookie.join("; ") : cookie! },
     });
     expect(session.statusCode).toBe(200);
-    const body = session.json();
+    const body = session.json() as SessionBody;
     expect(body.user.email).toBe("diogo@test.com");
 
     await app.close();
