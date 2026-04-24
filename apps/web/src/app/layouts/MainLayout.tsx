@@ -31,6 +31,7 @@ import {
 } from "../styles/tokens";
 import { OwnerOnboarding } from "../components/onboarding/OwnerOnboarding";
 import { InvitedOnboarding } from "../components/onboarding/InvitedOnboarding";
+import { OrgSwitcher } from "../components/OrgSwitcher";
 
 const navItems = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -382,6 +383,9 @@ export function MainLayout() {
           </div>
 
           <div className="ml-auto flex items-center gap-1.5">
+            {/* Org switcher */}
+            <OrgSwitcher />
+
             {/* Notifications */}
             <div className="relative">
               <button
