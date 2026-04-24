@@ -1,6 +1,6 @@
 import { Queue } from "bullmq";
 import { redisConnection } from "./redis.js";
-import type { EmailJob } from "./email.types.js";
+import { emailJobSchema, type EmailJob } from "./email.types.js";
 
 export const EMAIL_QUEUE_NAME = "email";
 
@@ -15,5 +15,6 @@ export const emailQueue = new Queue<EmailJob>(EMAIL_QUEUE_NAME, {
 });
 
 export async function enqueueEmail(job: EmailJob) {
-  return emailQueue.add(job.type, job);
+  const parsed = emailJobSchema.parse(job);
+  return emailQueue.add(parsed.type, parsed);
 }
