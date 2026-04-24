@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "../db/client.js";
 import { config } from "../config.js";
+import { enqueueEmail } from "../queues/email.queue.js";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg" }),
@@ -10,15 +11,33 @@ export const auth = betterAuth({
   trustedOrigins: [config.WEB_ORIGIN],
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false, // ativado na Task D5
-    autoSignIn: true,
+    requireEmailVerification: true,
+    autoSignIn: false,
+    sendResetPassword: async ({ user, url }) => {
+      await enqueueEmail({
+        type: "resetPassword",
+        to: user.email,
+        name: user.name,
+        resetUrl: url,
+      });
+    },
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await enqueueEmail({
+        type: "verifyEmail",
+        to: user.email,
+        name: user.name,
+        verifyUrl: url,
+      });
+    },
   },
   advanced: {
     cookiePrefix: "olympia",
     useSecureCookies: config.NODE_ENV === "production",
-    defaultCookieAttributes: {
-      sameSite: "lax",
-    },
+    defaultCookieAttributes: { sameSite: "lax" },
   },
 });
 
