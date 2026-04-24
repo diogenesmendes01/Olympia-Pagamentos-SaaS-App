@@ -48,7 +48,10 @@ const INVITE = {
   avatar: "RO",
 };
 
-const ROLE_PERMS: Record<string, { icon: any; label: string; allowed: boolean }[]> = {
+const ROLE_PERMS: Record<
+  string,
+  { icon: any; label: string; allowed: boolean }[]
+> = {
   Financeiro: [
     { icon: DollarSign, label: "Contas a Receber", allowed: true },
     { icon: FileText, label: "Contas a Pagar", allowed: true },
@@ -75,7 +78,11 @@ const ROLE_PERMS: Record<string, { icon: any; label: string; allowed: boolean }[
   ],
 };
 
-function strengthLabel(pwd: string): { pct: number; label: string; color: string } {
+function strengthLabel(pwd: string): {
+  pct: number;
+  label: string;
+  color: string;
+} {
   if (pwd.length === 0) return { pct: 0, label: "", color: "#E2E8F0" };
   const checks = [
     pwd.length >= 8,
@@ -117,7 +124,8 @@ export function InvitedOnboarding({ onComplete }: Props) {
     onComplete();
   };
 
-  const inputCls = "w-full px-4 py-2.5 rounded-xl border focus:outline-none transition-all";
+  const inputCls =
+    "w-full px-4 py-2.5 rounded-xl border focus:outline-none transition-all";
   const inputSty = {
     fontFamily: "'Inter', sans-serif",
     fontSize: 13,
@@ -148,10 +156,18 @@ export function InvitedOnboarding({ onComplete }: Props) {
             <div className="flex items-center gap-2.5">
               <div
                 className="flex h-8 w-8 items-center justify-center rounded-xl"
-                style={{ background: "rgba(200,169,107,0.15)", border: `1.5px solid ${G}` }}
+                style={{
+                  background: "rgba(200,169,107,0.15)",
+                  border: `1.5px solid ${G}`,
+                }}
               >
                 <span
-                  style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: G }}
+                  style={{
+                    fontFamily: "'Cinzel', serif",
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: G,
+                  }}
                 >
                   O
                 </span>
@@ -252,13 +268,22 @@ export function InvitedOnboarding({ onComplete }: Props) {
                 >
                   Você recebeu um convite!
                 </h2>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#64748B" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 13,
+                    color: "#64748B",
+                  }}
+                >
                   Revise os detalhes e aceite para ativar seu acesso
                 </p>
               </div>
 
               {/* Invite card */}
-              <div className="overflow-hidden rounded-2xl" style={{ border: "1px solid #E2E8F0" }}>
+              <div
+                className="overflow-hidden rounded-2xl"
+                style={{ border: "1px solid #E2E8F0" }}
+              >
                 <div
                   className="flex items-center gap-4 px-5 py-4"
                   style={{ background: PRIMARY_SOFT }}
@@ -290,7 +315,11 @@ export function InvitedOnboarding({ onComplete }: Props) {
                       {INVITE.convidadoPor}
                     </p>
                     <p
-                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#64748B" }}
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: 12,
+                        color: "#64748B",
+                      }}
                     >
                       {INVITE.cargo}
                     </p>
@@ -312,7 +341,10 @@ export function InvitedOnboarding({ onComplete }: Props) {
                     { label: "CNPJ", val: INVITE.cnpj },
                     { label: "Sua Função", val: INVITE.role },
                   ].map(({ label, val }) => (
-                    <div key={label} className="flex items-center justify-between">
+                    <div
+                      key={label}
+                      className="flex items-center justify-between"
+                    >
                       <span
                         style={{
                           fontFamily: "'Inter', sans-serif",
@@ -355,7 +387,9 @@ export function InvitedOnboarding({ onComplete }: Props) {
                     border: `2px solid ${accepted ? SUCCESS : "#CBD5E1"}`,
                   }}
                 >
-                  {accepted && <CheckCircle className="h-3.5 w-3.5 text-white" />}
+                  {accepted && (
+                    <CheckCircle className="h-3.5 w-3.5 text-white" />
+                  )}
                 </div>
                 <p
                   style={{
@@ -365,9 +399,16 @@ export function InvitedOnboarding({ onComplete }: Props) {
                     lineHeight: 1.5,
                   }}
                 >
-                  Aceito os <span style={{ color: P, fontWeight: 600 }}>Termos de Uso</span> e a{" "}
-                  <span style={{ color: P, fontWeight: 600 }}>Política de Privacidade</span> da
-                  Olympia Pagamentos e confirmo minha participação nessa empresa.
+                  Aceito os{" "}
+                  <span style={{ color: P, fontWeight: 600 }}>
+                    Termos de Uso
+                  </span>{" "}
+                  e a{" "}
+                  <span style={{ color: P, fontWeight: 600 }}>
+                    Política de Privacidade
+                  </span>{" "}
+                  da Olympia Pagamentos e confirmo minha participação nessa
+                  empresa.
                 </p>
               </div>
             </div>
@@ -387,7 +428,13 @@ export function InvitedOnboarding({ onComplete }: Props) {
                 >
                   Defina sua Senha
                 </h2>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12.5,
+                    color: "#64748B",
+                  }}
+                >
                   Crie uma senha forte para proteger seu acesso
                 </p>
               </div>
@@ -408,7 +455,11 @@ export function InvitedOnboarding({ onComplete }: Props) {
                   <input
                     type={showPwd ? "text" : "password"}
                     className={inputCls}
-                    style={{ ...inputSty, borderColor: "#CBD5E1", paddingRight: 40 }}
+                    style={{
+                      ...inputSty,
+                      borderColor: "#CBD5E1",
+                      paddingRight: 40,
+                    }}
                     placeholder="Mínimo 8 caracteres"
                     value={password}
                     onChange={(e) => {
@@ -426,7 +477,10 @@ export function InvitedOnboarding({ onComplete }: Props) {
                     className="absolute top-1/2 right-3 -translate-y-1/2"
                   >
                     {showPwd ? (
-                      <EyeOff className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                      <EyeOff
+                        className="h-4 w-4"
+                        style={{ color: "#94A3B8" }}
+                      />
                     ) : (
                       <Eye className="h-4 w-4" style={{ color: "#94A3B8" }} />
                     )}
@@ -435,10 +489,16 @@ export function InvitedOnboarding({ onComplete }: Props) {
                 {/* Strength */}
                 {password.length > 0 && (
                   <div className="mt-2">
-                    <div className="h-1.5 rounded-full" style={{ background: "#E2E8F0" }}>
+                    <div
+                      className="h-1.5 rounded-full"
+                      style={{ background: "#E2E8F0" }}
+                    >
                       <div
                         className="h-1.5 rounded-full transition-all"
-                        style={{ width: `${strength.pct}%`, background: strength.color }}
+                        style={{
+                          width: `${strength.pct}%`,
+                          background: strength.color,
+                        }}
                       />
                     </div>
                     <p
@@ -475,7 +535,11 @@ export function InvitedOnboarding({ onComplete }: Props) {
                     className={inputCls}
                     style={{
                       ...inputSty,
-                      borderColor: pwdMismatch ? DANGER : pwdMatch ? SUCCESS : "#CBD5E1",
+                      borderColor: pwdMismatch
+                        ? DANGER
+                        : pwdMatch
+                          ? SUCCESS
+                          : "#CBD5E1",
                       paddingRight: 40,
                     }}
                     placeholder="Repita a senha"
@@ -495,7 +559,10 @@ export function InvitedOnboarding({ onComplete }: Props) {
                     className="absolute top-1/2 right-3 -translate-y-1/2"
                   >
                     {showConf ? (
-                      <EyeOff className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                      <EyeOff
+                        className="h-4 w-4"
+                        style={{ color: "#94A3B8" }}
+                      />
                     ) : (
                       <Eye className="h-4 w-4" style={{ color: "#94A3B8" }} />
                     )}
@@ -515,9 +582,16 @@ export function InvitedOnboarding({ onComplete }: Props) {
                 )}
                 {pwdMatch && (
                   <div className="mt-1.5 flex items-center gap-1.5">
-                    <CheckCircle className="h-3.5 w-3.5" style={{ color: SUCCESS }} />
+                    <CheckCircle
+                      className="h-3.5 w-3.5"
+                      style={{ color: SUCCESS }}
+                    />
                     <p
-                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 11.5, color: SUCCESS }}
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: 11.5,
+                        color: SUCCESS,
+                      }}
                     >
                       Senhas conferem
                     </p>
@@ -545,7 +619,10 @@ export function InvitedOnboarding({ onComplete }: Props) {
                   { label: "Mínimo 8 caracteres", ok: password.length >= 8 },
                   { label: "Uma letra maiúscula", ok: /[A-Z]/.test(password) },
                   { label: "Um número", ok: /[0-9]/.test(password) },
-                  { label: "Um caractere especial (@!#…)", ok: /[^A-Za-z0-9]/.test(password) },
+                  {
+                    label: "Um caractere especial (@!#…)",
+                    ok: /[^A-Za-z0-9]/.test(password),
+                  },
                 ].map((req) => (
                   <div key={req.label} className="flex items-center gap-2">
                     <div
@@ -553,7 +630,10 @@ export function InvitedOnboarding({ onComplete }: Props) {
                       style={{ background: req.ok ? SUCCESS_BG : "#F1F5F9" }}
                     >
                       {req.ok ? (
-                        <CheckCircle className="h-3 w-3" style={{ color: SUCCESS }} />
+                        <CheckCircle
+                          className="h-3 w-3"
+                          style={{ color: SUCCESS }}
+                        />
                       ) : (
                         <div
                           className="h-1.5 w-1.5 rounded-full"
@@ -590,7 +670,13 @@ export function InvitedOnboarding({ onComplete }: Props) {
                 >
                   Complete seu Perfil
                 </h2>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12.5,
+                    color: "#64748B",
+                  }}
+                >
                   Seus colegas vão te ver assim no sistema
                 </p>
               </div>
@@ -647,7 +733,8 @@ export function InvitedOnboarding({ onComplete }: Props) {
                     marginBottom: 10,
                   }}
                 >
-                  Seus acessos como <span style={{ color: P }}>{INVITE.role}</span>
+                  Seus acessos como{" "}
+                  <span style={{ color: P }}>{INVITE.role}</span>
                 </p>
                 <div className="grid grid-cols-2 gap-2">
                   {perms.map((perm) => {
@@ -699,7 +786,10 @@ export function InvitedOnboarding({ onComplete }: Props) {
             <div className="py-4 text-center">
               <div
                 className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full"
-                style={{ background: SUCCESS_BG, border: `3px solid ${SUCCESS}` }}
+                style={{
+                  background: SUCCESS_BG,
+                  border: `3px solid ${SUCCESS}`,
+                }}
               >
                 <CheckCircle className="h-10 w-10" style={{ color: SUCCESS }} />
               </div>
@@ -712,7 +802,9 @@ export function InvitedOnboarding({ onComplete }: Props) {
                   marginBottom: 8,
                 }}
               >
-                {profile.nome ? `Bem-vindo(a), ${profile.nome.split(" ")[0]}!` : "Conta ativada!"}
+                {profile.nome
+                  ? `Bem-vindo(a), ${profile.nome.split(" ")[0]}!`
+                  : "Conta ativada!"}
               </h2>
               <p
                 style={{
@@ -724,14 +816,19 @@ export function InvitedOnboarding({ onComplete }: Props) {
                   margin: "0 auto 24px",
                 }}
               >
-                Sua conta na <strong style={{ color: P }}>{INVITE.empresa}</strong> está ativa. Você
-                tem acesso como <strong style={{ color: P }}>{INVITE.role}</strong>.
+                Sua conta na{" "}
+                <strong style={{ color: P }}>{INVITE.empresa}</strong> está
+                ativa. Você tem acesso como{" "}
+                <strong style={{ color: P }}>{INVITE.role}</strong>.
               </p>
               <div className="mx-auto max-w-xs space-y-2 text-left">
                 {[
                   { label: "Convite aceito", done: true },
                   { label: "Senha definida", done: password.length > 0 },
-                  { label: "Perfil configurado", done: profile.nome.length > 0 },
+                  {
+                    label: "Perfil configurado",
+                    done: profile.nome.length > 0,
+                  },
                   { label: "Acesso liberado", done: true },
                 ].map((item) => (
                   <div key={item.label} className="flex items-center gap-3">
@@ -740,9 +837,15 @@ export function InvitedOnboarding({ onComplete }: Props) {
                       style={{ background: item.done ? SUCCESS_BG : "#F1F5F9" }}
                     >
                       {item.done ? (
-                        <CheckCircle className="h-3.5 w-3.5" style={{ color: SUCCESS }} />
+                        <CheckCircle
+                          className="h-3.5 w-3.5"
+                          style={{ color: SUCCESS }}
+                        />
                       ) : (
-                        <div className="h-2 w-2 rounded-full" style={{ background: "#CBD5E1" }} />
+                        <div
+                          className="h-2 w-2 rounded-full"
+                          style={{ background: "#CBD5E1" }}
+                        />
                       )}
                     </div>
                     <span
@@ -800,10 +903,12 @@ export function InvitedOnboarding({ onComplete }: Props) {
                   cursor: step === 1 && !accepted ? "not-allowed" : "pointer",
                 }}
                 onMouseEnter={(e) => {
-                  if (!(step === 1 && !accepted)) e.currentTarget.style.background = PH;
+                  if (!(step === 1 && !accepted))
+                    e.currentTarget.style.background = PH;
                 }}
                 onMouseLeave={(e) => {
-                  if (!(step === 1 && !accepted)) e.currentTarget.style.background = P;
+                  if (!(step === 1 && !accepted))
+                    e.currentTarget.style.background = P;
                 }}
               >
                 {step === 1 ? "Aceitar e Continuar" : "Continuar"}{" "}

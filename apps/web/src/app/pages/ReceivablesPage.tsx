@@ -33,7 +33,9 @@ import {
 } from "../styles/tokens";
 
 const fmt = (v: number) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
+  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+    v,
+  );
 
 const statusConfig: Record<
   Receivable["status"],
@@ -43,10 +45,18 @@ const statusConfig: Record<
   pendente: { label: "Pendente", bg: "#EEF3F8", text: P, icon: Clock },
   vencido: { label: "Vencido", bg: DANGER_BG, text: DANGER, icon: XCircle },
   agendado: { label: "Agendado", bg: "#F5F1FF", text: "#6B4BAF", icon: Clock },
-  parcial: { label: "Parcial", bg: WARNING_BG, text: WARNING, icon: AlertTriangle },
+  parcial: {
+    label: "Parcial",
+    bg: WARNING_BG,
+    text: WARNING,
+    icon: AlertTriangle,
+  },
 };
 
-const methodConfig: Record<Receivable["metodo"], { label: string; color: string; bg: string }> = {
+const methodConfig: Record<
+  Receivable["metodo"],
+  { label: string; color: string; bg: string }
+> = {
   pix: { label: "Pix", color: "#00907A", bg: "#F0FDFB" },
   boleto: { label: "Boleto", color: P, bg: "#EEF2F9" },
   cartao: { label: "Cartão", color: "#6B4BAF", bg: "#F5F1FF" },
@@ -68,7 +78,12 @@ function BtnPrimary({
     <button
       onClick={onClick}
       className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-white transition-all ${className}`}
-      style={{ background: P, fontFamily: "'Inter', sans-serif", fontSize: 12.5, fontWeight: 700 }}
+      style={{
+        background: P,
+        fontFamily: "'Inter', sans-serif",
+        fontSize: 12.5,
+        fontWeight: 700,
+      }}
       onMouseEnter={(e) => (e.currentTarget.style.background = PH)}
       onMouseLeave={(e) => (e.currentTarget.style.background = P)}
     >
@@ -98,10 +113,18 @@ export function ReceivablesPage() {
   });
 
   const totals = {
-    pendente: receivables.filter((r) => r.status === "pendente").reduce((s, r) => s + r.valor, 0),
-    vencido: receivables.filter((r) => r.status === "vencido").reduce((s, r) => s + r.valor, 0),
-    pago: receivables.filter((r) => r.status === "pago").reduce((s, r) => s + r.valor, 0),
-    agendado: receivables.filter((r) => r.status === "agendado").reduce((s, r) => s + r.valor, 0),
+    pendente: receivables
+      .filter((r) => r.status === "pendente")
+      .reduce((s, r) => s + r.valor, 0),
+    vencido: receivables
+      .filter((r) => r.status === "vencido")
+      .reduce((s, r) => s + r.valor, 0),
+    pago: receivables
+      .filter((r) => r.status === "pago")
+      .reduce((s, r) => s + r.valor, 0),
+    agendado: receivables
+      .filter((r) => r.status === "agendado")
+      .reduce((s, r) => s + r.valor, 0),
   };
 
   const toggleSelect = (id: string) => {
@@ -129,7 +152,13 @@ export function ReceivablesPage() {
           >
             Contas a Receber
           </h1>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "#64748B",
+            }}
+          >
             Gerencie cobranças, faturas e recebimentos
           </p>
         </div>
@@ -140,7 +169,13 @@ export function ReceivablesPage() {
             onClick={() => toast.success("Exportando...")}
           >
             <Download className="h-3.5 w-3.5" style={{ color: "#64748B" }} />
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}>
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12.5,
+                color: "#374151",
+              }}
+            >
               Exportar
             </span>
           </button>
@@ -223,7 +258,10 @@ export function ReceivablesPage() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-2xl bg-white p-4" style={{ border: "1px solid #E2E8F0" }}>
+      <div
+        className="rounded-2xl bg-white p-4"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
         <div className="flex flex-col gap-3 sm:flex-row">
           <div
             className="flex flex-1 items-center gap-2 rounded-xl border px-3 py-2"
@@ -238,7 +276,11 @@ export function ReceivablesPage() {
               }}
               placeholder="Buscar por cliente, ID ou descrição..."
               className="flex-1 bg-transparent focus:outline-none"
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#374151" }}
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 13,
+                color: "#374151",
+              }}
             />
           </div>
           <div className="flex gap-2">
@@ -307,7 +349,11 @@ export function ReceivablesPage() {
             <button
               onClick={() => toast.success("Lembretes enviados!")}
               className="flex items-center gap-1.5 rounded-lg px-3 py-1 text-white"
-              style={{ background: P, fontFamily: "'Inter', sans-serif", fontSize: 11.5 }}
+              style={{
+                background: P,
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 11.5,
+              }}
             >
               <Send className="h-3 w-3" />
               Enviar Lembrete
@@ -317,17 +363,27 @@ export function ReceivablesPage() {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid #E2E8F0" }}>
+      <div
+        className="overflow-hidden rounded-2xl bg-white"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #F1F5F9" }}>
+              <tr
+                style={{
+                  background: "#F8FAFC",
+                  borderBottom: "1px solid #F1F5F9",
+                }}
+              >
                 <th className="px-4 py-3">
                   <input
                     type="checkbox"
                     onChange={(e) => {
                       setSelected(
-                        e.target.checked ? new Set(filtered.map((r) => r.id)) : new Set(),
+                        e.target.checked
+                          ? new Set(filtered.map((r) => r.id))
+                          : new Set(),
                       );
                     }}
                     className="rounded"
@@ -477,7 +533,9 @@ export function ReceivablesPage() {
                         </span>
                       ) : (
                         <button
-                          onClick={() => toast.success(`NFS-e emitida para ${rec.cliente}`)}
+                          onClick={() =>
+                            toast.success(`NFS-e emitida para ${rec.cliente}`)
+                          }
                           className="rounded-xl px-2.5 py-1"
                           style={{
                             fontFamily: "'Inter', sans-serif",
@@ -518,7 +576,10 @@ export function ReceivablesPage() {
                           }}
                           className="rounded-lg p-1.5 hover:bg-slate-100"
                         >
-                          <MoreHorizontal className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                          <MoreHorizontal
+                            className="h-4 w-4"
+                            style={{ color: "#94A3B8" }}
+                          />
                         </button>
                         {openMenu === rec.id && (
                           <div
@@ -526,19 +587,38 @@ export function ReceivablesPage() {
                             style={{ border: "1px solid #E2E8F0" }}
                           >
                             {[
-                              { icon: Eye, label: "Ver Detalhes", action: "view" },
-                              { icon: Bell, label: "Enviar Lembrete", action: "reminder" },
-                              { icon: FileText, label: "Emitir NF-e", action: "nf" },
+                              {
+                                icon: Eye,
+                                label: "Ver Detalhes",
+                                action: "view",
+                              },
+                              {
+                                icon: Bell,
+                                label: "Enviar Lembrete",
+                                action: "reminder",
+                              },
+                              {
+                                icon: FileText,
+                                label: "Emitir NF-e",
+                                action: "nf",
+                              },
                               { icon: Edit2, label: "Editar", action: "edit" },
-                              { icon: Trash2, label: "Excluir", action: "delete" },
+                              {
+                                icon: Trash2,
+                                label: "Excluir",
+                                action: "delete",
+                              },
                             ].map((item) => (
                               <button
                                 key={item.action}
                                 onClick={() => {
                                   setOpenMenu(null);
                                   if (item.action === "reminder")
-                                    toast.success(`Lembrete enviado para ${rec.cliente}`);
-                                  else if (item.action === "nf") toast.success("NFS-e emitida!");
+                                    toast.success(
+                                      `Lembrete enviado para ${rec.cliente}`,
+                                    );
+                                  else if (item.action === "nf")
+                                    toast.success("NFS-e emitida!");
                                   else if (item.action === "delete")
                                     toast.error(`${rec.id} excluído`);
                                   else toast.info("Abrindo...");
@@ -547,13 +627,21 @@ export function ReceivablesPage() {
                               >
                                 <item.icon
                                   className="h-3.5 w-3.5"
-                                  style={{ color: item.action === "delete" ? DANGER : "#94A3B8" }}
+                                  style={{
+                                    color:
+                                      item.action === "delete"
+                                        ? DANGER
+                                        : "#94A3B8",
+                                  }}
                                 />
                                 <span
                                   style={{
                                     fontFamily: "'Inter', sans-serif",
                                     fontSize: 12.5,
-                                    color: item.action === "delete" ? DANGER : "#374151",
+                                    color:
+                                      item.action === "delete"
+                                        ? DANGER
+                                        : "#374151",
                                   }}
                                 >
                                   {item.label}
@@ -574,7 +662,13 @@ export function ReceivablesPage() {
           className="flex items-center justify-between border-t px-5 py-3"
           style={{ borderColor: "#F1F5F9" }}
         >
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#94A3B8" }}>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12,
+              color: "#94A3B8",
+            }}
+          >
             Exibindo {filtered.length} de {receivables.length} cobranças
           </p>
           <div className="flex gap-1">
@@ -686,7 +780,11 @@ export function ReceivablesPage() {
                 </div>
               </div>
               {[
-                { label: "Cliente / CNPJ", placeholder: "Buscar cliente...", type: "text" },
+                {
+                  label: "Cliente / CNPJ",
+                  placeholder: "Buscar cliente...",
+                  type: "text",
+                },
                 {
                   label: "Descrição do Serviço",
                   placeholder: "Ex: Consultoria - Maio/26",
@@ -770,7 +868,11 @@ export function ReceivablesPage() {
                 />
                 <label
                   htmlFor="emitirNF"
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12.5,
+                    color: "#374151",
+                  }}
                 >
                   Emitir NFS-e automaticamente ao confirmar pagamento
                 </label>

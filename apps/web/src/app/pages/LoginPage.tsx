@@ -55,7 +55,9 @@ export function LoginPage() {
     localStorage.setItem("olympia_auth", "true");
     localStorage.setItem("olympia_onboarding", type);
     toast.success(
-      type === "owner" ? "Novo acesso como Dono detectado." : "Acesso por convite detectado.",
+      type === "owner"
+        ? "Novo acesso como Dono detectado."
+        : "Acesso por convite detectado.",
     );
     navigate("/dashboard");
   };
@@ -80,7 +82,10 @@ export function LoginPage() {
         <div className="flex items-center gap-3.5">
           <div
             className="flex h-11 w-11 items-center justify-center rounded-xl"
-            style={{ background: "rgba(200,169,107,0.12)", border: `1.5px solid ${C.gold}` }}
+            style={{
+              background: "rgba(200,169,107,0.12)",
+              border: `1.5px solid ${C.gold}`,
+            }}
           >
             <span
               style={{
@@ -129,7 +134,10 @@ export function LoginPage() {
               border: `1px solid rgba(200,169,107,0.25)`,
             }}
           >
-            <div className="h-1.5 w-1.5 rounded-full" style={{ background: C.gold }} />
+            <div
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ background: C.gold }}
+            />
             <span
               style={{
                 fontFamily: "'Inter', sans-serif",
@@ -166,8 +174,8 @@ export function LoginPage() {
               lineHeight: 1.65,
             }}
           >
-            Automatize cobranças, concilie em tempo real e tome decisões com inteligência
-            financeira.
+            Automatize cobranças, concilie em tempo real e tome decisões com
+            inteligência financeira.
           </p>
 
           <div className="mt-8 space-y-3">
@@ -181,12 +189,22 @@ export function LoginPage() {
               <div key={f} className="flex items-center gap-2.5">
                 <div
                   className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full"
-                  style={{ background: "rgba(200,169,107,0.15)", border: `1px solid ${C.gold}` }}
+                  style={{
+                    background: "rgba(200,169,107,0.15)",
+                    border: `1px solid ${C.gold}`,
+                  }}
                 >
-                  <div className="h-1.5 w-1.5 rounded-full" style={{ background: C.gold }} />
+                  <div
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ background: C.gold }}
+                  />
                 </div>
                 <span
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 13.5, color: "#CBD8E8" }}
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 13.5,
+                    color: "#CBD8E8",
+                  }}
                 >
                   {f}
                 </span>
@@ -291,7 +309,9 @@ export function LoginPage() {
                     fontWeight: 600,
                     color: tab === t ? C.primary : "#94A3B8",
                     borderBottom:
-                      tab === t ? `2.5px solid ${C.primary}` : "2.5px solid transparent",
+                      tab === t
+                        ? `2.5px solid ${C.primary}`
+                        : "2.5px solid transparent",
                     background: "transparent",
                   }}
                 >
@@ -345,9 +365,16 @@ export function LoginPage() {
                         key={s.provider}
                         onClick={() => handleSocialLogin(s.provider)}
                         className="flex w-full items-center gap-3 rounded-xl px-4 py-2.5 transition-colors"
-                        style={{ border: "1.5px solid #E2E8F0", background: "#FAFAF9" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "#F4EFE6")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "#FAFAF9")}
+                        style={{
+                          border: "1.5px solid #E2E8F0",
+                          background: "#FAFAF9",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.background = "#F4EFE6")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.background = "#FAFAF9")
+                        }
                       >
                         <div
                           className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold text-white"
@@ -369,7 +396,10 @@ export function LoginPage() {
                   </div>
 
                   <div className="mb-5 flex items-center gap-3">
-                    <div className="h-px flex-1" style={{ background: "#EDE8E1" }} />
+                    <div
+                      className="h-px flex-1"
+                      style={{ background: "#EDE8E1" }}
+                    />
                     <span
                       style={{
                         fontFamily: "'Inter', sans-serif",
@@ -379,7 +409,10 @@ export function LoginPage() {
                     >
                       ou com e-mail
                     </span>
-                    <div className="h-px flex-1" style={{ background: "#EDE8E1" }} />
+                    <div
+                      className="h-px flex-1"
+                      style={{ background: "#EDE8E1" }}
+                    />
                   </div>
 
                   <form onSubmit={handleLogin} className="space-y-4">
@@ -480,9 +513,15 @@ export function LoginPage() {
                           className="absolute top-1/2 right-3.5 -translate-y-1/2"
                         >
                           {showPass ? (
-                            <EyeOff className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                            <EyeOff
+                              className="h-4 w-4"
+                              style={{ color: "#94A3B8" }}
+                            />
                           ) : (
-                            <Eye className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                            <Eye
+                              className="h-4 w-4"
+                              style={{ color: "#94A3B8" }}
+                            />
                           )}
                         </button>
                       </div>
@@ -498,9 +537,12 @@ export function LoginPage() {
                         fontWeight: 700,
                         letterSpacing: "0.01em",
                       }}
-                      onMouseEnter={(e) => !loading && (e.currentTarget.style.background = C.hover)}
+                      onMouseEnter={(e) =>
+                        !loading && (e.currentTarget.style.background = C.hover)
+                      }
                       onMouseLeave={(e) =>
-                        !loading && (e.currentTarget.style.background = C.primary)
+                        !loading &&
+                        (e.currentTarget.style.background = C.primary)
                       }
                     >
                       {loading ? "Verificando..." : "Entrar"}{" "}
@@ -509,7 +551,11 @@ export function LoginPage() {
                   </form>
                   <p
                     className="mt-5 text-center"
-                    style={{ fontFamily: "'Inter', sans-serif", fontSize: 11.5, color: "#94A3B8" }}
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 11.5,
+                      color: "#94A3B8",
+                    }}
                   >
                     Também disponível: Magic Link via e-mail ou WhatsApp
                   </p>
@@ -526,7 +572,10 @@ export function LoginPage() {
                         border: `1px solid rgba(31,58,95,0.15)`,
                       }}
                     >
-                      <Shield className="h-5 w-5" style={{ color: C.primary }} />
+                      <Shield
+                        className="h-5 w-5"
+                        style={{ color: C.primary }}
+                      />
                     </div>
                     <div>
                       <h2
@@ -555,7 +604,9 @@ export function LoginPage() {
                       type="text"
                       value={mfaCode}
                       onChange={(e) => {
-                        setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                        setMfaCode(
+                          e.target.value.replace(/\D/g, "").slice(0, 6),
+                        );
                       }}
                       maxLength={6}
                       autoFocus
@@ -584,7 +635,8 @@ export function LoginPage() {
                       disabled={loading || mfaCode.length < 6}
                       className="w-full rounded-xl py-3 text-white transition-all"
                       style={{
-                        background: loading || mfaCode.length < 6 ? "#CBD5E1" : C.primary,
+                        background:
+                          loading || mfaCode.length < 6 ? "#CBD5E1" : C.primary,
                         fontFamily: "'Inter', sans-serif",
                         fontSize: 14,
                         fontWeight: 700,
@@ -598,14 +650,22 @@ export function LoginPage() {
                         setMfaStep(false);
                       }}
                       className="w-full py-2"
-                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#64748B" }}
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: 13,
+                        color: "#64748B",
+                      }}
                     >
                       ← Voltar
                     </button>
                   </form>
                   <p
                     className="mt-3 text-center"
-                    style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#94A3B8" }}
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 11,
+                      color: "#94A3B8",
+                    }}
                   >
                     Aceita: App autenticador, SMS, e-mail ou Passkey biométrico
                   </p>
@@ -714,20 +774,24 @@ export function LoginPage() {
                             e.currentTarget.style.boxShadow = "none";
                           }}
                         />
-                        {f.label === "CNPJ da Empresa" && cnpj.length === 18 && (
-                          <div className="mt-1.5 flex items-center gap-1.5">
-                            <CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#22C55E" }} />
-                            <span
-                              style={{
-                                fontSize: 11.5,
-                                color: "#22C55E",
-                                fontFamily: "'Inter', sans-serif",
-                              }}
-                            >
-                              CNPJ válido — preenchido automaticamente
-                            </span>
-                          </div>
-                        )}
+                        {f.label === "CNPJ da Empresa" &&
+                          cnpj.length === 18 && (
+                            <div className="mt-1.5 flex items-center gap-1.5">
+                              <CheckCircle2
+                                className="h-3.5 w-3.5"
+                                style={{ color: "#22C55E" }}
+                              />
+                              <span
+                                style={{
+                                  fontSize: 11.5,
+                                  color: "#22C55E",
+                                  fontFamily: "'Inter', sans-serif",
+                                }}
+                              >
+                                CNPJ válido — preenchido automaticamente
+                              </span>
+                            </div>
+                          )}
                       </div>
                     ))}
                     <button
@@ -739,8 +803,12 @@ export function LoginPage() {
                         fontSize: 14,
                         fontWeight: 700,
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = C.hover)}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = C.primary)}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.background = C.hover)
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.background = C.primary)
+                      }
                     >
                       Criar conta gratuita <ArrowRight className="h-4 w-4" />
                     </button>
@@ -753,7 +821,10 @@ export function LoginPage() {
                       }}
                     >
                       Ao criar sua conta você aceita os{" "}
-                      <span style={{ color: C.primary, fontWeight: 600 }}>Termos de Uso</span> e{" "}
+                      <span style={{ color: C.primary, fontWeight: 600 }}>
+                        Termos de Uso
+                      </span>{" "}
+                      e{" "}
                       <span style={{ color: C.primary, fontWeight: 600 }}>
                         Política de Privacidade
                       </span>
@@ -766,13 +837,20 @@ export function LoginPage() {
 
           <p
             className="mt-5 text-center"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 11.5, color: "#9B8F83" }}
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 11.5,
+              color: "#9B8F83",
+            }}
           >
             🔒 Criptografia AES-256 · Conformidade LGPD · SOC 2 Type II
           </p>
 
           {/* Demo first-login shortcuts */}
-          <div className="mt-4 border-t pt-4" style={{ borderColor: "#E8E3DA" }}>
+          <div
+            className="mt-4 border-t pt-4"
+            style={{ borderColor: "#E8E3DA" }}
+          >
             <p
               style={{
                 fontFamily: "'Inter', sans-serif",
@@ -788,7 +866,10 @@ export function LoginPage() {
               <button
                 onClick={() => handleDemoFirstLogin("owner")}
                 className="rounded-xl border px-3 py-2 text-left transition-all hover:shadow-sm"
-                style={{ borderColor: "#DDD8D0", background: "rgba(31,58,95,0.04)" }}
+                style={{
+                  borderColor: "#DDD8D0",
+                  background: "rgba(31,58,95,0.04)",
+                }}
               >
                 <p
                   style={{
@@ -800,14 +881,23 @@ export function LoginPage() {
                 >
                   🏢 Dono de Empresa
                 </p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10.5, color: "#9B8F83" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 10.5,
+                    color: "#9B8F83",
+                  }}
+                >
                   1º acesso com onboarding
                 </p>
               </button>
               <button
                 onClick={() => handleDemoFirstLogin("invited")}
                 className="rounded-xl border px-3 py-2 text-left transition-all hover:shadow-sm"
-                style={{ borderColor: "#DDD8D0", background: "rgba(31,58,95,0.04)" }}
+                style={{
+                  borderColor: "#DDD8D0",
+                  background: "rgba(31,58,95,0.04)",
+                }}
               >
                 <p
                   style={{
@@ -819,7 +909,13 @@ export function LoginPage() {
                 >
                   👤 Usuário Convidado
                 </p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10.5, color: "#9B8F83" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 10.5,
+                    color: "#9B8F83",
+                  }}
+                >
                   Aceitar convite de empresa
                 </p>
               </button>

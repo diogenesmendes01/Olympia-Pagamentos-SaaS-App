@@ -154,7 +154,12 @@ function ParticleCanvas() {
       window.removeEventListener("resize", resize);
     };
   }, []);
-  return <canvas ref={ref} className="pointer-events-none absolute inset-0 h-full w-full" />;
+  return (
+    <canvas
+      ref={ref}
+      className="pointer-events-none absolute inset-0 h-full w-full"
+    />
+  );
 }
 
 /* ══════════════════════════════════════════════════
@@ -255,7 +260,8 @@ function Card3D({ children, className = "", style = {} }: any) {
     ref.current!.style.transform = `perspective(700px) rotateX(${-y * 7}deg) rotateY(${x * 7}deg) translateY(-6px)`;
   }, []);
   const onLeave = useCallback(() => {
-    ref.current!.style.transform = "perspective(700px) rotateX(0) rotateY(0) translateY(0)";
+    ref.current!.style.transform =
+      "perspective(700px) rotateX(0) rotateY(0) translateY(0)";
   }, []);
   return (
     <div
@@ -436,7 +442,13 @@ export function LandingPage() {
       {/* Inject global CSS */}
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
-      <div style={{ fontFamily: "'Inter', sans-serif", background: "#fff", overflowX: "hidden" }}>
+      <div
+        style={{
+          fontFamily: "'Inter', sans-serif",
+          background: "#fff",
+          overflowX: "hidden",
+        }}
+      >
         {/* ═══════════════════════════════════════════
             NAVBAR
         ═══════════════════════════════════════════ */}
@@ -460,7 +472,12 @@ export function LandingPage() {
                 }}
               >
                 <span
-                  style={{ fontFamily: "'Cinzel', serif", fontSize: 15, fontWeight: 700, color: G }}
+                  style={{
+                    fontFamily: "'Cinzel', serif",
+                    fontSize: 15,
+                    fontWeight: 700,
+                    color: G,
+                  }}
                 >
                   O
                 </span>
@@ -493,21 +510,26 @@ export function LandingPage() {
             </a>
 
             <div className="ml-5 hidden items-center gap-0.5 lg:flex">
-              {["Soluções", "Boleto & PIX", "Contas a Pagar", "Integrações", "Preços", "Blog"].map(
-                (item) => (
-                  <a
-                    key={item}
-                    href="#"
-                    className="rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10"
-                    style={{
-                      color: scrolled ? "#374151" : "rgba(255,255,255,0.85)",
-                      textDecoration: "none",
-                    }}
-                  >
-                    {item}
-                  </a>
-                ),
-              )}
+              {[
+                "Soluções",
+                "Boleto & PIX",
+                "Contas a Pagar",
+                "Integrações",
+                "Preços",
+                "Blog",
+              ].map((item) => (
+                <a
+                  key={item}
+                  href="#"
+                  className="rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-white/10"
+                  style={{
+                    color: scrolled ? "#374151" : "rgba(255,255,255,0.85)",
+                    textDecoration: "none",
+                  }}
+                >
+                  {item}
+                </a>
+              ))}
             </div>
 
             <div className="ml-auto flex items-center gap-2">
@@ -538,9 +560,15 @@ export function LandingPage() {
                 }}
               >
                 {mobileOpen ? (
-                  <X className="h-5 w-5" style={{ color: scrolled ? P : "#fff" }} />
+                  <X
+                    className="h-5 w-5"
+                    style={{ color: scrolled ? P : "#fff" }}
+                  />
                 ) : (
-                  <Menu className="h-5 w-5" style={{ color: scrolled ? P : "#fff" }} />
+                  <Menu
+                    className="h-5 w-5"
+                    style={{ color: scrolled ? P : "#fff" }}
+                  />
                 )}
               </button>
             </div>
@@ -551,18 +579,23 @@ export function LandingPage() {
               className="space-y-1 border-t px-5 py-4 lg:hidden"
               style={{ background: "#fff", borderColor: "#E2E8F0" }}
             >
-              {["Soluções", "Boleto & PIX", "Contas a Pagar", "Integrações", "Preços", "Blog"].map(
-                (item) => (
-                  <a
-                    key={item}
-                    href="#"
-                    className="block rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-slate-50"
-                    style={{ color: "#374151", textDecoration: "none" }}
-                  >
-                    {item}
-                  </a>
-                ),
-              )}
+              {[
+                "Soluções",
+                "Boleto & PIX",
+                "Contas a Pagar",
+                "Integrações",
+                "Preços",
+                "Blog",
+              ].map((item) => (
+                <a
+                  key={item}
+                  href="#"
+                  className="block rounded-xl px-3 py-2.5 text-sm font-medium hover:bg-slate-50"
+                  style={{ color: "#374151", textDecoration: "none" }}
+                >
+                  {item}
+                </a>
+              ))}
               <div className="flex gap-2 pt-3">
                 <button
                   onClick={() => navigate("/login")}
@@ -615,7 +648,10 @@ export function LandingPage() {
                     border: `1px solid rgba(200,169,107,0.35)`,
                   }}
                 >
-                  <div className="h-1.5 w-1.5 rounded-full" style={{ background: G }} />
+                  <div
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ background: G }}
+                  />
                   <span
                     style={{
                       fontFamily: "'Inter', sans-serif",
@@ -642,9 +678,9 @@ export function LandingPage() {
                     maxWidth: 520,
                   }}
                 >
-                  Emita boleto registrado com Bolepix, receba com a segurança de um banco privado e
-                  tenha fluxo de caixa em tempo real. A plataforma brasileira que une tradição e
-                  tecnologia de ponta.
+                  Emita boleto registrado com Bolepix, receba com a segurança de
+                  um banco privado e tenha fluxo de caixa em tempo real. A
+                  plataforma brasileira que une tradição e tecnologia de ponta.
                 </p>
 
                 {/* CTAs */}
@@ -683,7 +719,11 @@ export function LandingPage() {
                         className="h-8 w-8 overflow-hidden rounded-full"
                         style={{ border: `2px solid ${G}` }}
                       >
-                        <ImageWithFallback src={p} alt="" className="h-full w-full object-cover" />
+                        <ImageWithFallback
+                          src={p}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
                       </div>
                     ))}
                   </div>
@@ -692,7 +732,11 @@ export function LandingPage() {
                       {Array(5)
                         .fill(0)
                         .map((_, i) => (
-                          <Star key={i} className="h-3 w-3 fill-current" style={{ color: G }} />
+                          <Star
+                            key={i}
+                            className="h-3 w-3 fill-current"
+                            style={{ color: G }}
+                          />
                         ))}
                     </div>
                     <p
@@ -714,7 +758,10 @@ export function LandingPage() {
                     "Cancelamento quando quiser",
                   ].map((t) => (
                     <div key={t} className="flex items-center gap-1">
-                      <CheckCircle className="h-3.5 w-3.5" style={{ color: "#22C55E" }} />
+                      <CheckCircle
+                        className="h-3.5 w-3.5"
+                        style={{ color: "#22C55E" }}
+                      />
                       <span
                         style={{
                           color: "rgba(200,215,235,0.65)",
@@ -728,7 +775,10 @@ export function LandingPage() {
                 </div>
 
                 {/* Partner badges */}
-                <div className="mt-7 pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                <div
+                  className="mt-7 pt-6"
+                  style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}
+                >
                   <p
                     style={{
                       fontFamily: "'Inter', sans-serif",
@@ -742,22 +792,27 @@ export function LandingPage() {
                     INTEGRADO COM
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {["Itaú", "Nubank", "Bradesco", "Open Finance", "Receita Federal", "LGPD"].map(
-                      (b) => (
-                        <span
-                          key={b}
-                          className="rounded-lg px-3 py-1 text-xs font-semibold"
-                          style={{
-                            background: "rgba(255,255,255,0.07)",
-                            border: "1px solid rgba(255,255,255,0.12)",
-                            color: "rgba(200,215,235,0.55)",
-                            fontFamily: "'Inter', sans-serif",
-                          }}
-                        >
-                          {b}
-                        </span>
-                      ),
-                    )}
+                    {[
+                      "Itaú",
+                      "Nubank",
+                      "Bradesco",
+                      "Open Finance",
+                      "Receita Federal",
+                      "LGPD",
+                    ].map((b) => (
+                      <span
+                        key={b}
+                        className="rounded-lg px-3 py-1 text-xs font-semibold"
+                        style={{
+                          background: "rgba(255,255,255,0.07)",
+                          border: "1px solid rgba(255,255,255,0.12)",
+                          color: "rgba(200,215,235,0.55)",
+                          fontFamily: "'Inter', sans-serif",
+                        }}
+                      >
+                        {b}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -786,9 +841,17 @@ export function LandingPage() {
                   {/* KPIs overlay */}
                   <div className="absolute right-3 bottom-4 left-3 grid grid-cols-3 gap-2">
                     {[
-                      { label: "Recebido Hoje", value: "R$ 84.200", color: "#22C55E" },
+                      {
+                        label: "Recebido Hoje",
+                        value: "R$ 84.200",
+                        color: "#22C55E",
+                      },
                       { label: "A Receber 30d", value: "R$ 342.000", color: G },
-                      { label: "Taxa Inadimp.", value: "2,1%", color: "#FF6B6B" },
+                      {
+                        label: "Taxa Inadimp.",
+                        value: "2,1%",
+                        color: "#FF6B6B",
+                      },
                     ].map((k) => (
                       <div
                         key={k.label}
@@ -836,7 +899,10 @@ export function LandingPage() {
                       className="flex h-9 w-9 items-center justify-center rounded-xl"
                       style={{ background: "rgba(0,144,122,0.15)" }}
                     >
-                      <QrCode className="h-5 w-5" style={{ color: "#00907A" }} />
+                      <QrCode
+                        className="h-5 w-5"
+                        style={{ color: "#00907A" }}
+                      />
                     </div>
                     <div>
                       <p
@@ -899,7 +965,10 @@ export function LandingPage() {
                 </div>
                 <p
                   className="mb-4 text-xs font-bold tracking-widest uppercase"
-                  style={{ color: "#EF4444", fontFamily: "'Inter', sans-serif" }}
+                  style={{
+                    color: "#EF4444",
+                    fontFamily: "'Inter', sans-serif",
+                  }}
                 >
                   Sem Olympia Pagamentos
                 </p>
@@ -912,7 +981,10 @@ export function LandingPage() {
                     "Fluxo de caixa imprevisível",
                   ].map((t) => (
                     <li key={t} className="flex items-center gap-2">
-                      <X className="h-4 w-4 flex-shrink-0" style={{ color: "#EF4444" }} />
+                      <X
+                        className="h-4 w-4 flex-shrink-0"
+                        style={{ color: "#EF4444" }}
+                      />
                       <span
                         style={{
                           fontFamily: "'Inter', sans-serif",
@@ -931,7 +1003,10 @@ export function LandingPage() {
               <div className="ol-reveal flex flex-col items-center gap-3 py-4">
                 <div
                   className="flex h-14 w-14 items-center justify-center rounded-full"
-                  style={{ background: P, boxShadow: `0 8px 28px rgba(31,58,95,0.3)` }}
+                  style={{
+                    background: P,
+                    boxShadow: `0 8px 28px rgba(31,58,95,0.3)`,
+                  }}
                 >
                   <ArrowRight className="h-7 w-7 text-white" />
                 </div>
@@ -957,11 +1032,17 @@ export function LandingPage() {
                   className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl"
                   style={{ background: "#DCFCE7" }}
                 >
-                  <CheckCircle className="h-5 w-5" style={{ color: "#16A34A" }} />
+                  <CheckCircle
+                    className="h-5 w-5"
+                    style={{ color: "#16A34A" }}
+                  />
                 </div>
                 <p
                   className="mb-4 text-xs font-bold tracking-widest uppercase"
-                  style={{ color: "#16A34A", fontFamily: "'Inter', sans-serif" }}
+                  style={{
+                    color: "#16A34A",
+                    fontFamily: "'Inter', sans-serif",
+                  }}
                 >
                   Com Olympia Pagamentos
                 </p>
@@ -1193,7 +1274,11 @@ export function LandingPage() {
                     <div className="absolute -top-3.5 left-5">
                       <span
                         className="rounded-full px-3 py-1 text-xs font-bold"
-                        style={{ background: G, color: P, fontFamily: "'Inter', sans-serif" }}
+                        style={{
+                          background: G,
+                          color: P,
+                          fontFamily: "'Inter', sans-serif",
+                        }}
                       >
                         {f.badge}
                       </span>
@@ -1318,7 +1403,10 @@ export function LandingPage() {
                 >
                   <div
                     className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl"
-                    style={{ background: `${s.color}15`, border: `1px solid ${s.color}35` }}
+                    style={{
+                      background: `${s.color}15`,
+                      border: `1px solid ${s.color}35`,
+                    }}
                   >
                     <s.Icon className="h-6 w-6" style={{ color: s.color }} />
                   </div>
@@ -1344,7 +1432,13 @@ export function LandingPage() {
                   >
                     {s.label}
                   </p>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#6B8BAF" }}>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 12,
+                      color: "#6B8BAF",
+                    }}
+                  >
                     {s.sub}
                   </p>
                 </div>
@@ -1359,7 +1453,8 @@ export function LandingPage() {
                   fontStyle: "italic",
                 }}
               >
-                "Em poucos dias, a Olympia Pagamentos elevou o padrão do nosso controle financeiro."
+                "Em poucos dias, a Olympia Pagamentos elevou o padrão do nosso
+                controle financeiro."
               </p>
               <p
                 style={{
@@ -1408,18 +1503,26 @@ export function LandingPage() {
                 {/* Gold accent top-left */}
                 <div
                   className="absolute top-0 left-0 h-1 w-32 rounded-r-full"
-                  style={{ background: `linear-gradient(90deg, ${G}, transparent)` }}
+                  style={{
+                    background: `linear-gradient(90deg, ${G}, transparent)`,
+                  }}
                 />
                 <div
                   className="absolute top-0 left-0 h-32 w-1 rounded-b-full"
-                  style={{ background: `linear-gradient(180deg, ${G}, transparent)` }}
+                  style={{
+                    background: `linear-gradient(180deg, ${G}, transparent)`,
+                  }}
                 />
 
                 <div className="mb-6 flex gap-1">
                   {Array(testimonials[slide].stars)
                     .fill(0)
                     .map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-current" style={{ color: G }} />
+                      <Star
+                        key={i}
+                        className="h-5 w-5 fill-current"
+                        style={{ color: G }}
+                      />
                     ))}
                 </div>
                 <blockquote
@@ -1473,12 +1576,18 @@ export function LandingPage() {
               <div className="mt-7 flex items-center justify-center gap-4">
                 <button
                   onClick={() => {
-                    setSlide((s) => (s - 1 + testimonials.length) % testimonials.length);
+                    setSlide(
+                      (s) =>
+                        (s - 1 + testimonials.length) % testimonials.length,
+                    );
                   }}
                   className="flex h-10 w-10 items-center justify-center rounded-full border transition-all hover:border-[#C8A96B]"
                   style={{ borderColor: "#E2E8F0" }}
                 >
-                  <ChevronLeft className="h-4 w-4" style={{ color: "#64748B" }} />
+                  <ChevronLeft
+                    className="h-4 w-4"
+                    style={{ color: "#64748B" }}
+                  />
                 </button>
                 <div className="flex gap-2">
                   {testimonials.map((_, i) => (
@@ -1503,7 +1612,10 @@ export function LandingPage() {
                   className="flex h-10 w-10 items-center justify-center rounded-full border transition-all hover:border-[#C8A96B]"
                   style={{ borderColor: "#E2E8F0" }}
                 >
-                  <ChevronRight className="h-4 w-4" style={{ color: "#64748B" }} />
+                  <ChevronRight
+                    className="h-4 w-4"
+                    style={{ color: "#64748B" }}
+                  />
                 </button>
               </div>
             </div>
@@ -1559,12 +1671,18 @@ export function LandingPage() {
                 <div
                   key={s.n}
                   className={`ol-reveal relative rounded-3xl border bg-white p-8 text-center ${s.delay}`}
-                  style={{ borderColor: "#E2E8F0", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}
+                  style={{
+                    borderColor: "#E2E8F0",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+                  }}
                 >
                   {/* Gold step circle */}
                   <div
                     className="absolute -top-5 left-1/2 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full"
-                    style={{ background: G, boxShadow: `0 4px 16px rgba(200,169,107,0.4)` }}
+                    style={{
+                      background: G,
+                      boxShadow: `0 4px 16px rgba(200,169,107,0.4)`,
+                    }}
                   >
                     <span
                       style={{
@@ -1595,7 +1713,11 @@ export function LandingPage() {
                     {s.title}
                   </h3>
                   <p
-                    style={{ fontFamily: "'Inter', sans-serif", fontSize: 13.5, color: "#64748B" }}
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 13.5,
+                      color: "#64748B",
+                    }}
                   >
                     {s.sub}
                   </p>
@@ -1695,7 +1817,10 @@ export function LandingPage() {
                     "Suporte por e-mail",
                   ].map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 flex-shrink-0" style={{ color: "#16A34A" }} />
+                      <CheckCircle
+                        className="h-4 w-4 flex-shrink-0"
+                        style={{ color: "#16A34A" }}
+                      />
                       <span
                         style={{
                           fontFamily: "'Inter', sans-serif",
@@ -1734,7 +1859,11 @@ export function LandingPage() {
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                   <span
                     className="rounded-full px-4 py-1.5 text-xs font-bold"
-                    style={{ background: G, color: P, fontFamily: "'Inter', sans-serif" }}
+                    style={{
+                      background: G,
+                      color: P,
+                      fontFamily: "'Inter', sans-serif",
+                    }}
                   >
                     MAIS ESCOLHIDO
                   </span>
@@ -1797,7 +1926,10 @@ export function LandingPage() {
                     "Suporte prioritário",
                   ].map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 flex-shrink-0" style={{ color: "#16A34A" }} />
+                      <CheckCircle
+                        className="h-4 w-4 flex-shrink-0"
+                        style={{ color: "#16A34A" }}
+                      />
                       <span
                         style={{
                           fontFamily: "'Inter', sans-serif",
@@ -1870,7 +2002,10 @@ export function LandingPage() {
                     "SSO + MFA avançado",
                   ].map((f) => (
                     <li key={f} className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 flex-shrink-0" style={{ color: G }} />
+                      <CheckCircle
+                        className="h-4 w-4 flex-shrink-0"
+                        style={{ color: G }}
+                      />
                       <span
                         style={{
                           fontFamily: "'Inter', sans-serif",
@@ -1893,10 +2028,12 @@ export function LandingPage() {
                     fontSize: 14,
                   }}
                   onMouseEnter={(e) =>
-                    (e.currentTarget.style.background = "rgba(200,169,107,0.25)")
+                    (e.currentTarget.style.background =
+                      "rgba(200,169,107,0.25)")
                   }
                   onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "rgba(200,169,107,0.15)")
+                    (e.currentTarget.style.background =
+                      "rgba(200,169,107,0.15)")
                   }
                 >
                   <PhoneCall className="h-4 w-4" />
@@ -1907,9 +2044,14 @@ export function LandingPage() {
 
             <p
               className="ol-reveal mt-8 text-center"
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: 13.5, color: "#94A3B8" }}
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 13.5,
+                color: "#94A3B8",
+              }}
             >
-              30 dias grátis no Pro e Enterprise · Sem contrato anual · Cancele quando quiser
+              30 dias grátis no Pro e Enterprise · Sem contrato anual · Cancele
+              quando quiser
             </p>
           </div>
         </section>
@@ -1959,9 +2101,15 @@ export function LandingPage() {
                       {f.q}
                     </span>
                     {faqOpen === i ? (
-                      <ChevronUp className="h-5 w-5 flex-shrink-0" style={{ color: G }} />
+                      <ChevronUp
+                        className="h-5 w-5 flex-shrink-0"
+                        style={{ color: G }}
+                      />
                     ) : (
-                      <ChevronDown className="h-5 w-5 flex-shrink-0" style={{ color: "#94A3B8" }} />
+                      <ChevronDown
+                        className="h-5 w-5 flex-shrink-0"
+                        style={{ color: "#94A3B8" }}
+                      />
                     )}
                   </button>
                   {faqOpen === i && (
@@ -2004,7 +2152,12 @@ export function LandingPage() {
               }}
             >
               <span
-                style={{ fontFamily: "'Cinzel', serif", fontSize: 26, fontWeight: 700, color: G }}
+                style={{
+                  fontFamily: "'Cinzel', serif",
+                  fontSize: 26,
+                  fontWeight: 700,
+                  color: G,
+                }}
               >
                 O
               </span>
@@ -2030,8 +2183,8 @@ export function LandingPage() {
                 marginBottom: 36,
               }}
             >
-              Crie sua conta em 5 minutos com CNPJ e emita seu primeiro Bolepix ainda hoje. Sem
-              cartão, sem burocracia.
+              Crie sua conta em 5 minutos com CNPJ e emita seu primeiro Bolepix
+              ainda hoje. Sem cartão, sem burocracia.
             </p>
             <div className="flex flex-col justify-center gap-3 sm:flex-row">
               <button
@@ -2071,7 +2224,10 @@ export function LandingPage() {
                 <div className="mb-4 flex items-center gap-2.5">
                   <div
                     className="flex h-9 w-9 items-center justify-center rounded-xl"
-                    style={{ background: "rgba(200,169,107,0.1)", border: `1px solid ${G}` }}
+                    style={{
+                      background: "rgba(200,169,107,0.1)",
+                      border: `1px solid ${G}`,
+                    }}
                   >
                     <span
                       style={{
@@ -2118,8 +2274,8 @@ export function LandingPage() {
                     maxWidth: 240,
                   }}
                 >
-                  Plataforma financeira completa para PMEs brasileiras. Boleto, Pix, fluxo de caixa
-                  e conciliação em um só lugar.
+                  Plataforma financeira completa para PMEs brasileiras. Boleto,
+                  Pix, fluxo de caixa e conciliação em um só lugar.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {[
@@ -2166,11 +2322,23 @@ export function LandingPage() {
                 },
                 {
                   title: "Empresa",
-                  links: ["Sobre nós", "Blog", "Casos de uso", "Parceiros", "Carreiras"],
+                  links: [
+                    "Sobre nós",
+                    "Blog",
+                    "Casos de uso",
+                    "Parceiros",
+                    "Carreiras",
+                  ],
                 },
                 {
                   title: "Suporte",
-                  links: ["Central de Ajuda", "Documentação API", "Status", "Contato", "WhatsApp"],
+                  links: [
+                    "Central de Ajuda",
+                    "Documentação API",
+                    "Status",
+                    "Contato",
+                    "WhatsApp",
+                  ],
                 },
               ].map((col) => (
                 <div key={col.title}>
@@ -2197,8 +2365,12 @@ export function LandingPage() {
                             color: "#334155",
                             textDecoration: "none",
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = G)}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "#334155")}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.color = G)
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.color = "#334155")
+                          }
                         >
                           {link}
                         </a>
@@ -2214,7 +2386,13 @@ export function LandingPage() {
               style={{ borderColor: "rgba(255,255,255,0.06)" }}
             >
               <div>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#1E293B" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12.5,
+                    color: "#1E293B",
+                  }}
+                >
                   © Olympia Pagamentos 2026 – Todos os direitos reservados
                 </p>
                 <p
@@ -2229,22 +2407,26 @@ export function LandingPage() {
                 </p>
               </div>
               <div className="flex gap-5">
-                {["Privacidade", "Termos de Uso", "Cookies", "LGPD"].map((l) => (
-                  <a
-                    key={l}
-                    href="#"
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: 12.5,
-                      color: "#1E293B",
-                      textDecoration: "none",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = G)}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "#1E293B")}
-                  >
-                    {l}
-                  </a>
-                ))}
+                {["Privacidade", "Termos de Uso", "Cookies", "LGPD"].map(
+                  (l) => (
+                    <a
+                      key={l}
+                      href="#"
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: 12.5,
+                        color: "#1E293B",
+                        textDecoration: "none",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = G)}
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.color = "#1E293B")
+                      }
+                    >
+                      {l}
+                    </a>
+                  ),
+                )}
               </div>
             </div>
           </div>
@@ -2276,7 +2458,10 @@ export function LandingPage() {
                   setVideoOpen(false);
                 }}
                 className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full"
-                style={{ background: "rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.2)" }}
+                style={{
+                  background: "rgba(0,0,0,0.6)",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                }}
               >
                 <X className="h-4 w-4 text-white" />
               </button>

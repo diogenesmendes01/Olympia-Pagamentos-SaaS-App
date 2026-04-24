@@ -88,7 +88,9 @@ export function OwnerOnboarding({ onComplete }: Props) {
     setInvites((v) => v.filter((_, idx) => idx !== i));
   };
   const updateInvite = (i: number, key: "email" | "role", val: string) => {
-    setInvites((v) => v.map((inv, idx) => (idx === i ? { ...inv, [key]: val } : inv)));
+    setInvites((v) =>
+      v.map((inv, idx) => (idx === i ? { ...inv, [key]: val } : inv)),
+    );
   };
 
   const connectBank = async (name: string) => {
@@ -105,7 +107,8 @@ export function OwnerOnboarding({ onComplete }: Props) {
     onComplete();
   };
 
-  const inputCls = "w-full px-4 py-2.5 rounded-xl border focus:outline-none transition-all";
+  const inputCls =
+    "w-full px-4 py-2.5 rounded-xl border focus:outline-none transition-all";
   const inputSty = {
     fontFamily: "'Inter', sans-serif",
     fontSize: 13,
@@ -137,10 +140,18 @@ export function OwnerOnboarding({ onComplete }: Props) {
             <div className="flex items-center gap-2.5">
               <div
                 className="flex h-8 w-8 items-center justify-center rounded-xl"
-                style={{ background: "rgba(200,169,107,0.15)", border: `1.5px solid ${G}` }}
+                style={{
+                  background: "rgba(200,169,107,0.15)",
+                  border: `1.5px solid ${G}`,
+                }}
               >
                 <span
-                  style={{ fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 700, color: G }}
+                  style={{
+                    fontFamily: "'Cinzel', serif",
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: G,
+                  }}
                 >
                   O
                 </span>
@@ -259,8 +270,8 @@ export function OwnerOnboarding({ onComplete }: Props) {
                   margin: "0 auto 24px",
                 }}
               >
-                Vamos configurar sua empresa em poucos passos para que você possa começar a
-                gerenciar seus pagamentos com total controle.
+                Vamos configurar sua empresa em poucos passos para que você
+                possa começar a gerenciar seus pagamentos com total controle.
               </p>
               <div className="mb-6 grid grid-cols-2 gap-3 text-left">
                 {[
@@ -279,12 +290,19 @@ export function OwnerOnboarding({ onComplete }: Props) {
                     title: "Conecte seu Banco",
                     desc: "Open Finance integrado e seguro",
                   },
-                  { icon: Zap, title: "Comece em minutos", desc: "Sem burocracia, setup rápido" },
+                  {
+                    icon: Zap,
+                    title: "Comece em minutos",
+                    desc: "Sem burocracia, setup rápido",
+                  },
                 ].map(({ icon: Icon, title, desc }) => (
                   <div
                     key={title}
                     className="flex items-start gap-3 rounded-2xl p-4"
-                    style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}
+                    style={{
+                      background: "#F8FAFC",
+                      border: "1px solid #E2E8F0",
+                    }}
                   >
                     <div
                       className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl"
@@ -333,7 +351,13 @@ export function OwnerOnboarding({ onComplete }: Props) {
                 >
                   Dados da Empresa
                 </h2>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12.5,
+                    color: "#64748B",
+                  }}
+                >
                   Essas informações serão usadas nas notas fiscais e cobranças
                 </p>
               </div>
@@ -493,7 +517,10 @@ export function OwnerOnboarding({ onComplete }: Props) {
                     onBlur={onB}
                     value={company.faturamento}
                     onChange={(e) => {
-                      setCompany((c) => ({ ...c, faturamento: e.target.value }));
+                      setCompany((c) => ({
+                        ...c,
+                        faturamento: e.target.value,
+                      }));
                     }}
                   >
                     <option value="">Selecione…</option>
@@ -528,7 +555,13 @@ export function OwnerOnboarding({ onComplete }: Props) {
                 >
                   Convide sua Equipe
                 </h2>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12.5,
+                    color: "#64748B",
+                  }}
+                >
                   Os convidados receberão um e-mail com link de acesso
                 </p>
               </div>
@@ -572,7 +605,10 @@ export function OwnerOnboarding({ onComplete }: Props) {
                       }}
                       className="flex-shrink-0 rounded-xl p-2 hover:bg-slate-100"
                     >
-                      <Trash2 className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                      <Trash2
+                        className="h-4 w-4"
+                        style={{ color: "#94A3B8" }}
+                      />
                     </button>
                   )}
                 </div>
@@ -621,8 +657,15 @@ export function OwnerOnboarding({ onComplete }: Props) {
                 >
                   Conecte seu Banco
                 </h2>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
-                  Integração segura via Open Finance — autorizada pelo Banco Central
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12.5,
+                    color: "#64748B",
+                  }}
+                >
+                  Integração segura via Open Finance — autorizada pelo Banco
+                  Central
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-3">
@@ -645,7 +688,10 @@ export function OwnerOnboarding({ onComplete }: Props) {
                     >
                       <div
                         className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white"
-                        style={{ background: bank.color, fontFamily: "'Inter', sans-serif" }}
+                        style={{
+                          background: bank.color,
+                          fontFamily: "'Inter', sans-serif",
+                        }}
                       >
                         {bank.initial}
                       </div>
@@ -675,7 +721,10 @@ export function OwnerOnboarding({ onComplete }: Props) {
                         </p>
                       </div>
                       {connected && (
-                        <CheckCircle className="h-4 w-4 flex-shrink-0" style={{ color: SUCCESS }} />
+                        <CheckCircle
+                          className="h-4 w-4 flex-shrink-0"
+                          style={{ color: SUCCESS }}
+                        />
                       )}
                     </button>
                   );
@@ -699,7 +748,10 @@ export function OwnerOnboarding({ onComplete }: Props) {
             <div className="py-4 text-center">
               <div
                 className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full"
-                style={{ background: SUCCESS_BG, border: `3px solid ${SUCCESS}` }}
+                style={{
+                  background: SUCCESS_BG,
+                  border: `3px solid ${SUCCESS}`,
+                }}
               >
                 <CheckCircle className="h-10 w-10" style={{ color: SUCCESS }} />
               </div>
@@ -724,8 +776,8 @@ export function OwnerOnboarding({ onComplete }: Props) {
                   margin: "0 auto 24px",
                 }}
               >
-                Sua empresa está configurada. Comece agora criando sua primeira cobrança ou
-                conectando mais integrações.
+                Sua empresa está configurada. Comece agora criando sua primeira
+                cobrança ou conectando mais integrações.
               </p>
               <div className="mx-auto mb-6 max-w-xs space-y-2 text-left">
                 {[
@@ -746,9 +798,15 @@ export function OwnerOnboarding({ onComplete }: Props) {
                       style={{ background: item.done ? SUCCESS_BG : "#F1F5F9" }}
                     >
                       {item.done ? (
-                        <CheckCircle className="h-3.5 w-3.5" style={{ color: SUCCESS }} />
+                        <CheckCircle
+                          className="h-3.5 w-3.5"
+                          style={{ color: SUCCESS }}
+                        />
                       ) : (
-                        <div className="h-2 w-2 rounded-full" style={{ background: "#CBD5E1" }} />
+                        <div
+                          className="h-2 w-2 rounded-full"
+                          style={{ background: "#CBD5E1" }}
+                        />
                       )}
                     </div>
                     <span

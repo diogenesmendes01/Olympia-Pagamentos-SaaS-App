@@ -35,15 +35,25 @@ import { toast } from "sonner";
 const roleConfig: Record<string, { bg: string; text: string; desc: string }> = {
   Administrador: { bg: "#EEF3F8", text: P, desc: "Acesso total ao sistema" },
   Financeiro: { bg: "#F5F1FF", text: "#6B4BAF", desc: "Tudo exceto usuários" },
-  Operacional: { bg: SUCCESS_BG, text: SUCCESS, desc: "Recebíveis e pagáveis + relatórios" },
+  Operacional: {
+    bg: SUCCESS_BG,
+    text: SUCCESS,
+    desc: "Recebíveis e pagáveis + relatórios",
+  },
   Visualizador: { bg: "#F1F5F9", text: "#64748B", desc: "Apenas leitura" },
-  "Contador Externo": { bg: "#FDF8EE", text: G, desc: "Relatórios fiscais + leitura" },
+  "Contador Externo": {
+    bg: "#FDF8EE",
+    text: G,
+    desc: "Relatórios fiscais + leitura",
+  },
 };
 
 export function UsersPage() {
   const [search, setSearch] = useState("");
   const [showInvite, setShowInvite] = useState(false);
-  const [activeTab, setActiveTab] = useState<"users" | "audit" | "sessions">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "audit" | "sessions">(
+    "users",
+  );
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("Financeiro");
@@ -71,7 +81,13 @@ export function UsersPage() {
           >
             Gestão de Usuários
           </h1>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "#64748B",
+            }}
+          >
             Controle de acesso, perfis e auditoria
           </p>
         </div>
@@ -97,7 +113,12 @@ export function UsersPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[
-          { label: "Total de Usuários", value: users.length, color: P, Icon: Users },
+          {
+            label: "Total de Usuários",
+            value: users.length,
+            color: P,
+            Icon: Users,
+          },
           {
             label: "Ativos",
             value: users.filter((u) => u.status === "ativo").length,
@@ -139,7 +160,13 @@ export function UsersPage() {
               >
                 {s.value}
               </p>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#64748B" }}>
+              <p
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12,
+                  color: "#64748B",
+                }}
+              >
                 {s.label}
               </p>
             </div>
@@ -148,7 +175,10 @@ export function UsersPage() {
       </div>
 
       {/* Tabs */}
-      <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid #E2E8F0" }}>
+      <div
+        className="overflow-hidden rounded-2xl bg-white"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
         <div className="flex border-b" style={{ borderColor: "#F1F5F9" }}>
           {(
             [
@@ -168,7 +198,10 @@ export function UsersPage() {
                 fontSize: 13.5,
                 fontWeight: 600,
                 color: activeTab === tab.id ? P : "#94A3B8",
-                borderBottom: activeTab === tab.id ? `2.5px solid ${P}` : "2.5px solid transparent",
+                borderBottom:
+                  activeTab === tab.id
+                    ? `2.5px solid ${P}`
+                    : "2.5px solid transparent",
                 background: "transparent",
               }}
             >
@@ -193,7 +226,11 @@ export function UsersPage() {
                   }}
                   placeholder="Buscar por nome, e-mail ou perfil..."
                   className="flex-1 bg-transparent focus:outline-none"
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#374151" }}
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 13,
+                    color: "#374151",
+                  }}
                 />
               </div>
             </div>
@@ -208,7 +245,10 @@ export function UsersPage() {
                     <div
                       className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-sm"
                       style={{
-                        background: user.status === "inativo" ? "#F1F5F9" : "rgba(31,58,95,0.08)",
+                        background:
+                          user.status === "inativo"
+                            ? "#F1F5F9"
+                            : "rgba(31,58,95,0.08)",
                         border:
                           user.status === "inativo"
                             ? "1px solid #E2E8F0"
@@ -227,7 +267,8 @@ export function UsersPage() {
                             fontFamily: "'Inter', sans-serif",
                             fontSize: 13.5,
                             fontWeight: 600,
-                            color: user.status === "inativo" ? "#94A3B8" : "#1E293B",
+                            color:
+                              user.status === "inativo" ? "#94A3B8" : "#1E293B",
                           }}
                         >
                           {user.nome}
@@ -286,7 +327,10 @@ export function UsersPage() {
                           className="flex items-center gap-1 rounded-lg px-2 py-0.5"
                           style={{ background: SUCCESS_BG }}
                         >
-                          <Shield className="h-3 w-3" style={{ color: SUCCESS }} />
+                          <Shield
+                            className="h-3 w-3"
+                            style={{ color: SUCCESS }}
+                          />
                           <span
                             style={{
                               fontFamily: "'Inter', sans-serif",
@@ -303,7 +347,10 @@ export function UsersPage() {
                           className="flex items-center gap-1 rounded-lg px-2 py-0.5"
                           style={{ background: DANGER_BG }}
                         >
-                          <AlertTriangle className="h-3 w-3" style={{ color: DANGER }} />
+                          <AlertTriangle
+                            className="h-3 w-3"
+                            style={{ color: DANGER }}
+                          />
                           <span
                             style={{
                               fontFamily: "'Inter', sans-serif",
@@ -345,7 +392,10 @@ export function UsersPage() {
                         }}
                         className="rounded-lg p-1.5 hover:bg-slate-100"
                       >
-                        <MoreHorizontal className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                        <MoreHorizontal
+                          className="h-4 w-4"
+                          style={{ color: "#94A3B8" }}
+                        />
                       </button>
                       {openMenu === user.id && (
                         <div
@@ -410,13 +460,19 @@ export function UsersPage() {
                             >
                               <item.icon
                                 className="h-3.5 w-3.5"
-                                style={{ color: (item as any).danger ? DANGER : "#94A3B8" }}
+                                style={{
+                                  color: (item as any).danger
+                                    ? DANGER
+                                    : "#94A3B8",
+                                }}
                               />
                               <span
                                 style={{
                                   fontFamily: "'Inter', sans-serif",
                                   fontSize: 12.5,
-                                  color: (item as any).danger ? DANGER : "#374151",
+                                  color: (item as any).danger
+                                    ? DANGER
+                                    : "#374151",
                                 }}
                               >
                                 {item.label}
@@ -463,7 +519,10 @@ export function UsersPage() {
             </div>
             <div className="divide-y" style={{ borderColor: "#F8FAFC" }}>
               {auditLog.map((log) => (
-                <div key={log.id} className="flex items-start gap-4 px-5 py-4 hover:bg-slate-50">
+                <div
+                  key={log.id}
+                  className="flex items-start gap-4 px-5 py-4 hover:bg-slate-50"
+                >
                   <div
                     className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl"
                     style={{ background: "#EEF2F9" }}
@@ -488,8 +547,11 @@ export function UsersPage() {
                         color: "#94A3B8",
                       }}
                     >
-                      Por <span style={{ color: P, fontWeight: 600 }}>{log.usuario}</span> · IP:{" "}
-                      {log.ip}
+                      Por{" "}
+                      <span style={{ color: P, fontWeight: 600 }}>
+                        {log.usuario}
+                      </span>{" "}
+                      · IP: {log.ip}
                     </p>
                   </div>
                   <p
@@ -510,8 +572,17 @@ export function UsersPage() {
 
         {activeTab === "sessions" && (
           <div>
-            <div className="border-b px-5 py-3" style={{ borderColor: "#F8FAFC" }}>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#64748B" }}>
+            <div
+              className="border-b px-5 py-3"
+              style={{ borderColor: "#F8FAFC" }}
+            >
+              <p
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12,
+                  color: "#64748B",
+                }}
+              >
                 Sessões ativas de Rafael Oliveira
               </p>
             </div>
@@ -547,7 +618,10 @@ export function UsersPage() {
                   className="flex h-8 w-8 items-center justify-center rounded-xl"
                   style={{ background: s.current ? "#EEF2F9" : "#F8FAFC" }}
                 >
-                  <Smartphone className="h-4 w-4" style={{ color: s.current ? P : "#94A3B8" }} />
+                  <Smartphone
+                    className="h-4 w-4"
+                    style={{ color: s.current ? P : "#94A3B8" }}
+                  />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
@@ -578,13 +652,23 @@ export function UsersPage() {
                     )}
                   </div>
                   <p
-                    style={{ fontFamily: "'Inter', sans-serif", fontSize: 11.5, color: "#94A3B8" }}
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 11.5,
+                      color: "#94A3B8",
+                    }}
                   >
                     {s.ip} · {s.location}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#64748B" }}>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 12,
+                      color: "#64748B",
+                    }}
+                  >
                     {s.time}
                   </p>
                   {!s.current && (
@@ -608,7 +692,10 @@ export function UsersPage() {
       </div>
 
       {/* Roles table */}
-      <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid #E2E8F0" }}>
+      <div
+        className="overflow-hidden rounded-2xl bg-white"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
         <div className="border-b px-5 py-4" style={{ borderColor: "#F1F5F9" }}>
           <h3
             style={{
@@ -624,7 +711,12 @@ export function UsersPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #F1F5F9" }}>
+              <tr
+                style={{
+                  background: "#F8FAFC",
+                  borderBottom: "1px solid #F1F5F9",
+                }}
+              >
                 {[
                   "Perfil",
                   "Recebíveis",
@@ -652,11 +744,51 @@ export function UsersPage() {
             </thead>
             <tbody>
               {[
-                ["Administrador", "total", "total", "total", "total", "total", "total"],
-                ["Financeiro", "total", "total", "total", "none", "none", "total"],
-                ["Operacional", "total", "write", "read", "none", "none", "none"],
-                ["Visualizador", "read", "read", "read", "none", "none", "none"],
-                ["Contador Externo", "read", "read", "total", "none", "none", "total"],
+                [
+                  "Administrador",
+                  "total",
+                  "total",
+                  "total",
+                  "total",
+                  "total",
+                  "total",
+                ],
+                [
+                  "Financeiro",
+                  "total",
+                  "total",
+                  "total",
+                  "none",
+                  "none",
+                  "total",
+                ],
+                [
+                  "Operacional",
+                  "total",
+                  "write",
+                  "read",
+                  "none",
+                  "none",
+                  "none",
+                ],
+                [
+                  "Visualizador",
+                  "read",
+                  "read",
+                  "read",
+                  "none",
+                  "none",
+                  "none",
+                ],
+                [
+                  "Contador Externo",
+                  "read",
+                  "read",
+                  "total",
+                  "none",
+                  "none",
+                  "total",
+                ],
               ].map(([role, ...perms]) => (
                 <tr
                   key={role}
@@ -678,17 +810,33 @@ export function UsersPage() {
                   {perms.map((p, i) => (
                     <td key={i} className="px-4 py-3">
                       {p === "total" && (
-                        <span className="inline-flex items-center gap-1" style={{ color: SUCCESS }}>
+                        <span
+                          className="inline-flex items-center gap-1"
+                          style={{ color: SUCCESS }}
+                        >
                           <CheckCircle className="h-3.5 w-3.5" />
-                          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12 }}>
+                          <span
+                            style={{
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: 12,
+                            }}
+                          >
                             Total
                           </span>
                         </span>
                       )}
                       {p === "write" && (
-                        <span className="inline-flex items-center gap-1" style={{ color: P }}>
+                        <span
+                          className="inline-flex items-center gap-1"
+                          style={{ color: P }}
+                        >
                           <CheckCircle className="h-3.5 w-3.5" />
-                          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12 }}>
+                          <span
+                            style={{
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: 12,
+                            }}
+                          >
                             Criar
                           </span>
                         </span>
@@ -699,7 +847,12 @@ export function UsersPage() {
                           style={{ color: "#64748B" }}
                         >
                           <Eye className="h-3.5 w-3.5" />
-                          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12 }}>
+                          <span
+                            style={{
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: 12,
+                            }}
+                          >
                             Ver
                           </span>
                         </span>
@@ -885,7 +1038,11 @@ export function UsersPage() {
                 />
                 <label
                   htmlFor="forceMfa"
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12.5,
+                    color: "#374151",
+                  }}
                 >
                   Exigir MFA no primeiro acesso
                 </label>
@@ -909,7 +1066,9 @@ export function UsersPage() {
               <button
                 onClick={() => {
                   setShowInvite(false);
-                  toast.success(`Convite enviado para ${inviteEmail || "o usuário"}!`);
+                  toast.success(
+                    `Convite enviado para ${inviteEmail || "o usuário"}!`,
+                  );
                   setInviteEmail("");
                 }}
                 className="flex-1 rounded-xl py-2.5 text-white transition-all"

@@ -28,17 +28,30 @@ import {
 } from "../styles/tokens";
 
 const fmt = (v: number) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
+  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+    v,
+  );
 
-const statusConfig: Record<string, { label: string; bg: string; text: string; icon: any }> = {
+const statusConfig: Record<
+  string,
+  { label: string; bg: string; text: string; icon: any }
+> = {
   pago: { label: "Pago", bg: SUCCESS_BG, text: SUCCESS, icon: CheckCircle },
   pendente: { label: "Pendente", bg: "#EEF3F8", text: P, icon: Clock },
   vencido: { label: "Vencido", bg: DANGER_BG, text: DANGER, icon: XCircle },
   agendado: { label: "Agendado", bg: "#F5F1FF", text: "#6B4BAF", icon: Clock },
-  aprovacao: { label: "Em Aprovação", bg: WARNING_BG, text: WARNING, icon: AlertTriangle },
+  aprovacao: {
+    label: "Em Aprovação",
+    bg: WARNING_BG,
+    text: WARNING,
+    icon: AlertTriangle,
+  },
 };
 
-const approvalConfig: Record<string, { label: string; bg: string; text: string }> = {
+const approvalConfig: Record<
+  string,
+  { label: string; bg: string; text: string }
+> = {
   aprovado: { label: "Aprovado", bg: SUCCESS_BG, text: SUCCESS },
   pendente: { label: "Ag. Aprovação", bg: WARNING_BG, text: WARNING },
   rejeitado: { label: "Rejeitado", bg: DANGER_BG, text: DANGER },
@@ -70,7 +83,8 @@ export function PayablesPage() {
       p.id.toLowerCase().includes(search.toLowerCase()) ||
       p.descricao.toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === "todos" || p.status === statusFilter;
-    const matchCat = categoryFilter === "todos" || p.categoria === categoryFilter;
+    const matchCat =
+      categoryFilter === "todos" || p.categoria === categoryFilter;
     return matchSearch && matchStatus && matchCat;
   });
 
@@ -80,7 +94,9 @@ export function PayablesPage() {
   const totalVencido = payables
     .filter((p) => p.status === "vencido")
     .reduce((s, p) => s + p.valor, 0);
-  const totalPago = payables.filter((p) => p.status === "pago").reduce((s, p) => s + p.valor, 0);
+  const totalPago = payables
+    .filter((p) => p.status === "pago")
+    .reduce((s, p) => s + p.valor, 0);
   const totalAprovacao = payables
     .filter((p) => p.aprovacao === "pendente")
     .reduce((s, p) => s + p.valor, 0);
@@ -109,7 +125,13 @@ export function PayablesPage() {
           >
             Contas a Pagar
           </h1>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "#64748B",
+            }}
+          >
             Fornecedores, impostos, salários e obrigações
           </p>
         </div>
@@ -122,7 +144,13 @@ export function PayablesPage() {
             style={{ border: "1px solid #E2E8F0" }}
           >
             <Layers className="h-3.5 w-3.5" style={{ color: "#64748B" }} />
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}>
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12.5,
+                color: "#374151",
+              }}
+            >
               Pagamento em Lote
             </span>
           </button>
@@ -132,7 +160,13 @@ export function PayablesPage() {
             style={{ border: "1px solid #E2E8F0" }}
           >
             <Download className="h-3.5 w-3.5" style={{ color: "#64748B" }} />
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}>
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12.5,
+                color: "#374151",
+              }}
+            >
               CNAB
             </span>
           </button>
@@ -162,7 +196,10 @@ export function PayablesPage() {
           className="flex items-center gap-3 rounded-2xl border px-4 py-3"
           style={{ background: WARNING_BG, borderColor: WARNING_BORDER }}
         >
-          <AlertTriangle className="h-4 w-4 flex-shrink-0" style={{ color: WARNING }} />
+          <AlertTriangle
+            className="h-4 w-4 flex-shrink-0"
+            style={{ color: WARNING }}
+          />
           <div className="flex-1">
             <p
               style={{
@@ -172,10 +209,16 @@ export function PayablesPage() {
                 color: "#92400E",
               }}
             >
-              {payables.filter((p) => p.aprovacao === "pendente").length} pagamento(s) aguardando
-              aprovação
+              {payables.filter((p) => p.aprovacao === "pendente").length}{" "}
+              pagamento(s) aguardando aprovação
             </p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#B45309" }}>
+            <p
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12,
+                color: "#B45309",
+              }}
+            >
               Total: {fmt(totalAprovacao)}
             </p>
           </div>
@@ -203,8 +246,18 @@ export function PayablesPage() {
             color: P,
             sub: `${payables.filter((p) => p.status === "pendente").length} contas`,
           },
-          { label: "Vencido", value: fmt(totalVencido), color: DANGER, sub: `em atraso` },
-          { label: "Pago no Mês", value: fmt(totalPago), color: SUCCESS, sub: `quitados` },
+          {
+            label: "Vencido",
+            value: fmt(totalVencido),
+            color: DANGER,
+            sub: `em atraso`,
+          },
+          {
+            label: "Pago no Mês",
+            value: fmt(totalPago),
+            color: SUCCESS,
+            sub: `quitados`,
+          },
           {
             label: "Em Aprovação",
             value: fmt(totalAprovacao),
@@ -252,7 +305,10 @@ export function PayablesPage() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-2xl bg-white p-4" style={{ border: "1px solid #E2E8F0" }}>
+      <div
+        className="rounded-2xl bg-white p-4"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
         <div className="flex flex-col gap-3 sm:flex-row">
           <div
             className="flex flex-1 items-center gap-2 rounded-xl border px-3 py-2"
@@ -267,7 +323,11 @@ export function PayablesPage() {
               }}
               placeholder="Buscar fornecedor, ID, descrição..."
               className="flex-1 bg-transparent focus:outline-none"
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#374151" }}
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 13,
+                color: "#374151",
+              }}
             />
           </div>
           <div className="flex gap-2">
@@ -335,7 +395,9 @@ export function PayablesPage() {
               {selected.size} selecionada(s)
             </span>
             <button
-              onClick={() => toast.success(`${selected.size} pagamentos agendados!`)}
+              onClick={() =>
+                toast.success(`${selected.size} pagamentos agendados!`)
+              }
               className="flex items-center gap-1.5 rounded-lg px-3 py-1 text-white"
               style={{
                 background: P,
@@ -352,17 +414,27 @@ export function PayablesPage() {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid #E2E8F0" }}>
+      <div
+        className="overflow-hidden rounded-2xl bg-white"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #F1F5F9" }}>
+              <tr
+                style={{
+                  background: "#F8FAFC",
+                  borderBottom: "1px solid #F1F5F9",
+                }}
+              >
                 <th className="px-4 py-3">
                   <input
                     type="checkbox"
                     onChange={(e) => {
                       setSelected(
-                        e.target.checked ? new Set(filtered.map((p) => p.id)) : new Set(),
+                        e.target.checked
+                          ? new Set(filtered.map((p) => p.id))
+                          : new Set(),
                       );
                     }}
                     className="rounded"
@@ -578,7 +650,10 @@ export function PayablesPage() {
                           }}
                           className="rounded-lg p-1.5 hover:bg-slate-100"
                         >
-                          <MoreHorizontal className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                          <MoreHorizontal
+                            className="h-4 w-4"
+                            style={{ color: "#94A3B8" }}
+                          />
                         </button>
                         {openMenu === pay.id && (
                           <div
@@ -627,13 +702,19 @@ export function PayablesPage() {
                               >
                                 <item.icon
                                   className="h-3.5 w-3.5"
-                                  style={{ color: (item as any).danger ? DANGER : "#94A3B8" }}
+                                  style={{
+                                    color: (item as any).danger
+                                      ? DANGER
+                                      : "#94A3B8",
+                                  }}
                                 />
                                 <span
                                   style={{
                                     fontFamily: "'Inter', sans-serif",
                                     fontSize: 12.5,
-                                    color: (item as any).danger ? DANGER : "#374151",
+                                    color: (item as any).danger
+                                      ? DANGER
+                                      : "#374151",
                                   }}
                                 >
                                   {item.label}
@@ -654,7 +735,13 @@ export function PayablesPage() {
           className="flex items-center justify-between border-t px-5 py-3"
           style={{ borderColor: "#F1F5F9" }}
         >
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#94A3B8" }}>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12,
+              color: "#94A3B8",
+            }}
+          >
             Exibindo {filtered.length} de {payables.length} contas
           </p>
           <div className="flex gap-1">
@@ -706,8 +793,16 @@ export function PayablesPage() {
             </div>
             <div className="space-y-4 p-6">
               {[
-                { label: "Fornecedor / CNPJ", placeholder: "Buscar fornecedor...", type: "text" },
-                { label: "Descrição", placeholder: "Ex: Aluguel - Maio/26", type: "text" },
+                {
+                  label: "Fornecedor / CNPJ",
+                  placeholder: "Buscar fornecedor...",
+                  type: "text",
+                },
+                {
+                  label: "Descrição",
+                  placeholder: "Ex: Aluguel - Maio/26",
+                  type: "text",
+                },
                 { label: "Valor (R$)", placeholder: "0,00", type: "text" },
                 { label: "Vencimento", placeholder: "", type: "date" },
               ].map((f) => (
@@ -817,7 +912,11 @@ export function PayablesPage() {
                 />
                 <label
                   htmlFor="needApproval"
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12.5,
+                    color: "#374151",
+                  }}
                 >
                   Requer aprovação antes de pagar
                 </label>
@@ -911,11 +1010,20 @@ export function PayablesPage() {
                   }}
                 >
                   {fmt(
-                    payables.filter((p) => p.status !== "pago").reduce((s, p) => s + p.valor, 0),
+                    payables
+                      .filter((p) => p.status !== "pago")
+                      .reduce((s, p) => s + p.valor, 0),
                   )}
                 </p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#3D5E3E" }}>
-                  {payables.filter((p) => p.status !== "pago").length} contas selecionadas
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12,
+                    color: "#3D5E3E",
+                  }}
+                >
+                  {payables.filter((p) => p.status !== "pago").length} contas
+                  selecionadas
                 </p>
               </div>
               <div>

@@ -47,7 +47,13 @@ export function SettingsPage() {
     { id: "localizacao", label: "Localização", icon: Globe },
   ];
 
-  const Toggle = ({ checked, onChange }: { checked: boolean; onChange: () => void }) => (
+  const Toggle = ({
+    checked,
+    onChange,
+  }: {
+    checked: boolean;
+    onChange: () => void;
+  }) => (
     <button
       onClick={onChange}
       className="relative flex-shrink-0 rounded-full transition-colors"
@@ -78,14 +84,23 @@ export function SettingsPage() {
         >
           Configurações
         </h1>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
+        <p
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 12.5,
+            color: "#64748B",
+          }}
+        >
           Personalize o Olympia Pagamentos para sua empresa
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-4">
         {/* Side nav */}
-        <div className="rounded-2xl bg-white p-2" style={{ border: "1px solid #E2E8F0" }}>
+        <div
+          className="rounded-2xl bg-white p-2"
+          style={{ border: "1px solid #E2E8F0" }}
+        >
           {sections.map((s) => {
             const Icon = s.icon;
             return (
@@ -95,7 +110,10 @@ export function SettingsPage() {
                   setActiveSection(s.id);
                 }}
                 className="mb-0.5 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-all"
-                style={{ background: activeSection === s.id ? "#EEF2F9" : "transparent" }}
+                style={{
+                  background:
+                    activeSection === s.id ? "#EEF2F9" : "transparent",
+                }}
               >
                 <Icon
                   className="h-4 w-4"
@@ -112,7 +130,10 @@ export function SettingsPage() {
                   {s.label}
                 </span>
                 {activeSection === s.id && (
-                  <ChevronRight className="ml-auto h-4 w-4" style={{ color: P }} />
+                  <ChevronRight
+                    className="ml-auto h-4 w-4"
+                    style={{ color: P }}
+                  />
                 )}
               </button>
             );
@@ -122,7 +143,10 @@ export function SettingsPage() {
         {/* Content */}
         <div className="space-y-4 lg:col-span-3">
           {activeSection === "empresa" && (
-            <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+            <div
+              className="rounded-2xl bg-white p-5"
+              style={{ border: "1px solid #E2E8F0" }}
+            >
               <h3
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
@@ -136,12 +160,32 @@ export function SettingsPage() {
               </h3>
               <div className="space-y-4">
                 {[
-                  { label: "Razão Social", value: "Olympia Pagamentos Ltda", type: "text" },
-                  { label: "Nome Fantasia", value: "Olympia Pagamentos", type: "text" },
+                  {
+                    label: "Razão Social",
+                    value: "Olympia Pagamentos Ltda",
+                    type: "text",
+                  },
+                  {
+                    label: "Nome Fantasia",
+                    value: "Olympia Pagamentos",
+                    type: "text",
+                  },
                   { label: "CNPJ", value: currentUser.cnpj, type: "text" },
-                  { label: "E-mail Corporativo", value: currentUser.email, type: "email" },
-                  { label: "Telefone / WhatsApp", value: "+55 (11) 98765-4321", type: "tel" },
-                  { label: "Site", value: "https://olympiapag.com.br", type: "url" },
+                  {
+                    label: "E-mail Corporativo",
+                    value: currentUser.email,
+                    type: "email",
+                  },
+                  {
+                    label: "Telefone / WhatsApp",
+                    value: "+55 (11) 98765-4321",
+                    type: "tel",
+                  },
+                  {
+                    label: "Site",
+                    value: "https://olympiapag.com.br",
+                    type: "url",
+                  },
                 ].map((f) => (
                   <div key={f.label}>
                     <label
@@ -231,7 +275,12 @@ export function SettingsPage() {
                       borderColor: "#E2E8F0",
                     }}
                   >
-                    {["Simples Nacional", "Lucro Presumido", "Lucro Real", "MEI"].map((o) => (
+                    {[
+                      "Simples Nacional",
+                      "Lucro Presumido",
+                      "Lucro Real",
+                      "MEI",
+                    ].map((o) => (
                       <option key={o}>{o}</option>
                     ))}
                   </select>
@@ -239,7 +288,11 @@ export function SettingsPage() {
                 <button
                   onClick={() => toast.success("Dados salvos!")}
                   className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-white transition-all"
-                  style={{ background: P, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+                  style={{
+                    background: P,
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 700,
+                  }}
                   onMouseEnter={(e) => (e.currentTarget.style.background = PH)}
                   onMouseLeave={(e) => (e.currentTarget.style.background = P)}
                 >
@@ -252,7 +305,10 @@ export function SettingsPage() {
 
           {activeSection === "notificacoes" && (
             <div className="space-y-4">
-              <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+              <div
+                className="rounded-2xl bg-white p-5"
+                style={{ border: "1px solid #E2E8F0" }}
+              >
                 <h3
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
@@ -343,7 +399,10 @@ export function SettingsPage() {
                   ))}
                 </div>
               </div>
-              <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+              <div
+                className="rounded-2xl bg-white p-5"
+                style={{ border: "1px solid #E2E8F0" }}
+              >
                 <h3
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
@@ -407,7 +466,11 @@ export function SettingsPage() {
                 <button
                   onClick={() => toast.success("Notificações salvas!")}
                   className="mt-4 flex items-center gap-2 rounded-xl px-5 py-2.5 text-white"
-                  style={{ background: P, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+                  style={{
+                    background: P,
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 700,
+                  }}
                 >
                   <Save className="h-4 w-4" />
                   Salvar
@@ -418,7 +481,10 @@ export function SettingsPage() {
 
           {activeSection === "seguranca" && (
             <div className="space-y-4">
-              <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+              <div
+                className="rounded-2xl bg-white p-5"
+                style={{ border: "1px solid #E2E8F0" }}
+              >
                 <h3
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
@@ -491,7 +557,9 @@ export function SettingsPage() {
                       />
                       <div
                         className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl"
-                        style={{ background: mfaType === m.id ? P + "18" : "#F1F5F9" }}
+                        style={{
+                          background: mfaType === m.id ? P + "18" : "#F1F5F9",
+                        }}
                       >
                         <m.Icon
                           className="h-4 w-4"
@@ -538,7 +606,10 @@ export function SettingsPage() {
                         </p>
                       </div>
                       {mfaType === m.id && (
-                        <CheckCircle className="h-4 w-4 flex-shrink-0" style={{ color: P }} />
+                        <CheckCircle
+                          className="h-4 w-4 flex-shrink-0"
+                          style={{ color: P }}
+                        />
                       )}
                     </label>
                   ))}
@@ -546,13 +617,20 @@ export function SettingsPage() {
                 <button
                   onClick={() => toast.success("MFA configurado!")}
                   className="mt-4 flex items-center gap-2 rounded-xl px-5 py-2.5 text-white"
-                  style={{ background: P, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+                  style={{
+                    background: P,
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 700,
+                  }}
                 >
                   <Shield className="h-4 w-4" />
                   Configurar MFA
                 </button>
               </div>
-              <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+              <div
+                className="rounded-2xl bg-white p-5"
+                style={{ border: "1px solid #E2E8F0" }}
+              >
                 <h3
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
@@ -567,10 +645,22 @@ export function SettingsPage() {
                 <div className="space-y-3">
                   {[
                     { label: "Mínimo 8 caracteres", checked: true },
-                    { label: "Maiúsculas e minúsculas obrigatórias", checked: true },
-                    { label: "Caracteres especiais obrigatórios", checked: true },
-                    { label: "Expiração de senha a cada 90 dias", checked: false },
-                    { label: "Bloquear após 5 tentativas falhas", checked: true },
+                    {
+                      label: "Maiúsculas e minúsculas obrigatórias",
+                      checked: true,
+                    },
+                    {
+                      label: "Caracteres especiais obrigatórios",
+                      checked: true,
+                    },
+                    {
+                      label: "Expiração de senha a cada 90 dias",
+                      checked: false,
+                    },
+                    {
+                      label: "Bloquear após 5 tentativas falhas",
+                      checked: true,
+                    },
                     { label: "CAPTCHA após 3 tentativas", checked: true },
                   ].map((pol) => (
                     <div key={pol.label} className="flex items-center gap-3">
@@ -593,9 +683,15 @@ export function SettingsPage() {
                   ))}
                 </div>
                 <button
-                  onClick={() => toast.success("Política de senhas atualizada!")}
+                  onClick={() =>
+                    toast.success("Política de senhas atualizada!")
+                  }
                   className="mt-4 flex items-center gap-2 rounded-xl px-5 py-2.5 text-white"
-                  style={{ background: P, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+                  style={{
+                    background: P,
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 700,
+                  }}
                 >
                   <Save className="h-4 w-4" />
                   Salvar Política
@@ -605,7 +701,10 @@ export function SettingsPage() {
           )}
 
           {activeSection === "cobranca" && (
-            <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+            <div
+              className="rounded-2xl bg-white p-5"
+              style={{ border: "1px solid #E2E8F0" }}
+            >
               <h3
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
@@ -630,7 +729,11 @@ export function SettingsPage() {
               <div className="space-y-5">
                 <div className="grid grid-cols-3 gap-4">
                   {[
-                    { label: "Juros ao mês (%)", ph: "1,00", help: "Aplicado após vencimento" },
+                    {
+                      label: "Juros ao mês (%)",
+                      ph: "1,00",
+                      help: "Aplicado após vencimento",
+                    },
                     {
                       label: "Multa por atraso (%)",
                       ph: "2,00",
@@ -678,7 +781,10 @@ export function SettingsPage() {
                     </div>
                   ))}
                 </div>
-                <div className="border-t pt-4" style={{ borderColor: "#F1F5F9" }}>
+                <div
+                  className="border-t pt-4"
+                  style={{ borderColor: "#F1F5F9" }}
+                >
                   <p
                     style={{
                       fontFamily: "'Inter', sans-serif",
@@ -693,7 +799,8 @@ export function SettingsPage() {
                   <div className="space-y-3">
                     {[
                       {
-                        label: "Emitir NF-e/NFS-e automaticamente ao confirmar pagamento",
+                        label:
+                          "Emitir NF-e/NFS-e automaticamente ao confirmar pagamento",
                         checked: autoNF,
                         toggle: () => {
                           setAutoNF(!autoNF);
@@ -707,7 +814,8 @@ export function SettingsPage() {
                         },
                       },
                       {
-                        label: "Escalonamento automático: email → WhatsApp → SMS",
+                        label:
+                          "Escalonamento automático: email → WhatsApp → SMS",
                         checked: true,
                         // eslint-disable-next-line @typescript-eslint/no-empty-function -- demo UI noop toggle
                         toggle: () => {},
@@ -741,7 +849,11 @@ export function SettingsPage() {
                 <button
                   onClick={() => toast.success("Regras atualizadas!")}
                   className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-white"
-                  style={{ background: P, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+                  style={{
+                    background: P,
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 700,
+                  }}
                 >
                   <Save className="h-4 w-4" />
                   Salvar Regras
@@ -751,7 +863,10 @@ export function SettingsPage() {
           )}
 
           {activeSection === "aparencia" && (
-            <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+            <div
+              className="rounded-2xl bg-white p-5"
+              style={{ border: "1px solid #E2E8F0" }}
+            >
               <h3
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
@@ -780,7 +895,10 @@ export function SettingsPage() {
                       background: theme === t.id ? "#EEF2F9" : "white",
                     }}
                   >
-                    <t.icon className="h-5 w-5" style={{ color: theme === t.id ? P : "#94A3B8" }} />
+                    <t.icon
+                      className="h-5 w-5"
+                      style={{ color: theme === t.id ? P : "#94A3B8" }}
+                    />
                     <span
                       style={{
                         fontFamily: "'Inter', sans-serif",
@@ -807,19 +925,30 @@ export function SettingsPage() {
                   Cor Principal da Marca
                 </p>
                 <div className="flex items-center gap-3">
-                  {[P, "#162C47", "#1E4080", "#00507A", "#3B4A6B", "#2D3E6B"].map((c) => (
+                  {[
+                    P,
+                    "#162C47",
+                    "#1E4080",
+                    "#00507A",
+                    "#3B4A6B",
+                    "#2D3E6B",
+                  ].map((c) => (
                     <button
                       key={c}
                       className="h-8 w-8 rounded-full border-2 transition-transform hover:scale-110"
                       style={{
                         background: c,
                         borderColor: c === P ? G : "transparent",
-                        boxShadow: c === P ? `0 0 0 3px rgba(200,169,107,0.4)` : "none",
+                        boxShadow:
+                          c === P ? `0 0 0 3px rgba(200,169,107,0.4)` : "none",
                       }}
                     />
                   ))}
                   <div className="ml-2 flex items-center gap-2">
-                    <div className="h-4 w-4 rounded-full" style={{ background: G }} />
+                    <div
+                      className="h-4 w-4 rounded-full"
+                      style={{ background: G }}
+                    />
                     <span
                       style={{
                         fontFamily: "'Inter', sans-serif",
@@ -832,7 +961,10 @@ export function SettingsPage() {
                   </div>
                 </div>
               </div>
-              <div className="rounded-2xl border p-3.5" style={{ borderColor: "#E2E8F0" }}>
+              <div
+                className="rounded-2xl border p-3.5"
+                style={{ borderColor: "#E2E8F0" }}
+              >
                 <p
                   style={{
                     fontFamily: "'Inter', sans-serif",
@@ -862,14 +994,21 @@ export function SettingsPage() {
                     borderColor: "#E2E8F0",
                   }}
                 >
-                  <Upload className="h-3.5 w-3.5" style={{ color: "#64748B" }} />
+                  <Upload
+                    className="h-3.5 w-3.5"
+                    style={{ color: "#64748B" }}
+                  />
                   Fazer Upload do Logo
                 </button>
               </div>
               <button
                 onClick={() => toast.success("Aparência atualizada!")}
                 className="mt-4 flex items-center gap-2 rounded-xl px-5 py-2.5 text-white"
-                style={{ background: P, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+                style={{
+                  background: P,
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 700,
+                }}
               >
                 <Save className="h-4 w-4" />
                 Salvar Aparência
@@ -878,7 +1017,10 @@ export function SettingsPage() {
           )}
 
           {activeSection === "localizacao" && (
-            <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+            <div
+              className="rounded-2xl bg-white p-5"
+              style={{ border: "1px solid #E2E8F0" }}
+            >
               <h3
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
@@ -951,7 +1093,11 @@ export function SettingsPage() {
                 {[
                   {
                     label: "Formato de Data",
-                    opts: ["DD/MM/AAAA (padrão Brasil)", "MM/DD/AAAA", "AAAA-MM-DD (ISO 8601)"],
+                    opts: [
+                      "DD/MM/AAAA (padrão Brasil)",
+                      "MM/DD/AAAA",
+                      "AAAA-MM-DD (ISO 8601)",
+                    ],
                   },
                   {
                     label: "Idioma da Plataforma",
@@ -989,7 +1135,11 @@ export function SettingsPage() {
                 <button
                   onClick={() => toast.success("Preferências salvas!")}
                   className="flex items-center gap-2 rounded-xl px-5 py-2.5 text-white"
-                  style={{ background: P, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+                  style={{
+                    background: P,
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 700,
+                  }}
                 >
                   <Save className="h-4 w-4" />
                   Salvar Preferências

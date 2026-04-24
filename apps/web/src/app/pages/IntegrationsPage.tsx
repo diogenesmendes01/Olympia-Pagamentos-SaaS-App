@@ -71,7 +71,12 @@ const banks = [
   { nome: "Itaú", initials: "IU", color: "#B8872F", status: "conectado" },
   { nome: "Bradesco", initials: "BD", color: "#7A3535", status: "conectado" },
   { nome: "Nubank", initials: "NU", color: "#6B4BAF", status: "conectado" },
-  { nome: "Banco do Brasil", initials: "BB", color: "#B8872F", status: "disponivel" },
+  {
+    nome: "Banco do Brasil",
+    initials: "BB",
+    color: "#B8872F",
+    status: "disponivel",
+  },
   { nome: "Caixa", initials: "CX", color: "#1A6BBA", status: "disponivel" },
   { nome: "Santander", initials: "ST", color: "#7A3535", status: "disponivel" },
   { nome: "BTG Pactual", initials: "BT", color: G, status: "disponivel" },
@@ -89,7 +94,9 @@ export function IntegrationsPage() {
     toast.success(`${nome} conectado com sucesso!`);
   };
 
-  const connectedCount = integrations.filter((i) => i.status === "conectado").length;
+  const connectedCount = integrations.filter(
+    (i) => i.status === "conectado",
+  ).length;
 
   return (
     <div className="space-y-5 p-5 lg:p-6">
@@ -106,7 +113,13 @@ export function IntegrationsPage() {
           >
             Integrações
           </h1>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "#64748B",
+            }}
+          >
             Conecte seus bancos, ERPs e sistemas de pagamento
           </p>
         </div>
@@ -114,15 +127,27 @@ export function IntegrationsPage() {
           className="flex items-center gap-2 rounded-xl border bg-white px-3 py-2"
           style={{ borderColor: "#E2E8F0" }}
         >
-          <div className="h-2 w-2 rounded-full" style={{ background: SUCCESS }} />
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}>
+          <div
+            className="h-2 w-2 rounded-full"
+            style={{ background: SUCCESS }}
+          />
+          <span
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "#374151",
+            }}
+          >
             {connectedCount} ativas de {integrations.length}
           </span>
         </div>
       </div>
 
       {/* Open Finance banner */}
-      <div className="relative overflow-hidden rounded-2xl p-5" style={{ background: "#1F3A5F" }}>
+      <div
+        className="relative overflow-hidden rounded-2xl p-5"
+        style={{ background: "#1F3A5F" }}
+      >
         <div className="relative z-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
           <div
             className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl"
@@ -136,13 +161,23 @@ export function IntegrationsPage() {
           <div className="flex-1">
             <p
               className="text-white"
-              style={{ fontFamily: "'Montserrat', sans-serif", fontSize: 16, fontWeight: 800 }}
+              style={{
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: 16,
+                fontWeight: 800,
+              }}
             >
               Open Finance Brazil — 3 bancos conectados
             </p>
-            <p style={{ fontFamily: "'Inter', sans-serif", color: "#A8BDD4", fontSize: 13 }}>
-              Itaú, Bradesco e Nubank · Conciliação automática ativa · Última sincronização: há 5
-              min
+            <p
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                color: "#A8BDD4",
+                fontSize: 13,
+              }}
+            >
+              Itaú, Bradesco e Nubank · Conciliação automática ativa · Última
+              sincronização: há 5 min
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
               {["Itaú", "Bradesco", "Nubank"].map((b) => (
@@ -160,7 +195,10 @@ export function IntegrationsPage() {
                   setOpenBanks(true);
                 }}
                 className="flex items-center gap-1 rounded-lg px-2 py-0.5 text-xs"
-                style={{ background: `rgba(200,169,107,0.15)`, color: "#C8A96B" }}
+                style={{
+                  background: `rgba(200,169,107,0.15)`,
+                  color: "#C8A96B",
+                }}
               >
                 <Plus className="h-3 w-3" />
                 Adicionar banco
@@ -191,7 +229,9 @@ export function IntegrationsPage() {
         { label: "Bancário & Remessa", ids: [9, 10] },
         { label: "E-commerce", ids: [12] },
       ].map((cat) => {
-        const catIntegrations = integrations.filter((i) => cat.ids.includes(i.id));
+        const catIntegrations = integrations.filter((i) =>
+          cat.ids.includes(i.id),
+        );
         return (
           <div key={cat.label}>
             <h3
@@ -221,7 +261,10 @@ export function IntegrationsPage() {
       })}
 
       {/* API */}
-      <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+      <div
+        className="rounded-2xl bg-white p-5"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="mb-1 flex items-center gap-2">
@@ -237,21 +280,39 @@ export function IntegrationsPage() {
                 API REST — Integração Personalizada
               </h3>
             </div>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#64748B" }}>
+            <p
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 13,
+                color: "#64748B",
+              }}
+            >
               Conecte qualquer sistema via API completa com webhooks
             </p>
           </div>
           <button
             onClick={() => toast.info("Abrindo documentação...")}
             className="flex flex-shrink-0 items-center gap-1.5 rounded-xl border px-3 py-2 hover:bg-slate-50"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, borderColor: "#E2E8F0" }}
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              borderColor: "#E2E8F0",
+            }}
           >
-            <ExternalLink className="h-3.5 w-3.5" style={{ color: "#64748B" }} />
+            <ExternalLink
+              className="h-3.5 w-3.5"
+              style={{ color: "#64748B" }}
+            />
             Documentação
           </button>
         </div>
-        <div className="mt-4 rounded-xl p-3.5" style={{ background: "#1F3A5F" }}>
-          <code style={{ fontSize: 12, color: "#A8C8E8", fontFamily: "monospace" }}>
+        <div
+          className="mt-4 rounded-xl p-3.5"
+          style={{ background: "#1F3A5F" }}
+        >
+          <code
+            style={{ fontSize: 12, color: "#A8C8E8", fontFamily: "monospace" }}
+          >
             curl -X GET https://api.olympiapag.com.br/v1/receivables \<br />
             &nbsp;&nbsp;-H "Authorization: Bearer{" "}
             <span style={{ color: "#C8A96B" }}>$YOUR_API_KEY</span>" \<br />
@@ -333,8 +394,10 @@ export function IntegrationsPage() {
                     }}
                     className="flex items-center gap-2.5 rounded-xl border-2 p-3 text-left transition-all"
                     style={{
-                      borderColor: b.status === "conectado" ? SUCCESS : "#E2E8F0",
-                      background: b.status === "conectado" ? SUCCESS_BG : "white",
+                      borderColor:
+                        b.status === "conectado" ? SUCCESS : "#E2E8F0",
+                      background:
+                        b.status === "conectado" ? SUCCESS_BG : "white",
                     }}
                   >
                     <div
@@ -361,7 +424,10 @@ export function IntegrationsPage() {
                       <div className="mt-0.5 flex items-center gap-1">
                         {b.status === "conectado" ? (
                           <>
-                            <CheckCircle className="h-3 w-3" style={{ color: SUCCESS }} />
+                            <CheckCircle
+                              className="h-3 w-3"
+                              style={{ color: SUCCESS }}
+                            />
                             <span
                               style={{
                                 fontFamily: "'Inter', sans-serif",
@@ -411,8 +477,18 @@ function IntegrationCard({
   const IconComponent = iconMap[integ.icone] ?? Link2;
 
   const statusConfig: any = {
-    conectado: { label: "Conectado", bg: SUCCESS_BG, text: SUCCESS, icon: CheckCircle },
-    pendente: { label: "Configurar", bg: WARNING_BG, text: WARNING, icon: Clock },
+    conectado: {
+      label: "Conectado",
+      bg: SUCCESS_BG,
+      text: SUCCESS,
+      icon: CheckCircle,
+    },
+    pendente: {
+      label: "Configurar",
+      bg: WARNING_BG,
+      text: WARNING,
+      icon: Clock,
+    },
     disponivel: { label: "Conectar", bg: "#EEF2F9", text: P, icon: Plus },
   };
   const sc = statusConfig[integ.status];
@@ -474,7 +550,11 @@ function IntegrationCard({
             <span
               key={b}
               className="rounded px-1.5 py-0.5 text-xs"
-              style={{ fontFamily: "'Inter', sans-serif", background: "#F1F5F9", color: "#64748B" }}
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                background: "#F1F5F9",
+                color: "#64748B",
+              }}
             >
               {b}
             </span>
@@ -490,7 +570,13 @@ function IntegrationCard({
               style={{ borderColor: "#E2E8F0" }}
             >
               <Settings className="h-3.5 w-3.5" style={{ color: "#64748B" }} />
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#374151" }}>
+              <span
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12,
+                  color: "#374151",
+                }}
+              >
                 Configurar
               </span>
             </button>
@@ -513,10 +599,18 @@ function IntegrationCard({
               fontSize: 12.5,
               fontWeight: 700,
             }}
-            onMouseEnter={(e) => !connecting && (e.currentTarget.style.background = PH)}
-            onMouseLeave={(e) => !connecting && (e.currentTarget.style.background = P)}
+            onMouseEnter={(e) =>
+              !connecting && (e.currentTarget.style.background = PH)
+            }
+            onMouseLeave={(e) =>
+              !connecting && (e.currentTarget.style.background = P)
+            }
           >
-            {connecting ? "Conectando..." : integ.status === "pendente" ? "Configurar" : "Conectar"}
+            {connecting
+              ? "Conectando..."
+              : integ.status === "pendente"
+                ? "Configurar"
+                : "Conectar"}
           </button>
         )}
       </div>

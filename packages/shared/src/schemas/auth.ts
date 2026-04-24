@@ -2,7 +2,9 @@ import { z } from "zod";
 
 export const emailSchema = z.string().email("Email inválido");
 
-export const passwordSchema = z.string().min(8, "Senha precisa ter ao menos 8 caracteres");
+export const passwordSchema = z
+  .string()
+  .min(8, "Senha precisa ter ao menos 8 caracteres");
 
 export const signupSchema = z.object({
   name: z.string().min(2, "Nome obrigatório"),

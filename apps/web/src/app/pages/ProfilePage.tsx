@@ -199,7 +199,9 @@ export function ProfilePage() {
             borderColor: editMode ? "#CBD5E1" : "#E2E8F0",
           }}
           onFocus={(e) => editMode && (e.currentTarget.style.borderColor = P)}
-          onBlur={(e) => editMode && (e.currentTarget.style.borderColor = "#CBD5E1")}
+          onBlur={(e) =>
+            editMode && (e.currentTarget.style.borderColor = "#CBD5E1")
+          }
         />
       ) : (
         <input
@@ -218,7 +220,9 @@ export function ProfilePage() {
             borderColor: editMode ? "#CBD5E1" : "#E2E8F0",
           }}
           onFocus={(e) => editMode && (e.currentTarget.style.borderColor = P)}
-          onBlur={(e) => editMode && (e.currentTarget.style.borderColor = "#CBD5E1")}
+          onBlur={(e) =>
+            editMode && (e.currentTarget.style.borderColor = "#CBD5E1")
+          }
         />
       )}
     </div>
@@ -227,10 +231,15 @@ export function ProfilePage() {
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-5 lg:p-6">
       {/* Header card */}
-      <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid #E2E8F0" }}>
+      <div
+        className="overflow-hidden rounded-2xl bg-white"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
         <div
           className="mx-[0px] my-[39px] h-24"
-          style={{ background: `linear-gradient(135deg, ${P} 0%, #2D527A 100%)` }}
+          style={{
+            background: `linear-gradient(135deg, ${P} 0%, #2D527A 100%)`,
+          }}
         />
         <div className="px-6 pb-5">
           <div
@@ -258,7 +267,9 @@ export function ProfilePage() {
                 <button
                   className="absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full shadow-md"
                   style={{ background: P }}
-                  onClick={() => toast.info("Upload de foto disponível na versão Pro")}
+                  onClick={() =>
+                    toast.info("Upload de foto disponível na versão Pro")
+                  }
                 >
                   <Camera className="h-3 w-3 text-white" />
                 </button>
@@ -274,7 +285,13 @@ export function ProfilePage() {
                 >
                   {form.nome}
                 </h1>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#64748B" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 13,
+                    color: "#64748B",
+                  }}
+                >
                   {form.cargo} · {currentUser.company}
                 </p>
               </div>
@@ -382,7 +399,13 @@ export function ProfilePage() {
                   >
                     Informações Pessoais
                   </h2>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#64748B" }}>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 12,
+                      color: "#64748B",
+                    }}
+                  >
                     Atualize seus dados e informações profissionais
                   </p>
                 </div>
@@ -394,7 +417,10 @@ export function ProfilePage() {
                     className="flex items-center gap-2 rounded-xl border px-4 py-2 transition-colors hover:bg-slate-50"
                     style={{ borderColor: "#E2E8F0" }}
                   >
-                    <Edit3 className="h-3.5 w-3.5" style={{ color: "#64748B" }} />
+                    <Edit3
+                      className="h-3.5 w-3.5"
+                      style={{ color: "#64748B" }}
+                    />
                     <span
                       style={{
                         fontFamily: "'Inter', sans-serif",
@@ -505,7 +531,10 @@ export function ProfilePage() {
           {tab === "seguranca" && (
             <div className="space-y-4">
               {/* Alterar senha */}
-              <div className="rounded-2xl bg-white p-6" style={{ border: "1px solid #E2E8F0" }}>
+              <div
+                className="rounded-2xl bg-white p-6"
+                style={{ border: "1px solid #E2E8F0" }}
+              >
                 <h2
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
@@ -589,9 +618,15 @@ export function ProfilePage() {
                           className="absolute top-1/2 right-3 -translate-y-1/2"
                         >
                           {f.show ? (
-                            <EyeOff className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                            <EyeOff
+                              className="h-4 w-4"
+                              style={{ color: "#94A3B8" }}
+                            />
                           ) : (
-                            <Eye className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                            <Eye
+                              className="h-4 w-4"
+                              style={{ color: "#94A3B8" }}
+                            />
                           )}
                         </button>
                       </div>
@@ -606,7 +641,9 @@ export function ProfilePage() {
                       fontSize: 13.5,
                       fontWeight: 700,
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = PH)}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = PH)
+                    }
                     onMouseLeave={(e) => (e.currentTarget.style.background = P)}
                   >
                     Atualizar Senha
@@ -615,7 +652,10 @@ export function ProfilePage() {
               </div>
 
               {/* MFA */}
-              <div className="rounded-2xl bg-white p-6" style={{ border: "1px solid #E2E8F0" }}>
+              <div
+                className="rounded-2xl bg-white p-6"
+                style={{ border: "1px solid #E2E8F0" }}
+              >
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="mb-1 flex items-center gap-2">
@@ -659,7 +699,11 @@ export function ProfilePage() {
                   <button
                     onClick={() => {
                       setMfaEnabled(!mfaEnabled);
-                      toast.success(mfaEnabled ? "MFA desativado" : "MFA configurado com sucesso!");
+                      toast.success(
+                        mfaEnabled
+                          ? "MFA desativado"
+                          : "MFA configurado com sucesso!",
+                      );
                     }}
                     className="flex-shrink-0 rounded-xl px-4 py-2"
                     style={{
@@ -668,7 +712,9 @@ export function ProfilePage() {
                       fontFamily: "'Inter', sans-serif",
                       fontSize: 12.5,
                       fontWeight: 700,
-                      border: mfaEnabled ? `1px solid ${DANGER_BORDER}` : "none",
+                      border: mfaEnabled
+                        ? `1px solid ${DANGER_BORDER}`
+                        : "none",
                     }}
                   >
                     {mfaEnabled ? "Desativar MFA" : "Ativar MFA"}
@@ -677,7 +723,10 @@ export function ProfilePage() {
                 {!mfaEnabled && (
                   <div
                     className="mt-4 flex items-start gap-3 rounded-xl p-4"
-                    style={{ background: WARNING_BG, border: `1px solid #E8D5B0` }}
+                    style={{
+                      background: WARNING_BG,
+                      border: `1px solid #E8D5B0`,
+                    }}
                   >
                     <AlertTriangle
                       className="mt-0.5 h-4 w-4 flex-shrink-0"
@@ -690,14 +739,18 @@ export function ProfilePage() {
                         color: "#92400E",
                       }}
                     >
-                      Sem MFA, sua conta está vulnerável. Recomendamos ativar imediatamente.
+                      Sem MFA, sua conta está vulnerável. Recomendamos ativar
+                      imediatamente.
                     </p>
                   </div>
                 )}
               </div>
 
               {/* Recovery codes */}
-              <div className="rounded-2xl bg-white p-6" style={{ border: "1px solid #E2E8F0" }}>
+              <div
+                className="rounded-2xl bg-white p-6"
+                style={{ border: "1px solid #E2E8F0" }}
+              >
                 <div className="mb-3 flex items-center gap-3">
                   <Key
                     className="h-4.5 w-4.5"
@@ -722,8 +775,8 @@ export function ProfilePage() {
                     marginBottom: 14,
                   }}
                 >
-                  Use estes códigos para acessar sua conta caso perca o dispositivo MFA. Cada código
-                  só pode ser usado uma vez.
+                  Use estes códigos para acessar sua conta caso perca o
+                  dispositivo MFA. Cada código só pode ser usado uma vez.
                 </p>
                 <div className="mb-4 grid grid-cols-2 gap-2">
                   {[
@@ -757,7 +810,11 @@ export function ProfilePage() {
                 >
                   <Key className="h-3.5 w-3.5" style={{ color: "#64748B" }} />
                   <span
-                    style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 12.5,
+                      color: "#374151",
+                    }}
                   >
                     Gerar novos códigos
                   </span>
@@ -784,7 +841,13 @@ export function ProfilePage() {
                 >
                   Preferências de Notificação
                 </h2>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#64748B" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12,
+                    color: "#64748B",
+                  }}
+                >
                   Escolha como e quando deseja ser notificado
                 </p>
               </div>
@@ -799,7 +862,9 @@ export function ProfilePage() {
                   <button
                     key={label}
                     onClick={() =>
-                      toast.info(`Canal ${label} ${active ? "desativado" : "ativado"}`)
+                      toast.info(
+                        `Canal ${label} ${active ? "desativado" : "ativado"}`,
+                      )
                     }
                     className="flex flex-col items-center gap-2 rounded-xl border-2 py-4 transition-all"
                     style={{
@@ -807,7 +872,10 @@ export function ProfilePage() {
                       background: active ? PRIMARY_SOFT : "white",
                     }}
                   >
-                    <Icon className="h-5 w-5" style={{ color: active ? P : "#94A3B8" }} />
+                    <Icon
+                      className="h-5 w-5"
+                      style={{ color: active ? P : "#94A3B8" }}
+                    />
                     <span
                       style={{
                         fontFamily: "'Inter', sans-serif",
@@ -867,7 +935,10 @@ export function ProfilePage() {
                         </div>
                         <button
                           onClick={() => {
-                            setNotifs((n) => ({ ...n, [item.key]: !n[item.key] }));
+                            setNotifs((n) => ({
+                              ...n,
+                              [item.key]: !n[item.key],
+                            }));
                           }}
                           className="relative h-5.5 w-10 flex-shrink-0 rounded-full transition-all"
                           style={{
@@ -906,7 +977,10 @@ export function ProfilePage() {
 
           {/* ── SESSÕES ── */}
           {tab === "sessoes" && (
-            <div className="rounded-2xl bg-white p-6" style={{ border: "1px solid #E2E8F0" }}>
+            <div
+              className="rounded-2xl bg-white p-6"
+              style={{ border: "1px solid #E2E8F0" }}
+            >
               <div className="mb-5 flex items-center justify-between">
                 <div>
                   <h2
@@ -920,12 +994,20 @@ export function ProfilePage() {
                   >
                     Sessões Ativas
                   </h2>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#64748B" }}>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 12,
+                      color: "#64748B",
+                    }}
+                  >
                     Dispositivos conectados à sua conta
                   </p>
                 </div>
                 <button
-                  onClick={() => toast.success("Todas as outras sessões encerradas!")}
+                  onClick={() =>
+                    toast.success("Todas as outras sessões encerradas!")
+                  }
                   className="flex items-center gap-2 rounded-xl border px-3 py-2 hover:bg-slate-50"
                   style={{ borderColor: DANGER_BORDER }}
                 >

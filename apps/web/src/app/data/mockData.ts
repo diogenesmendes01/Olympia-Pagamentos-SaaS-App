@@ -62,14 +62,16 @@ export const alerts = [
     id: 2,
     type: "warning",
     title: "Saldo insuficiente para pagamento amanhã",
-    description: "DARF de R$ 8.340,00 vence em 24h — saldo projetado: R$ 6.200,00",
+    description:
+      "DARF de R$ 8.340,00 vence em 24h — saldo projetado: R$ 6.200,00",
     time: "1h atrás",
   },
   {
     id: 3,
     type: "info",
     title: "Boleto recebido automaticamente",
-    description: "R$ 4.500,00 — Empresa Alfa Ltda — conciliado via Open Finance",
+    description:
+      "R$ 4.500,00 — Empresa Alfa Ltda — conciliado via Open Finance",
     time: "2h atrás",
   },
   {
@@ -631,9 +633,17 @@ export const integrations = [
 
 export const dreData = [
   { categoria: "Receita Bruta de Serviços", valor: 284500, tipo: "receita" },
-  { categoria: "(-) Deduções (ISS, PIS, COFINS)", valor: -17280, tipo: "deducao" },
+  {
+    categoria: "(-) Deduções (ISS, PIS, COFINS)",
+    valor: -17280,
+    tipo: "deducao",
+  },
   { categoria: "= Receita Líquida", valor: 267220, tipo: "resultado" },
-  { categoria: "(-) Custos dos Serviços Prestados", valor: -89300, tipo: "custo" },
+  {
+    categoria: "(-) Custos dos Serviços Prestados",
+    valor: -89300,
+    tipo: "custo",
+  },
   { categoria: "= Lucro Bruto", valor: 177920, tipo: "resultado" },
   { categoria: "(-) Despesas Operacionais", valor: -54200, tipo: "despesa" },
   { categoria: "(-) Despesas Administrativas", valor: -18400, tipo: "despesa" },
@@ -729,7 +739,13 @@ export const invoices: Invoice[] = [
         unitario: 18000.0,
         total: 36000.0,
       },
-      { id: "i2", descricao: "Switch Cisco 24 portas", qtd: 1, unitario: 5500.0, total: 5500.0 },
+      {
+        id: "i2",
+        descricao: "Switch Cisco 24 portas",
+        qtd: 1,
+        unitario: 5500.0,
+        total: 5500.0,
+      },
     ],
   },
   {
@@ -755,7 +771,13 @@ export const invoices: Invoice[] = [
         unitario: 55000.0,
         total: 55000.0,
       },
-      { id: "i2", descricao: "Compatibilização BIM", qtd: 1, unitario: 30000.0, total: 30000.0 },
+      {
+        id: "i2",
+        descricao: "Compatibilização BIM",
+        qtd: 1,
+        unitario: 30000.0,
+        total: 30000.0,
+      },
     ],
   },
   {

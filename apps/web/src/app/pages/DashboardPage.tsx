@@ -66,7 +66,9 @@ const fmt = (v: number) =>
     maximumFractionDigits: 0,
   }).format(v);
 const fmtFull = (v: number) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
+  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+    v,
+  );
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload?.length) {
@@ -87,7 +89,14 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           {label}
         </p>
         {payload.map((p: any, i: number) => (
-          <p key={i} style={{ fontSize: 12, color: p.color, fontFamily: "'Inter', sans-serif" }}>
+          <p
+            key={i}
+            style={{
+              fontSize: 12,
+              color: p.color,
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
             {p.name}: {fmt(p.value)}
           </p>
         ))}
@@ -97,7 +106,15 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-const KPICard = ({ title, value, trend, trendLabel, icon: Icon, color, suffix = "" }: any) => {
+const KPICard = ({
+  title,
+  value,
+  trend,
+  trendLabel,
+  icon: Icon,
+  color,
+  suffix = "",
+}: any) => {
   const positive = trend > 0;
   return (
     <div
@@ -147,12 +164,22 @@ const KPICard = ({ title, value, trend, trendLabel, icon: Icon, color, suffix = 
         {suffix}
       </p>
       <p
-        style={{ fontSize: 12, color: "#374151", marginTop: 2, fontFamily: "'Inter', sans-serif" }}
+        style={{
+          fontSize: 12,
+          color: "#374151",
+          marginTop: 2,
+          fontFamily: "'Inter', sans-serif",
+        }}
       >
         {title}
       </p>
       <p
-        style={{ fontSize: 11, color: "#94A3B8", marginTop: 1, fontFamily: "'Inter', sans-serif" }}
+        style={{
+          fontSize: 11,
+          color: "#94A3B8",
+          marginTop: 1,
+          fontFamily: "'Inter', sans-serif",
+        }}
       >
         {trendLabel}
       </p>
@@ -162,10 +189,20 @@ const KPICard = ({ title, value, trend, trendLabel, icon: Icon, color, suffix = 
 
 const AlertItem = ({ alert }: { alert: (typeof alerts)[0] }) => {
   const cfg: any = {
-    danger: { bg: DANGER_BG, border: DANGER_BORDER, text: DANGER, icon: AlertTriangle },
+    danger: {
+      bg: DANGER_BG,
+      border: DANGER_BORDER,
+      text: DANGER,
+      icon: AlertTriangle,
+    },
     warning: { bg: WARNING_BG, border: "#E8D5B0", text: WARNING, icon: Clock },
     info: { bg: INFO_BG, border: INFO_BORDER, text: P, icon: Info },
-    success: { bg: SUCCESS_BG, border: "#C9DEC9", text: SUCCESS, icon: CheckCircle },
+    success: {
+      bg: SUCCESS_BG,
+      border: "#C9DEC9",
+      text: SUCCESS,
+      icon: CheckCircle,
+    },
   };
   const c = cfg[alert.type];
   const Icon = c.icon;
@@ -174,7 +211,10 @@ const AlertItem = ({ alert }: { alert: (typeof alerts)[0] }) => {
       className="flex items-start gap-3 rounded-xl border p-3"
       style={{ background: c.bg, borderColor: c.border }}
     >
-      <Icon className="mt-0.5 h-4 w-4 flex-shrink-0" style={{ color: c.text }} />
+      <Icon
+        className="mt-0.5 h-4 w-4 flex-shrink-0"
+        style={{ color: c.text }}
+      />
       <div className="min-w-0 flex-1">
         <p
           style={{
@@ -198,7 +238,12 @@ const AlertItem = ({ alert }: { alert: (typeof alerts)[0] }) => {
         </p>
       </div>
       <span
-        style={{ fontSize: 10, color: "#94A3B8", flexShrink: 0, fontFamily: "'Inter', sans-serif" }}
+        style={{
+          fontSize: 10,
+          color: "#94A3B8",
+          flexShrink: 0,
+          fontFamily: "'Inter', sans-serif",
+        }}
       >
         {alert.time}
       </span>
@@ -250,7 +295,13 @@ export function DashboardPage() {
             style={{ border: "1px solid #E2E8F0" }}
           >
             <RefreshCw className="h-3.5 w-3.5" style={{ color: "#64748B" }} />
-            <span style={{ fontSize: 12.5, color: "#374151", fontFamily: "'Inter', sans-serif" }}>
+            <span
+              style={{
+                fontSize: 12.5,
+                color: "#374151",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
               Atualizar
             </span>
           </button>
@@ -274,9 +325,19 @@ export function DashboardPage() {
       {/* Quick actions */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
-          { label: "Pix Cobrança", icon: QrCode, color: "#00907A", bg: "#F0FDFB" },
+          {
+            label: "Pix Cobrança",
+            icon: QrCode,
+            color: "#00907A",
+            bg: "#F0FDFB",
+          },
           { label: "Novo Boleto", icon: FileText, color: P, bg: "#EEF2F9" },
-          { label: "Link de Pag.", icon: Send, color: "#6B4BAF", bg: "#F5F1FF" },
+          {
+            label: "Link de Pag.",
+            icon: Send,
+            color: "#6B4BAF",
+            bg: "#F5F1FF",
+          },
           { label: "Pagar Conta", icon: Zap, color: "#B07A1A", bg: "#FDF8EE" },
         ].map((a) => (
           <button
@@ -377,7 +438,13 @@ export function DashboardPage() {
               >
                 Fluxo de Caixa
               </h3>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11.5, color: "#64748B" }}>
+              <p
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 11.5,
+                  color: "#64748B",
+                }}
+              >
                 Recebimentos vs. Pagamentos
               </p>
             </div>
@@ -421,16 +488,28 @@ export function DashboardPage() {
               <Legend
                 iconType="circle"
                 iconSize={8}
-                wrapperStyle={{ fontSize: 11, paddingTop: 8, fontFamily: "Inter" }}
+                wrapperStyle={{
+                  fontSize: 11,
+                  paddingTop: 8,
+                  fontFamily: "Inter",
+                }}
               />
-              <Bar dataKey="recebido" name="Recebido" fill={CHART_SUCCESS} radius={[4, 4, 0, 0]} />
+              <Bar
+                dataKey="recebido"
+                name="Recebido"
+                fill={CHART_SUCCESS}
+                radius={[4, 4, 0, 0]}
+              />
               <Bar dataKey="pago" name="Pago" fill={P} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
         {/* Pie chart */}
-        <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+        <div
+          className="rounded-2xl bg-white p-5"
+          style={{ border: "1px solid #E2E8F0" }}
+        >
           <h3
             style={{
               fontFamily: "'Montserrat', sans-serif",
@@ -522,7 +601,13 @@ export function DashboardPage() {
               >
                 Projeção de Caixa — 90 dias
               </h3>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11.5, color: "#64748B" }}>
+              <p
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 11.5,
+                  color: "#64748B",
+                }}
+              >
                 Baseada em histórico + IA preditiva
               </p>
             </div>
@@ -586,7 +671,13 @@ export function DashboardPage() {
               { label: "90 dias", valor: "R$ 512k", trend: "+49,7%" },
             ].map((p) => (
               <div key={p.label} className="text-center">
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10.5, color: "#94A3B8" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 10.5,
+                    color: "#94A3B8",
+                  }}
+                >
                   Em {p.label}
                 </p>
                 <p
@@ -615,7 +706,10 @@ export function DashboardPage() {
         </div>
 
         {/* Alerts */}
-        <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+        <div
+          className="rounded-2xl bg-white p-5"
+          style={{ border: "1px solid #E2E8F0" }}
+        >
           <div className="mb-4 flex items-center justify-between">
             <h3
               style={{
@@ -643,7 +737,10 @@ export function DashboardPage() {
       </div>
 
       {/* Recent Transactions */}
-      <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid #E2E8F0" }}>
+      <div
+        className="overflow-hidden rounded-2xl bg-white"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
         <div
           className="flex items-center justify-between border-b px-5 py-4"
           style={{ borderColor: "#F1F5F9" }}
@@ -659,7 +756,12 @@ export function DashboardPage() {
             Transações Recentes
           </h3>
           <button
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: P, fontWeight: 600 }}
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: P,
+              fontWeight: 600,
+            }}
           >
             Ver todas →
           </button>
@@ -672,12 +774,20 @@ export function DashboardPage() {
             >
               <div
                 className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl"
-                style={{ background: tx.tipo === "recebido" ? SUCCESS_BG : WARNING_BG }}
+                style={{
+                  background: tx.tipo === "recebido" ? SUCCESS_BG : WARNING_BG,
+                }}
               >
                 {tx.tipo === "recebido" ? (
-                  <ArrowDownCircle className="h-4 w-4" style={{ color: SUCCESS }} />
+                  <ArrowDownCircle
+                    className="h-4 w-4"
+                    style={{ color: SUCCESS }}
+                  />
                 ) : (
-                  <ArrowUpCircle className="h-4 w-4" style={{ color: WARNING }} />
+                  <ArrowUpCircle
+                    className="h-4 w-4"
+                    style={{ color: WARNING }}
+                  />
                 )}
               </div>
               <div className="min-w-0 flex-1">
@@ -691,7 +801,13 @@ export function DashboardPage() {
                 >
                   {tx.cliente}
                 </p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#94A3B8" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 11,
+                    color: "#94A3B8",
+                  }}
+                >
                   {tx.id} · {tx.metodo.toUpperCase()}
                 </p>
               </div>
@@ -707,7 +823,13 @@ export function DashboardPage() {
                   {tx.tipo === "recebido" ? "+" : ""}
                   {fmtFull(tx.valor)}
                 </p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#94A3B8" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 11,
+                    color: "#94A3B8",
+                  }}
+                >
                   {tx.horario}
                 </p>
               </div>

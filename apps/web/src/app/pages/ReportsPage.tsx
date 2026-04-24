@@ -63,9 +63,19 @@ const CustomTooltip = ({ active, payload, label }: any) => {
           {label}
         </p>
         {payload.map((p: any, i: number) => (
-          <p key={i} style={{ fontSize: 12, color: p.color, fontFamily: "'Inter', sans-serif" }}>
+          <p
+            key={i}
+            style={{
+              fontSize: 12,
+              color: p.color,
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
             {p.name}:{" "}
-            {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(p.value)}
+            {new Intl.NumberFormat("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            }).format(p.value)}
           </p>
         ))}
       </div>
@@ -79,20 +89,45 @@ export function ReportsPage() {
   const [period, setPeriod] = useState("abril-2026");
 
   const reportTypes = [
-    { id: "dre", label: "DRE", Icon: BarChart3, desc: "Demonstração do Resultado" },
-    { id: "cashflow", label: "Fluxo de Caixa", Icon: DollarSign, desc: "Entradas e saídas" },
-    { id: "aging", label: "Aging (Vencimentos)", Icon: Clock, desc: "Análise por faixa de prazo" },
+    {
+      id: "dre",
+      label: "DRE",
+      Icon: BarChart3,
+      desc: "Demonstração do Resultado",
+    },
+    {
+      id: "cashflow",
+      label: "Fluxo de Caixa",
+      Icon: DollarSign,
+      desc: "Entradas e saídas",
+    },
+    {
+      id: "aging",
+      label: "Aging (Vencimentos)",
+      Icon: Clock,
+      desc: "Análise por faixa de prazo",
+    },
     {
       id: "inadimplencia",
       label: "Inadimplência",
       Icon: AlertTriangle,
       desc: "Clientes em atraso",
     },
-    { id: "fiscal", label: "Relatórios Fiscais", Icon: Receipt, desc: "SPED, EFD, DCTF" },
+    {
+      id: "fiscal",
+      label: "Relatórios Fiscais",
+      Icon: Receipt,
+      desc: "SPED, EFD, DCTF",
+    },
   ];
 
   const inadimplenciaData = [
-    { cliente: "Tech Solutions ME", valor: 32000, diasAtraso: 2, risco: "alto" },
+    {
+      cliente: "Tech Solutions ME",
+      valor: 32000,
+      diasAtraso: 2,
+      risco: "alto",
+    },
     { cliente: "Grupo Nexus Ltda", valor: 5600, diasAtraso: 2, risco: "medio" },
     { cliente: "MK Distribuidora", valor: 3800, diasAtraso: 2, risco: "baixo" },
   ];
@@ -112,7 +147,13 @@ export function ReportsPage() {
           >
             Relatórios & Análises
           </h1>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "#64748B",
+            }}
+          >
             Dados financeiros consolidados para decisão estratégica
           </p>
         </div>
@@ -123,7 +164,11 @@ export function ReportsPage() {
               setPeriod(e.target.value);
             }}
             className="rounded-xl border bg-white px-3 py-2 focus:outline-none"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, borderColor: "#E2E8F0" }}
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              borderColor: "#E2E8F0",
+            }}
           >
             <option value="abril-2026">Abril 2026</option>
             <option value="marco-2026">Março 2026</option>
@@ -150,7 +195,10 @@ export function ReportsPage() {
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-4">
         {/* Report nav */}
-        <div className="rounded-2xl bg-white p-2" style={{ border: "1px solid #E2E8F0" }}>
+        <div
+          className="rounded-2xl bg-white p-2"
+          style={{ border: "1px solid #E2E8F0" }}
+        >
           {reportTypes.map((r) => (
             <button
               key={r.id}
@@ -158,11 +206,15 @@ export function ReportsPage() {
                 setActiveReport(r.id);
               }}
               className="mb-0.5 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-all"
-              style={{ background: activeReport === r.id ? "#EEF2F9" : "transparent" }}
+              style={{
+                background: activeReport === r.id ? "#EEF2F9" : "transparent",
+              }}
             >
               <div
                 className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
-                style={{ background: activeReport === r.id ? P + "18" : "#F1F5F9" }}
+                style={{
+                  background: activeReport === r.id ? P + "18" : "#F1F5F9",
+                }}
               >
                 <r.Icon
                   className="h-4 w-4"
@@ -180,17 +232,29 @@ export function ReportsPage() {
                 >
                   {r.label}
                 </p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#94A3B8" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 11,
+                    color: "#94A3B8",
+                  }}
+                >
                   {r.desc}
                 </p>
               </div>
               {activeReport === r.id && (
-                <ChevronRight className="ml-auto h-4 w-4" style={{ color: P }} />
+                <ChevronRight
+                  className="ml-auto h-4 w-4"
+                  style={{ color: P }}
+                />
               )}
             </button>
           ))}
 
-          <div className="mt-4 border-t pt-4" style={{ borderColor: "#F1F5F9" }}>
+          <div
+            className="mt-4 border-t pt-4"
+            style={{ borderColor: "#F1F5F9" }}
+          >
             <p
               style={{
                 fontFamily: "'Inter', sans-serif",
@@ -204,21 +268,33 @@ export function ReportsPage() {
             >
               EXPORTAÇÕES FISCAIS
             </p>
-            {["SPED Fiscal", "EFD Contribuições", "DCTF", "Balancete"].map((f) => (
-              <button
-                key={f}
-                onClick={() => toast.success(`${f} exportado!`)}
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-slate-50"
-              >
-                <FileText className="h-3.5 w-3.5" style={{ color: "#94A3B8" }} />
-                <span
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}
+            {["SPED Fiscal", "EFD Contribuições", "DCTF", "Balancete"].map(
+              (f) => (
+                <button
+                  key={f}
+                  onClick={() => toast.success(`${f} exportado!`)}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-slate-50"
                 >
-                  {f}
-                </span>
-                <Download className="ml-auto h-3 w-3" style={{ color: "#94A3B8" }} />
-              </button>
-            ))}
+                  <FileText
+                    className="h-3.5 w-3.5"
+                    style={{ color: "#94A3B8" }}
+                  />
+                  <span
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 12.5,
+                      color: "#374151",
+                    }}
+                  >
+                    {f}
+                  </span>
+                  <Download
+                    className="ml-auto h-3 w-3"
+                    style={{ color: "#94A3B8" }}
+                  />
+                </button>
+              ),
+            )}
           </div>
         </div>
 
@@ -244,7 +320,13 @@ export function ReportsPage() {
                   >
                     Demonstração do Resultado — DRE
                   </h3>
-                  <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#64748B" }}>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 12,
+                      color: "#64748B",
+                    }}
+                  >
                     Período: Abril 2026
                   </p>
                 </div>
@@ -253,8 +335,15 @@ export function ReportsPage() {
                   className="flex items-center gap-1.5 rounded-xl border px-3 py-1.5 hover:bg-slate-50"
                   style={{ borderColor: "#E2E8F0" }}
                 >
-                  <Download className="h-3.5 w-3.5" style={{ color: "#64748B" }} />
-                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12 }}>Exportar</span>
+                  <Download
+                    className="h-3.5 w-3.5"
+                    style={{ color: "#64748B" }}
+                  />
+                  <span
+                    style={{ fontFamily: "'Inter', sans-serif", fontSize: 12 }}
+                  >
+                    Exportar
+                  </span>
                 </button>
               </div>
               <div>
@@ -263,7 +352,8 @@ export function ReportsPage() {
                     key={i}
                     className="flex items-center justify-between border-t px-5 py-3 transition-colors hover:bg-slate-50"
                     style={{
-                      background: item.tipo === "resultado" ? "#F8FAFC" : "transparent",
+                      background:
+                        item.tipo === "resultado" ? "#F8FAFC" : "transparent",
                       borderColor: "#F8FAFC",
                     }}
                   >
@@ -272,7 +362,8 @@ export function ReportsPage() {
                         fontFamily: "'Inter', sans-serif",
                         fontSize: 13,
                         fontWeight: item.tipo === "resultado" ? 700 : 400,
-                        color: item.tipo === "resultado" ? "#1E293B" : "#374151",
+                        color:
+                          item.tipo === "resultado" ? "#1E293B" : "#374151",
                         paddingLeft: item.tipo !== "resultado" ? 16 : 0,
                       }}
                     >
@@ -280,7 +371,10 @@ export function ReportsPage() {
                     </p>
                     <div className="flex items-center gap-2">
                       {item.tipo === "resultado" && item.valor > 0 && (
-                        <TrendingUp className="h-3.5 w-3.5" style={{ color: SUCCESS }} />
+                        <TrendingUp
+                          className="h-3.5 w-3.5"
+                          style={{ color: SUCCESS }}
+                        />
                       )}
                       <p
                         style={{
@@ -307,9 +401,24 @@ export function ReportsPage() {
                 style={{ borderColor: "#F1F5F9" }}
               >
                 {[
-                  { label: "Receita Bruta", value: "R$ 284.500", trend: "+12,4%", color: SUCCESS },
-                  { label: "EBITDA", value: "R$ 102.120", trend: "35,9% margem", color: P },
-                  { label: "Lucro Líquido", value: "R$ 74.940", trend: "26,3% margem", color: G },
+                  {
+                    label: "Receita Bruta",
+                    value: "R$ 284.500",
+                    trend: "+12,4%",
+                    color: SUCCESS,
+                  },
+                  {
+                    label: "EBITDA",
+                    value: "R$ 102.120",
+                    trend: "35,9% margem",
+                    color: P,
+                  },
+                  {
+                    label: "Lucro Líquido",
+                    value: "R$ 74.940",
+                    trend: "26,3% margem",
+                    color: G,
+                  },
                 ].map((s) => (
                   <div
                     key={s.label}
@@ -353,7 +462,10 @@ export function ReportsPage() {
           )}
 
           {activeReport === "cashflow" && (
-            <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+            <div
+              className="rounded-2xl bg-white p-5"
+              style={{ border: "1px solid #E2E8F0" }}
+            >
               <h3
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
@@ -380,12 +492,20 @@ export function ReportsPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
                   <XAxis
                     dataKey="mes"
-                    tick={{ fontSize: 11, fill: "#94A3B8", fontFamily: "Inter" }}
+                    tick={{
+                      fontSize: 11,
+                      fill: "#94A3B8",
+                      fontFamily: "Inter",
+                    }}
                     axisLine={false}
                     tickLine={false}
                   />
                   <YAxis
-                    tick={{ fontSize: 11, fill: "#94A3B8", fontFamily: "Inter" }}
+                    tick={{
+                      fontSize: 11,
+                      fill: "#94A3B8",
+                      fontFamily: "Inter",
+                    }}
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
@@ -402,15 +522,28 @@ export function ReportsPage() {
                     fill={CHART_SUCCESS}
                     radius={[4, 4, 0, 0]}
                   />
-                  <Bar dataKey="pago" name="Pago" fill={P} radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="saldo" name="Saldo" fill={G} radius={[4, 4, 0, 0]} />
+                  <Bar
+                    dataKey="pago"
+                    name="Pago"
+                    fill={P}
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="saldo"
+                    name="Saldo"
+                    fill={G}
+                    radius={[4, 4, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
               <div className="mt-4 grid grid-cols-3 gap-3">
                 {[
                   {
                     label: "Total Recebido",
-                    value: cashFlowChartData.reduce((s, d) => s + d.recebido, 0),
+                    value: cashFlowChartData.reduce(
+                      (s, d) => s + d.recebido,
+                      0,
+                    ),
                     color: SUCCESS,
                   },
                   {
@@ -455,7 +588,10 @@ export function ReportsPage() {
           )}
 
           {activeReport === "aging" && (
-            <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid #E2E8F0" }}>
+            <div
+              className="rounded-2xl bg-white p-5"
+              style={{ border: "1px solid #E2E8F0" }}
+            >
               <h3
                 style={{
                   fontFamily: "'Montserrat', sans-serif",
@@ -479,10 +615,18 @@ export function ReportsPage() {
               </p>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={agingData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" horizontal={false} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#F1F5F9"
+                    horizontal={false}
+                  />
                   <XAxis
                     type="number"
-                    tick={{ fontSize: 11, fill: "#94A3B8", fontFamily: "Inter" }}
+                    tick={{
+                      fontSize: 11,
+                      fill: "#94A3B8",
+                      fontFamily: "Inter",
+                    }}
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
@@ -490,20 +634,34 @@ export function ReportsPage() {
                   <YAxis
                     type="category"
                     dataKey="faixa"
-                    tick={{ fontSize: 11.5, fill: "#374151", fontFamily: "Inter" }}
+                    tick={{
+                      fontSize: 11.5,
+                      fill: "#374151",
+                      fontFamily: "Inter",
+                    }}
                     axisLine={false}
                     tickLine={false}
                     width={110}
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="valor" name="Valor" fill={P} radius={[0, 4, 4, 0]} />
+                  <Bar
+                    dataKey="valor"
+                    name="Valor"
+                    fill={P}
+                    radius={[0, 4, 4, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
               <div className="mt-4 overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr style={{ background: "#F8FAFC" }}>
-                      {["Faixa", "Qtd. Faturas", "Valor Total", "% do Total"].map((h) => (
+                      {[
+                        "Faixa",
+                        "Qtd. Faturas",
+                        "Valor Total",
+                        "% do Total",
+                      ].map((h) => (
                         <th
                           key={h}
                           className="px-4 py-2 text-left"
@@ -567,7 +725,10 @@ export function ReportsPage() {
                               <div className="h-1.5 flex-1 rounded-full bg-slate-100">
                                 <div
                                   className="h-1.5 rounded-full"
-                                  style={{ width: `${pct}%`, background: overdue ? DANGER : P }}
+                                  style={{
+                                    width: `${pct}%`,
+                                    background: overdue ? DANGER : P,
+                                  }}
                                 />
                               </div>
                               <span
@@ -595,7 +756,10 @@ export function ReportsPage() {
               className="overflow-hidden rounded-2xl bg-white"
               style={{ border: "1px solid #E2E8F0" }}
             >
-              <div className="border-b px-5 py-4" style={{ borderColor: "#F1F5F9" }}>
+              <div
+                className="border-b px-5 py-4"
+                style={{ borderColor: "#F1F5F9" }}
+              >
                 <h3
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
@@ -606,7 +770,13 @@ export function ReportsPage() {
                 >
                   Análise de Inadimplência
                 </h3>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#64748B" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12,
+                    color: "#64748B",
+                  }}
+                >
                   Clientes com pagamentos em atraso
                 </p>
               </div>
@@ -615,7 +785,12 @@ export function ReportsPage() {
                 style={{ borderColor: "#F1F5F9" }}
               >
                 {[
-                  { label: "Taxa de Inadimplência", value: "3,2%", trend: "-0,8%", positive: true },
+                  {
+                    label: "Taxa de Inadimplência",
+                    value: "3,2%",
+                    trend: "-0,8%",
+                    positive: true,
+                  },
                   {
                     label: "Valor Total em Atraso",
                     value: "R$ 41.400",
@@ -668,12 +843,19 @@ export function ReportsPage() {
               </div>
               <div className="divide-y" style={{ borderColor: "#F8FAFC" }}>
                 {inadimplenciaData.map((c, i) => (
-                  <div key={i} className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50">
+                  <div
+                    key={i}
+                    className="flex items-center gap-4 px-5 py-4 hover:bg-slate-50"
+                  >
                     <div
                       className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white"
                       style={{
                         background:
-                          c.risco === "alto" ? DANGER : c.risco === "medio" ? WARNING : "#64748B",
+                          c.risco === "alto"
+                            ? DANGER
+                            : c.risco === "medio"
+                              ? WARNING
+                              : "#64748B",
                         fontFamily: "'Inter', sans-serif",
                       }}
                     >
@@ -722,18 +904,31 @@ export function ReportsPage() {
                                 ? WARNING_BG
                                 : "#F1F5F9",
                           color:
-                            c.risco === "alto" ? DANGER : c.risco === "medio" ? WARNING : "#64748B",
+                            c.risco === "alto"
+                              ? DANGER
+                              : c.risco === "medio"
+                                ? WARNING
+                                : "#64748B",
                         }}
                       >
                         Risco {c.risco.toUpperCase()}
                       </span>
                     </div>
                     <button
-                      onClick={() => toast.success(`Lembrete enviado para ${c.cliente}`)}
+                      onClick={() =>
+                        toast.success(`Lembrete enviado para ${c.cliente}`)
+                      }
                       className="ml-2 rounded-xl px-3 py-1.5 text-xs font-semibold text-white transition-all"
-                      style={{ background: P, fontFamily: "'Inter', sans-serif" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = PH)}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = P)}
+                      style={{
+                        background: P,
+                        fontFamily: "'Inter', sans-serif",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.background = PH)
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.background = P)
+                      }
                     >
                       Cobrar
                     </button>
@@ -748,7 +943,10 @@ export function ReportsPage() {
               className="overflow-hidden rounded-2xl bg-white"
               style={{ border: "1px solid #E2E8F0" }}
             >
-              <div className="border-b px-5 py-4" style={{ borderColor: "#F1F5F9" }}>
+              <div
+                className="border-b px-5 py-4"
+                style={{ borderColor: "#F1F5F9" }}
+              >
                 <h3
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
@@ -759,7 +957,13 @@ export function ReportsPage() {
                 >
                   Relatórios Fiscais e Obrigações
                 </h3>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#64748B" }}>
+                <p
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: 12,
+                    color: "#64748B",
+                  }}
+                >
                   Competência: Abril 2026
                 </p>
               </div>
@@ -805,7 +1009,10 @@ export function ReportsPage() {
                       className="flex h-8 w-8 items-center justify-center rounded-xl"
                       style={{ background: "#F8FAFC" }}
                     >
-                      <FileText className="h-4 w-4" style={{ color: "#64748B" }} />
+                      <FileText
+                        className="h-4 w-4"
+                        style={{ color: "#64748B" }}
+                      />
                     </div>
                     <div className="flex-1">
                       <p
@@ -839,12 +1046,20 @@ export function ReportsPage() {
                               ? WARNING_BG
                               : "#EEF2F9",
                         color:
-                          o.status === "entregue" ? SUCCESS : o.status === "pendente" ? WARNING : P,
+                          o.status === "entregue"
+                            ? SUCCESS
+                            : o.status === "pendente"
+                              ? WARNING
+                              : P,
                       }}
                     >
-                      {o.status === "entregue" && <CheckCircle className="h-3 w-3" />}
+                      {o.status === "entregue" && (
+                        <CheckCircle className="h-3 w-3" />
+                      )}
                       {o.status === "pendente" && <Clock className="h-3 w-3" />}
-                      {o.status === "em-preparo" && <RefreshCw className="h-3 w-3" />}
+                      {o.status === "em-preparo" && (
+                        <RefreshCw className="h-3 w-3" />
+                      )}
                       {o.status === "entregue"
                         ? "Entregue"
                         : o.status === "pendente"
@@ -855,7 +1070,10 @@ export function ReportsPage() {
                       onClick={() => toast.success(`${o.nome} exportado!`)}
                       className="rounded-xl p-1.5 hover:bg-slate-100"
                     >
-                      <Download className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                      <Download
+                        className="h-4 w-4"
+                        style={{ color: "#94A3B8" }}
+                      />
                     </button>
                   </div>
                 ))}

@@ -66,11 +66,13 @@ export function MainLayout() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   // Onboarding state
-  const [onboarding, setOnboarding] = useState<"owner" | "invited" | null>(() => {
-    const val = localStorage.getItem("olympia_onboarding");
-    if (val === "owner" || val === "invited") return val;
-    return null;
-  });
+  const [onboarding, setOnboarding] = useState<"owner" | "invited" | null>(
+    () => {
+      const val = localStorage.getItem("olympia_onboarding");
+      if (val === "owner" || val === "invited") return val;
+      return null;
+    },
+  );
 
   const finishOnboarding = () => {
     localStorage.removeItem("olympia_onboarding");
@@ -84,7 +86,10 @@ export function MainLayout() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: "#F8FAFC" }}>
+    <div
+      className="flex h-screen overflow-hidden"
+      style={{ background: "#F8FAFC" }}
+    >
       {/* ──────────── SIDEBAR ──────────── */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 flex flex-col transition-transform duration-300 lg:relative lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} `}
@@ -167,7 +172,10 @@ export function MainLayout() {
         >
           <div
             className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg"
-            style={{ background: C.goldLight, border: `1px solid rgba(200,169,107,0.3)` }}
+            style={{
+              background: C.goldLight,
+              border: `1px solid rgba(200,169,107,0.3)`,
+            }}
           >
             <Building2 style={{ width: 14, height: 14, color: C.gold }} />
           </div>
@@ -183,7 +191,13 @@ export function MainLayout() {
             >
               Olympia Pagamentos
             </p>
-            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 9.5, color: C.sidebarText }}>
+            <p
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 9.5,
+                color: C.sidebarText,
+              }}
+            >
               CNPJ 12.345.678/0001-90
             </p>
           </div>
@@ -257,15 +271,24 @@ export function MainLayout() {
         </nav>
 
         {/* Bottom */}
-        <div className="px-3 py-4" style={{ borderTop: `1px solid ${C.sidebarBorder}` }}>
+        <div
+          className="px-3 py-4"
+          style={{ borderTop: `1px solid ${C.sidebarBorder}` }}
+        >
           <button
             className="mb-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 transition-all"
             style={{ color: C.sidebarText }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = "rgba(255,255,255,0.05)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "transparent")
+            }
           >
             <HelpCircle style={{ width: 17, height: 17 }} />
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13.5 }}>Suporte</span>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13.5 }}>
+              Suporte
+            </span>
           </button>
 
           {/* User */}
@@ -297,7 +320,13 @@ export function MainLayout() {
               >
                 {currentUser.name}
               </p>
-              <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, color: C.sidebarText }}>
+              <p
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 10,
+                  color: C.sidebarText,
+                }}
+              >
                 {currentUser.role}
               </p>
             </div>
@@ -344,7 +373,11 @@ export function MainLayout() {
               type="text"
               placeholder="Buscar cobranças, clientes, pagamentos..."
               className="flex-1 bg-transparent placeholder-slate-400 focus:outline-none"
-              style={{ fontSize: 13, color: "#374151", fontFamily: "'Inter', sans-serif" }}
+              style={{
+                fontSize: 13,
+                color: "#374151",
+                fontFamily: "'Inter', sans-serif",
+              }}
             />
           </div>
 
@@ -358,9 +391,12 @@ export function MainLayout() {
                 }}
                 className="relative rounded-xl p-2 transition-colors"
                 style={{ background: notifOpen ? "#EEF2F9" : "transparent" }}
-                onMouseEnter={(e) => !notifOpen && (e.currentTarget.style.background = "#F8FAFC")}
+                onMouseEnter={(e) =>
+                  !notifOpen && (e.currentTarget.style.background = "#F8FAFC")
+                }
                 onMouseLeave={(e) =>
-                  !notifOpen && (e.currentTarget.style.background = "transparent")
+                  !notifOpen &&
+                  (e.currentTarget.style.background = "transparent")
                 }
               >
                 <Bell className="h-5 w-5" style={{ color: "#64748B" }} />
@@ -396,8 +432,16 @@ export function MainLayout() {
                     </span>
                   </div>
                   {[
-                    { title: "3 faturas vencidas hoje", sub: "Total: R$ 12.400,00", dot: DANGER },
-                    { title: "Pix recebido R$ 18.200,00", sub: "Beta Indústria S/A", dot: SUCCESS },
+                    {
+                      title: "3 faturas vencidas hoje",
+                      sub: "Total: R$ 12.400,00",
+                      dot: DANGER,
+                    },
+                    {
+                      title: "Pix recebido R$ 18.200,00",
+                      sub: "Beta Indústria S/A",
+                      dot: SUCCESS,
+                    },
                     {
                       title: "DARF vence amanhã",
                       sub: "R$ 8.340,00 — saldo insuficiente",
@@ -425,7 +469,9 @@ export function MainLayout() {
                           >
                             {n.title}
                           </p>
-                          <p style={{ fontSize: 11.5, color: "#64748B" }}>{n.sub}</p>
+                          <p style={{ fontSize: 11.5, color: "#64748B" }}>
+                            {n.sub}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -456,10 +502,12 @@ export function MainLayout() {
                 className="flex items-center gap-2 rounded-xl py-1.5 pr-2 pl-3 transition-colors"
                 style={{ background: userMenuOpen ? "#EEF2F9" : "transparent" }}
                 onMouseEnter={(e) =>
-                  !userMenuOpen && (e.currentTarget.style.background = "#F8FAFC")
+                  !userMenuOpen &&
+                  (e.currentTarget.style.background = "#F8FAFC")
                 }
                 onMouseLeave={(e) =>
-                  !userMenuOpen && (e.currentTarget.style.background = "transparent")
+                  !userMenuOpen &&
+                  (e.currentTarget.style.background = "transparent")
                 }
               >
                 <div
@@ -486,20 +534,36 @@ export function MainLayout() {
                   >
                     {currentUser.name}
                   </p>
-                  <p style={{ fontSize: 10.5, color: "#64748B" }}>{currentUser.role}</p>
+                  <p style={{ fontSize: 10.5, color: "#64748B" }}>
+                    {currentUser.role}
+                  </p>
                 </div>
-                <ChevronDown className="h-3.5 w-3.5" style={{ color: "#94A3B8" }} />
+                <ChevronDown
+                  className="h-3.5 w-3.5"
+                  style={{ color: "#94A3B8" }}
+                />
               </button>
               {userMenuOpen && (
                 <div
                   className="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-2xl border bg-white shadow-xl"
                   style={{ borderColor: "#E2E8F0" }}
                 >
-                  <div className="border-b px-4 py-3" style={{ borderColor: "#F1F5F9" }}>
-                    <p style={{ fontSize: 12.5, fontWeight: 700, color: "#1E293B" }}>
+                  <div
+                    className="border-b px-4 py-3"
+                    style={{ borderColor: "#F1F5F9" }}
+                  >
+                    <p
+                      style={{
+                        fontSize: 12.5,
+                        fontWeight: 700,
+                        color: "#1E293B",
+                      }}
+                    >
                       {currentUser.name}
                     </p>
-                    <p style={{ fontSize: 11, color: "#64748B" }}>{currentUser.email}</p>
+                    <p style={{ fontSize: 11, color: "#64748B" }}>
+                      {currentUser.email}
+                    </p>
                   </div>
                   {[
                     { label: "Meu Perfil", icon: User },
@@ -509,12 +573,21 @@ export function MainLayout() {
                       key={item.label}
                       onClick={() => {
                         setUserMenuOpen(false);
-                        void navigate(item.label === "Meu Perfil" ? "/profile" : "/settings");
+                        void navigate(
+                          item.label === "Meu Perfil"
+                            ? "/profile"
+                            : "/settings",
+                        );
                       }}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-slate-50"
                     >
-                      <item.icon className="h-4 w-4" style={{ color: "#94A3B8" }} />
-                      <span style={{ fontSize: 13, color: "#374151" }}>{item.label}</span>
+                      <item.icon
+                        className="h-4 w-4"
+                        style={{ color: "#94A3B8" }}
+                      />
+                      <span style={{ fontSize: 13, color: "#374151" }}>
+                        {item.label}
+                      </span>
                     </button>
                   ))}
                   <div className="border-t" style={{ borderColor: "#F1F5F9" }}>
@@ -533,14 +606,21 @@ export function MainLayout() {
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto" style={{ background: "#F8FAFC" }}>
+        <main
+          className="flex-1 overflow-y-auto"
+          style={{ background: "#F8FAFC" }}
+        >
           <Outlet />
         </main>
       </div>
 
       {/* Onboarding overlays */}
-      {onboarding === "owner" && <OwnerOnboarding onComplete={finishOnboarding} />}
-      {onboarding === "invited" && <InvitedOnboarding onComplete={finishOnboarding} />}
+      {onboarding === "owner" && (
+        <OwnerOnboarding onComplete={finishOnboarding} />
+      )}
+      {onboarding === "invited" && (
+        <InvitedOnboarding onComplete={finishOnboarding} />
+      )}
     </div>
   );
 }

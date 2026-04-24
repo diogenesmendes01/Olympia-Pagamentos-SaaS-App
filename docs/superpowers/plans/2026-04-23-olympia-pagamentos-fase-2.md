@@ -572,7 +572,9 @@ import { z } from "zod";
 
 export const emailSchema = z.string().email("Email inválido");
 
-export const passwordSchema = z.string().min(8, "Senha precisa ter ao menos 8 caracteres");
+export const passwordSchema = z
+  .string()
+  .min(8, "Senha precisa ter ao menos 8 caracteres");
 
 export const signupSchema = z.object({
   name: z.string().min(2, "Nome obrigatório"),
@@ -747,7 +749,10 @@ export default [
       parserOptions: { project: "./tsconfig.json" },
     },
     rules: {
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_" },
+      ],
     },
   },
 ];
@@ -999,8 +1004,12 @@ git commit -m "feat: docker-compose com postgres 16 + redis 7 + mailpit"
 import { z } from "zod";
 
 const schema = z.object({
-  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-  LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]).default("info"),
+  NODE_ENV: z
+    .enum(["development", "test", "production"])
+    .default("development"),
+  LOG_LEVEL: z
+    .enum(["trace", "debug", "info", "warn", "error", "fatal"])
+    .default("info"),
   PORT: z.coerce.number().default(3000),
 
   DATABASE_URL: z.string().url(),
@@ -1036,7 +1045,9 @@ if (!result.success) {
 export const config = result.data;
 export type Config = typeof config;
 
-export const hasGoogleSSO = Boolean(config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET);
+export const hasGoogleSSO = Boolean(
+  config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET,
+);
 export const hasMicrosoftSSO = Boolean(
   config.MICROSOFT_CLIENT_ID && config.MICROSOFT_CLIENT_SECRET,
 );
@@ -1355,7 +1366,9 @@ export type Auth = typeof auth;
 import type { FastifyPluginAsync } from "fastify";
 import { auth } from "./instance.js";
 
-function toWebHeaders(headers: Record<string, string | string[] | undefined>): Headers {
+function toWebHeaders(
+  headers: Record<string, string | string[] | undefined>,
+): Headers {
   const out = new Headers();
   for (const [k, v] of Object.entries(headers)) {
     if (v === undefined) continue;
@@ -1367,12 +1380,17 @@ function toWebHeaders(headers: Record<string, string | string[] | undefined>): H
 
 export const authPlugin: FastifyPluginAsync = async (app) => {
   // Better Auth precisa do body raw; evita double-parse por Fastify
-  app.addContentTypeParser("application/json", { parseAs: "string" }, (_req, body, done) =>
-    done(null, body),
+  app.addContentTypeParser(
+    "application/json",
+    { parseAs: "string" },
+    (_req, body, done) => done(null, body),
   );
 
   app.all("/api/auth/*", async (req, reply) => {
-    const url = new URL(req.url, `${req.protocol}://${req.headers.host ?? "localhost"}`);
+    const url = new URL(
+      req.url,
+      `${req.protocol}://${req.headers.host ?? "localhost"}`,
+    );
     const webRequest = new Request(url.toString(), {
       method: req.method,
       headers: toWebHeaders(req.headers),
@@ -1519,7 +1537,8 @@ import { execSync } from "node:child_process";
 
 export async function setup() {
   process.env.DATABASE_URL =
-    process.env.DATABASE_URL_TEST ?? "postgresql://olympia:olympia@localhost:5432/olympia_test";
+    process.env.DATABASE_URL_TEST ??
+    "postgresql://olympia:olympia@localhost:5432/olympia_test";
   execSync("pnpm db:migrate", {
     stdio: "inherit",
     env: { ...process.env },
@@ -1768,7 +1787,9 @@ export const transport = nodemailer.createTransport({
   host: config.SMTP_HOST,
   port: config.SMTP_PORT,
   secure: false,
-  auth: config.SMTP_USER ? { user: config.SMTP_USER, pass: config.SMTP_PASS ?? "" } : undefined,
+  auth: config.SMTP_USER
+    ? { user: config.SMTP_USER, pass: config.SMTP_PASS ?? "" }
+    : undefined,
 });
 
 export const FROM = config.SMTP_FROM;
@@ -2268,7 +2289,11 @@ it("magic link — pede link → captura token → autentica", async () => {
   await app.inject({
     method: "POST",
     url: "/api/auth/sign-up/email",
-    payload: { name: "Magic", email: "magic@test.com", password: "password123" },
+    payload: {
+      name: "Magic",
+      email: "magic@test.com",
+      password: "password123",
+    },
   });
 
   const res = await app.inject({
@@ -2518,13 +2543,19 @@ vi.mock("../../queues/email.queue.js", () => ({
   EMAIL_QUEUE_NAME: "email",
 }));
 
-async function signupAndVerify(app: any, email: string, password = "password123") {
+async function signupAndVerify(
+  app: any,
+  email: string,
+  password = "password123",
+) {
   await app.inject({
     method: "POST",
     url: "/api/auth/sign-up/email",
     payload: { name: email.split("@")[0], email, password },
   });
-  const job = capturedEmails.find((j) => j.type === "verifyEmail" && j.to === email);
+  const job = capturedEmails.find(
+    (j) => j.type === "verifyEmail" && j.to === email,
+  );
   const token = new URL(job.verifyUrl).searchParams.get("token");
   await app.inject({
     method: "GET",
@@ -2618,15 +2649,24 @@ vi.mock("../../queues/email.queue.js", () => ({
   EMAIL_QUEUE_NAME: "email",
 }));
 
-async function signupAndVerify(app: any, email: string, password = "password123") {
+async function signupAndVerify(
+  app: any,
+  email: string,
+  password = "password123",
+) {
   await app.inject({
     method: "POST",
     url: "/api/auth/sign-up/email",
     payload: { name: email.split("@")[0], email, password },
   });
-  const job = capturedEmails.find((j) => j.type === "verifyEmail" && j.to === email);
+  const job = capturedEmails.find(
+    (j) => j.type === "verifyEmail" && j.to === email,
+  );
   const token = new URL(job.verifyUrl).searchParams.get("token");
-  await app.inject({ method: "GET", url: `/api/auth/verify-email?token=${token}` });
+  await app.inject({
+    method: "GET",
+    url: `/api/auth/verify-email?token=${token}`,
+  });
   const login = await app.inject({
     method: "POST",
     url: "/api/auth/sign-in/email",
@@ -2675,7 +2715,9 @@ describe("organization members", () => {
       headers: { cookie: ownerCookie },
     });
     const members = list.json().data ?? list.json();
-    const membro = members.find((m: any) => m.user?.email === "member2@test.com");
+    const membro = members.find(
+      (m: any) => m.user?.email === "member2@test.com",
+    );
     expect(membro).toBeDefined();
 
     // owner promove a admin
@@ -2785,7 +2827,10 @@ Todos os testes de organizations + invitations + members devem passar. Se um tes
 
 ```typescript
 import { createAuthClient } from "better-auth/react";
-import { organizationClient, magicLinkClient } from "better-auth/client/plugins";
+import {
+  organizationClient,
+  magicLinkClient,
+} from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
   baseURL: "/api/auth",
@@ -2996,7 +3041,11 @@ export function SignupPage() {
     navigate("/verify-email");
   }
 
-  return <form onSubmit={form.handleSubmit(onSubmit)}>{/* campos nome, email, password */}</form>;
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      {/* campos nome, email, password */}
+    </form>
+  );
 }
 ```
 
@@ -3056,9 +3105,12 @@ export function VerifyEmailPage() {
     const token = params.get("token");
     if (!token) return;
     // endpoint GET /api/auth/verify-email?token=...&callbackURL=...
-    fetch(`/api/auth/verify-email?token=${encodeURIComponent(token)}&callbackURL=/dashboard`, {
-      credentials: "include",
-    }).then((res) => {
+    fetch(
+      `/api/auth/verify-email?token=${encodeURIComponent(token)}&callbackURL=/dashboard`,
+      {
+        credentials: "include",
+      },
+    ).then((res) => {
       if (res.ok || res.redirected) navigate("/dashboard");
       else setState("error");
     });
@@ -3077,7 +3129,8 @@ export function VerifyEmailPage() {
   }
 
   if (state === "verifying") return <div className="p-8">Verificando...</div>;
-  if (state === "error") return <div className="p-8">Link inválido ou expirado.</div>;
+  if (state === "error")
+    return <div className="p-8">Link inválido ou expirado.</div>;
 
   return (
     <div className="mx-auto max-w-md p-8">
@@ -3176,10 +3229,15 @@ Form com nome + slug auto-gerado (kebab-case do nome) + CNPJ opcional. Submete v
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { organization } from "../../lib/auth";
-import { createOrgSchema, type CreateOrgInput } from "@olympia/shared/schemas/organization";
+import {
+  createOrgSchema,
+  type CreateOrgInput,
+} from "@olympia/shared/schemas/organization";
 
 export function OrgOnboardingPage() {
-  const form = useForm<CreateOrgInput>({ resolver: zodResolver(createOrgSchema) });
+  const form = useForm<CreateOrgInput>({
+    resolver: zodResolver(createOrgSchema),
+  });
   const navigate = useNavigate();
 
   async function onSubmit(values: CreateOrgInput) {
@@ -3263,7 +3321,9 @@ export function OrgSwitcher() {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => navigate("/onboarding/organization?mode=additional")}>
+        <DropdownMenuItem
+          onSelect={() => navigate("/onboarding/organization?mode=additional")}
+        >
           + Criar nova organização
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -3321,19 +3381,23 @@ export function InvitationPage() {
 
   useEffect(() => {
     if (!id) return;
-    authClient.organization.getInvitation({ query: { id } }).then(({ data, error }) => {
-      if (error) {
-        setError(error.message);
-        return;
-      }
-      setInvite(data);
-    });
+    authClient.organization
+      .getInvitation({ query: { id } })
+      .then(({ data, error }) => {
+        if (error) {
+          setError(error.message);
+          return;
+        }
+        setInvite(data);
+      });
   }, [id]);
 
   useEffect(() => {
     if (isPending || !invite || !id) return;
     if (!session) {
-      navigate(`/signup?invitation=${id}&email=${encodeURIComponent(invite.email)}`);
+      navigate(
+        `/signup?invitation=${id}&email=${encodeURIComponent(invite.email)}`,
+      );
       return;
     }
     if (session.user.email === invite.email) {

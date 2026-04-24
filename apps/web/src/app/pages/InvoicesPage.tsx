@@ -19,7 +19,11 @@ import {
   Printer,
 } from "lucide-react";
 import { toast } from "sonner";
-import { invoices as mockInvoices, type Invoice, type InvoiceItem } from "../data/mockData";
+import {
+  invoices as mockInvoices,
+  type Invoice,
+  type InvoiceItem,
+} from "../data/mockData";
 import {
   PRIMARY as P,
   PRIMARY_HOVER as PH,
@@ -37,15 +41,35 @@ import {
 } from "../styles/tokens";
 
 const fmt = (v: number) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
+  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+    v,
+  );
 
 const statusConfig: Record<
   Invoice["status"],
   { label: string; bg: string; text: string; border: string; icon: any }
 > = {
-  emitida: { label: "Emitida", bg: PRIMARY_SOFT, text: P, border: "#C3D0E4", icon: FileText },
-  enviada: { label: "Enviada", bg: WARNING_BG, text: WARNING, border: WARNING_BORDER, icon: Send },
-  paga: { label: "Paga", bg: SUCCESS_BG, text: SUCCESS, border: SUCCESS_BORDER, icon: CheckCircle },
+  emitida: {
+    label: "Emitida",
+    bg: PRIMARY_SOFT,
+    text: P,
+    border: "#C3D0E4",
+    icon: FileText,
+  },
+  enviada: {
+    label: "Enviada",
+    bg: WARNING_BG,
+    text: WARNING,
+    border: WARNING_BORDER,
+    icon: Send,
+  },
+  paga: {
+    label: "Paga",
+    bg: SUCCESS_BG,
+    text: SUCCESS,
+    border: SUCCESS_BORDER,
+    icon: CheckCircle,
+  },
   cancelada: {
     label: "Cancelada",
     bg: DANGER_BG,
@@ -53,7 +77,13 @@ const statusConfig: Record<
     border: DANGER_BORDER,
     icon: XCircle,
   },
-  rascunho: { label: "Rascunho", bg: "#F1F5F9", text: "#64748B", border: "#E2E8F0", icon: Clock },
+  rascunho: {
+    label: "Rascunho",
+    bg: "#F1F5F9",
+    text: "#64748B",
+    border: "#E2E8F0",
+    icon: Clock,
+  },
 };
 
 // ─── Invoice creation wizard ──────────────────────────────────────────────────
@@ -105,7 +135,9 @@ function InvoiceWizard({
         if (it.id !== id) return it;
         const updated = { ...it, [key]: val };
         if (key === "qtd" || key === "unitario") {
-          updated.total = (key === "qtd" ? val : it.qtd) * (key === "unitario" ? val : it.unitario);
+          updated.total =
+            (key === "qtd" ? val : it.qtd) *
+            (key === "unitario" ? val : it.unitario);
         }
         return updated;
       }),
@@ -115,7 +147,16 @@ function InvoiceWizard({
   const addItem = () => {
     setData((d) => ({
       ...d,
-      items: [...d.items, { id: String(Date.now()), descricao: "", qtd: 1, unitario: 0, total: 0 }],
+      items: [
+        ...d.items,
+        {
+          id: String(Date.now()),
+          descricao: "",
+          qtd: 1,
+          unitario: 0,
+          total: 0,
+        },
+      ],
     }));
   };
 
@@ -149,10 +190,13 @@ function InvoiceWizard({
       items: data.items,
     };
     onSave(newInv);
-    toast.success(asDraft ? "Rascunho salvo com sucesso!" : "NF emitida com sucesso!");
+    toast.success(
+      asDraft ? "Rascunho salvo com sucesso!" : "NF emitida com sucesso!",
+    );
   };
 
-  const inputClass = "w-full px-4 py-2.5 rounded-xl border focus:outline-none transition-all";
+  const inputClass =
+    "w-full px-4 py-2.5 rounded-xl border focus:outline-none transition-all";
   const inputStyle = {
     fontFamily: "'Inter', sans-serif",
     fontSize: 13,
@@ -178,7 +222,10 @@ function InvoiceWizard({
         style={{ maxHeight: "92vh" }}
       >
         {/* Header */}
-        <div className="flex-shrink-0 border-b px-6 pt-5 pb-4" style={{ borderColor: "#F1F5F9" }}>
+        <div
+          className="flex-shrink-0 border-b px-6 pt-5 pb-4"
+          style={{ borderColor: "#F1F5F9" }}
+        >
           <div className="mb-4 flex items-center justify-between">
             <h3
               style={{
@@ -190,7 +237,10 @@ function InvoiceWizard({
             >
               Nova Fatura / Nota Fiscal
             </h3>
-            <button onClick={onClose} className="rounded-xl p-1.5 hover:bg-slate-100">
+            <button
+              onClick={onClose}
+              className="rounded-xl p-1.5 hover:bg-slate-100"
+            >
               <XCircle className="h-5 w-5" style={{ color: "#94A3B8" }} />
             </button>
           </div>
@@ -278,7 +328,8 @@ function InvoiceWizard({
                       className="rounded-xl border-2 p-4 text-left transition-all"
                       style={{
                         borderColor: data.tipo === opt.val ? P : "#E2E8F0",
-                        background: data.tipo === opt.val ? PRIMARY_SOFT : "white",
+                        background:
+                          data.tipo === opt.val ? PRIMARY_SOFT : "white",
                       }}
                     >
                       <p
@@ -501,7 +552,10 @@ function InvoiceWizard({
                 >
                   <input
                     className="w-full rounded-lg border px-2 py-1.5 text-sm focus:outline-none"
-                    style={{ fontFamily: "'Inter', sans-serif", borderColor: "#CBD5E1" }}
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      borderColor: "#CBD5E1",
+                    }}
                     placeholder="Descrição do item"
                     value={item.descricao}
                     onChange={(e) => {
@@ -512,7 +566,10 @@ function InvoiceWizard({
                     type="number"
                     min="1"
                     className="w-full rounded-lg border px-2 py-1.5 text-center text-sm focus:outline-none"
-                    style={{ fontFamily: "'Inter', sans-serif", borderColor: "#CBD5E1" }}
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      borderColor: "#CBD5E1",
+                    }}
                     value={item.qtd}
                     onChange={(e) => {
                       updateItem(item.id, "qtd", Number(e.target.value));
@@ -523,7 +580,10 @@ function InvoiceWizard({
                     min="0"
                     step="0.01"
                     className="w-full rounded-lg border px-2 py-1.5 text-sm focus:outline-none"
-                    style={{ fontFamily: "'Inter', sans-serif", borderColor: "#CBD5E1" }}
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      borderColor: "#CBD5E1",
+                    }}
                     value={item.unitario}
                     onChange={(e) => {
                       updateItem(item.id, "unitario", Number(e.target.value));
@@ -547,7 +607,9 @@ function InvoiceWizard({
                   >
                     <Trash2
                       className="h-4 w-4"
-                      style={{ color: data.items.length === 1 ? "#E2E8F0" : DANGER }}
+                      style={{
+                        color: data.items.length === 1 ? "#E2E8F0" : DANGER,
+                      }}
                     />
                   </button>
                 </div>
@@ -556,11 +618,18 @@ function InvoiceWizard({
               {/* Totals */}
               <div
                 className="space-y-2 rounded-xl p-4"
-                style={{ background: PRIMARY_SOFT, border: `1px solid #C3D0E4` }}
+                style={{
+                  background: PRIMARY_SOFT,
+                  border: `1px solid #C3D0E4`,
+                }}
               >
                 <div className="flex justify-between">
                   <span
-                    style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#374151" }}
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 13,
+                      color: "#374151",
+                    }}
                   >
                     Subtotal
                   </span>
@@ -577,11 +646,23 @@ function InvoiceWizard({
                 </div>
                 <div className="flex justify-between">
                   <span
-                    style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#374151" }}
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 13,
+                      color: "#374151",
+                    }}
                   >
-                    {data.tipo === "nfse" ? "ISS (8%)" : "ICMS + PIS + COFINS (12%)"}
+                    {data.tipo === "nfse"
+                      ? "ISS (8%)"
+                      : "ICMS + PIS + COFINS (12%)"}
                   </span>
-                  <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: WARNING }}>
+                  <span
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 13,
+                      color: WARNING,
+                    }}
+                  >
                     - {fmt(impostos)}
                   </span>
                 </div>
@@ -617,7 +698,10 @@ function InvoiceWizard({
           {/* Step 3 — Preview */}
           {step === 3 && (
             <div className="space-y-4">
-              <div className="overflow-hidden rounded-2xl" style={{ border: "1px solid #E2E8F0" }}>
+              <div
+                className="overflow-hidden rounded-2xl"
+                style={{ border: "1px solid #E2E8F0" }}
+              >
                 {/* NF Header */}
                 <div
                   className="flex items-center justify-between px-5 py-4"
@@ -736,7 +820,9 @@ function InvoiceWizard({
                       >
                         {new Date().toLocaleDateString("pt-BR")} /{" "}
                         {data.vencimento
-                          ? new Date(data.vencimento + "T00:00:00").toLocaleDateString("pt-BR")
+                          ? new Date(
+                              data.vencimento + "T00:00:00",
+                            ).toLocaleDateString("pt-BR")
                           : "—"}
                       </p>
                     </div>
@@ -766,9 +852,17 @@ function InvoiceWizard({
                     </p>
                   </div>
 
-                  <table className="w-full" style={{ borderCollapse: "collapse" }}>
+                  <table
+                    className="w-full"
+                    style={{ borderCollapse: "collapse" }}
+                  >
                     <thead>
-                      <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #E2E8F0" }}>
+                      <tr
+                        style={{
+                          background: "#F8FAFC",
+                          borderBottom: "1px solid #E2E8F0",
+                        }}
+                      >
                         {["Descrição", "Qtd", "Unit.", "Total"].map((h) => (
                           <th
                             key={h}
@@ -787,7 +881,10 @@ function InvoiceWizard({
                     </thead>
                     <tbody>
                       {data.items.map((it) => (
-                        <tr key={it.id} style={{ borderBottom: "1px solid #F1F5F9" }}>
+                        <tr
+                          key={it.id}
+                          style={{ borderBottom: "1px solid #F1F5F9" }}
+                        >
                           <td
                             className="px-3 py-2"
                             style={{
@@ -837,13 +934,24 @@ function InvoiceWizard({
 
                   <div className="space-y-1 pt-2">
                     {[
-                      { label: "Subtotal Bruto", val: fmt(totalBruto), bold: false },
                       {
-                        label: data.tipo === "nfse" ? "(-) ISS 8%" : "(-) ICMS + PIS + COFINS 12%",
+                        label: "Subtotal Bruto",
+                        val: fmt(totalBruto),
+                        bold: false,
+                      },
+                      {
+                        label:
+                          data.tipo === "nfse"
+                            ? "(-) ISS 8%"
+                            : "(-) ICMS + PIS + COFINS 12%",
                         val: `- ${fmt(impostos)}`,
                         bold: false,
                       },
-                      { label: "Valor Líquido a Receber", val: fmt(liquido), bold: true },
+                      {
+                        label: "Valor Líquido a Receber",
+                        val: fmt(liquido),
+                        bold: true,
+                      },
                     ].map((row) => (
                       <div
                         key={row.label}
@@ -995,7 +1103,13 @@ function InvoiceWizard({
 }
 
 // ─── Invoice Detail Modal ─────────────────────────────────────────────────────
-function InvoiceDetail({ inv, onClose }: { inv: Invoice; onClose: () => void }) {
+function InvoiceDetail({
+  inv,
+  onClose,
+}: {
+  inv: Invoice;
+  onClose: () => void;
+}) {
   const sc = statusConfig[inv.status];
   const StatusIcon = sc.icon;
   return (
@@ -1036,7 +1150,10 @@ function InvoiceDetail({ inv, onClose }: { inv: Invoice; onClose: () => void }) 
               </span>
             </span>
           </div>
-          <button onClick={onClose} className="rounded-xl p-1.5 hover:bg-slate-100">
+          <button
+            onClick={onClose}
+            className="rounded-xl p-1.5 hover:bg-slate-100"
+          >
             <XCircle className="h-5 w-5" style={{ color: "#94A3B8" }} />
           </button>
         </div>
@@ -1050,11 +1167,15 @@ function InvoiceDetail({ inv, onClose }: { inv: Invoice; onClose: () => void }) 
               { label: "E-mail", val: inv.email },
               {
                 label: "Vencimento",
-                val: new Date(inv.vencimento + "T00:00:00").toLocaleDateString("pt-BR"),
+                val: new Date(inv.vencimento + "T00:00:00").toLocaleDateString(
+                  "pt-BR",
+                ),
               },
               {
                 label: "Emissão",
-                val: new Date(inv.emissao + "T00:00:00").toLocaleDateString("pt-BR"),
+                val: new Date(inv.emissao + "T00:00:00").toLocaleDateString(
+                  "pt-BR",
+                ),
               },
               { label: "Tipo", val: inv.tipo === "nfse" ? "NFS-e" : "NF-e" },
             ].map(({ label, val }) => (
@@ -1098,12 +1219,18 @@ function InvoiceDetail({ inv, onClose }: { inv: Invoice; onClose: () => void }) 
             >
               ITENS
             </p>
-            <div className="overflow-hidden rounded-xl" style={{ border: "1px solid #E2E8F0" }}>
+            <div
+              className="overflow-hidden rounded-xl"
+              style={{ border: "1px solid #E2E8F0" }}
+            >
               {inv.items.map((it, i) => (
                 <div
                   key={it.id}
                   className="flex items-center justify-between px-4 py-3"
-                  style={{ borderBottom: i < inv.items.length - 1 ? "1px solid #F1F5F9" : "none" }}
+                  style={{
+                    borderBottom:
+                      i < inv.items.length - 1 ? "1px solid #F1F5F9" : "none",
+                  }}
                 >
                   <div>
                     <p
@@ -1116,7 +1243,11 @@ function InvoiceDetail({ inv, onClose }: { inv: Invoice; onClose: () => void }) 
                       {it.descricao}
                     </p>
                     <p
-                      style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#94A3B8" }}
+                      style={{
+                        fontFamily: "'Inter', sans-serif",
+                        fontSize: 11,
+                        color: "#94A3B8",
+                      }}
                     >
                       {it.qtd}x {fmt(it.unitario)}
                     </p>
@@ -1137,10 +1268,17 @@ function InvoiceDetail({ inv, onClose }: { inv: Invoice; onClose: () => void }) 
           </div>
 
           {/* Totals */}
-          <div className="space-y-1.5 rounded-xl p-4" style={{ background: PRIMARY_SOFT }}>
+          <div
+            className="space-y-1.5 rounded-xl p-4"
+            style={{ background: PRIMARY_SOFT }}
+          >
             {[
               { l: "Valor Bruto", v: fmt(inv.valor), big: false },
-              { l: "Impostos retidos", v: `- ${fmt(inv.impostos)}`, big: false },
+              {
+                l: "Impostos retidos",
+                v: `- ${fmt(inv.impostos)}`,
+                big: false,
+              },
               { l: "Valor Líquido", v: fmt(inv.valorLiquido), big: true },
             ].map((row) => (
               <div
@@ -1225,7 +1363,13 @@ function InvoiceDetail({ inv, onClose }: { inv: Invoice; onClose: () => void }) 
               style={{ borderColor: "#E2E8F0" }}
             >
               <Mail className="h-4 w-4" style={{ color: P }} />
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}>
+              <span
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12.5,
+                  color: "#374151",
+                }}
+              >
                 E-mail
               </span>
             </button>
@@ -1235,7 +1379,13 @@ function InvoiceDetail({ inv, onClose }: { inv: Invoice; onClose: () => void }) 
               style={{ borderColor: "#E2E8F0" }}
             >
               <MessageCircle className="h-4 w-4" style={{ color: P }} />
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}>
+              <span
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12.5,
+                  color: "#374151",
+                }}
+              >
                 WhatsApp
               </span>
             </button>
@@ -1245,7 +1395,13 @@ function InvoiceDetail({ inv, onClose }: { inv: Invoice; onClose: () => void }) 
               style={{ borderColor: "#E2E8F0" }}
             >
               <Download className="h-4 w-4" style={{ color: P }} />
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}>
+              <span
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12.5,
+                  color: "#374151",
+                }}
+              >
                 PDF
               </span>
             </button>
@@ -1279,7 +1435,9 @@ export function InvoicesPage() {
       label: "Total Emitido",
       value: fmt(
         list.reduce(
-          (s, i) => s + (i.status !== "rascunho" && i.status !== "cancelada" ? i.valor : 0),
+          (s, i) =>
+            s +
+            (i.status !== "rascunho" && i.status !== "cancelada" ? i.valor : 0),
           0,
         ),
       ),
@@ -1298,7 +1456,11 @@ export function InvoicesPage() {
     },
     {
       label: "Pagas",
-      value: fmt(list.filter((i) => i.status === "paga").reduce((s, i) => s + i.valorLiquido, 0)),
+      value: fmt(
+        list
+          .filter((i) => i.status === "paga")
+          .reduce((s, i) => s + i.valorLiquido, 0),
+      ),
       color: SUCCESS,
       sub: `${list.filter((i) => i.status === "paga").length} notas quitadas`,
     },
@@ -1325,7 +1487,13 @@ export function InvoicesPage() {
           >
             Faturas & Notas Fiscais
           </h1>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#64748B" }}>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12.5,
+              color: "#64748B",
+            }}
+          >
             Emissão e gestão de NF-e e NFS-e
           </p>
         </div>
@@ -1336,7 +1504,13 @@ export function InvoicesPage() {
             style={{ border: "1px solid #E2E8F0" }}
           >
             <Download className="h-3.5 w-3.5" style={{ color: "#64748B" }} />
-            <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12.5, color: "#374151" }}>
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12.5,
+                color: "#374151",
+              }}
+            >
               Exportar
             </span>
           </button>
@@ -1403,7 +1577,10 @@ export function InvoicesPage() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-2xl bg-white p-4" style={{ border: "1px solid #E2E8F0" }}>
+      <div
+        className="rounded-2xl bg-white p-4"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
         <div className="flex flex-col gap-3 sm:flex-row">
           <div
             className="flex flex-1 items-center gap-2 rounded-xl border px-3 py-2"
@@ -1418,7 +1595,11 @@ export function InvoicesPage() {
               }}
               placeholder="Buscar cliente, ID, descrição…"
               className="flex-1 bg-transparent focus:outline-none"
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: "#374151" }}
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 13,
+                color: "#374151",
+              }}
             />
           </div>
           <select
@@ -1451,11 +1632,19 @@ export function InvoicesPage() {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-2xl bg-white" style={{ border: "1px solid #E2E8F0" }}>
+      <div
+        className="overflow-hidden rounded-2xl bg-white"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #F1F5F9" }}>
+              <tr
+                style={{
+                  background: "#F8FAFC",
+                  borderBottom: "1px solid #F1F5F9",
+                }}
+              >
                 {[
                   "Nº / ID",
                   "Cliente",
@@ -1556,7 +1745,9 @@ export function InvoicesPage() {
                           color: "#374151",
                         }}
                       >
-                        {new Date(inv.emissao + "T00:00:00").toLocaleDateString("pt-BR")}
+                        {new Date(inv.emissao + "T00:00:00").toLocaleDateString(
+                          "pt-BR",
+                        )}
                       </p>
                     </td>
                     <td className="px-4 py-3.5 whitespace-nowrap">
@@ -1567,7 +1758,9 @@ export function InvoicesPage() {
                           color: "#374151",
                         }}
                       >
-                        {new Date(inv.vencimento + "T00:00:00").toLocaleDateString("pt-BR")}
+                        {new Date(
+                          inv.vencimento + "T00:00:00",
+                        ).toLocaleDateString("pt-BR")}
                       </p>
                     </td>
                     <td className="px-4 py-3.5 whitespace-nowrap">
@@ -1611,9 +1804,15 @@ export function InvoicesPage() {
                     <td className="px-4 py-3.5">
                       <span
                         className="inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1"
-                        style={{ background: sc.bg, border: `1px solid ${sc.border}` }}
+                        style={{
+                          background: sc.bg,
+                          border: `1px solid ${sc.border}`,
+                        }}
                       >
-                        <StatusIcon className="h-3 w-3" style={{ color: sc.text }} />
+                        <StatusIcon
+                          className="h-3 w-3"
+                          style={{ color: sc.text }}
+                        />
                         <span
                           style={{
                             fontFamily: "'Inter', sans-serif",
@@ -1634,7 +1833,10 @@ export function InvoicesPage() {
                           }}
                           className="rounded-lg p-1.5 hover:bg-slate-100"
                         >
-                          <MoreHorizontal className="h-4 w-4" style={{ color: "#94A3B8" }} />
+                          <MoreHorizontal
+                            className="h-4 w-4"
+                            style={{ color: "#94A3B8" }}
+                          />
                         </button>
                         {openMenu === inv.id && (
                           <div
@@ -1672,7 +1874,9 @@ export function InvoicesPage() {
                                 action: () => {
                                   setList((l) =>
                                     l.map((i) =>
-                                      i.id === inv.id ? { ...i, status: "cancelada" } : i,
+                                      i.id === inv.id
+                                        ? { ...i, status: "cancelada" }
+                                        : i,
                                     ),
                                   );
                                   setOpenMenu(null);
@@ -1688,13 +1892,19 @@ export function InvoicesPage() {
                               >
                                 <item.icon
                                   className="h-3.5 w-3.5"
-                                  style={{ color: (item as any).danger ? DANGER : "#94A3B8" }}
+                                  style={{
+                                    color: (item as any).danger
+                                      ? DANGER
+                                      : "#94A3B8",
+                                  }}
                                 />
                                 <span
                                   style={{
                                     fontFamily: "'Inter', sans-serif",
                                     fontSize: 12.5,
-                                    color: (item as any).danger ? DANGER : "#374151",
+                                    color: (item as any).danger
+                                      ? DANGER
+                                      : "#374151",
                                   }}
                                 >
                                   {item.label}
@@ -1715,7 +1925,13 @@ export function InvoicesPage() {
           className="flex items-center justify-between border-t px-5 py-3"
           style={{ borderColor: "#F1F5F9" }}
         >
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, color: "#94A3B8" }}>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 12,
+              color: "#94A3B8",
+            }}
+          >
             Exibindo {filtered.length} de {list.length} faturas
           </p>
           <div className="flex gap-1">
