@@ -23,28 +23,43 @@ export function LoginPage() {
     e.preventDefault();
     const parsed = loginSchema.safeParse({ email, password });
     if (!parsed.success) {
-      toast.error("Email ou senha inválidos");
+      toast.error(
+        parsed.error.issues[0]?.message ?? "Email ou senha inválidos",
+      );
       return;
     }
     setLoading(true);
-    const { error } = await signIn.email({
-      email: parsed.data.email,
-      password: parsed.data.password,
-    });
-    setLoading(false);
-    if (error) {
-      toast.error(error.message ?? "Falha no login");
-      return;
+    try {
+      const { error } = await signIn.email({
+        email: parsed.data.email,
+        password: parsed.data.password,
+      });
+      if (error) {
+        toast.error(error.message ?? "Falha no login");
+        return;
+      }
+      navigate("/dashboard");
+    } catch {
+      toast.error("Erro de conexão. Tente novamente.");
+    } finally {
+      setLoading(false);
     }
-    navigate("/dashboard");
   };
 
   const loginGoogle = async () => {
-    await signIn.social({ provider: "google", callbackURL: "/dashboard" });
+    try {
+      await signIn.social({ provider: "google", callbackURL: "/dashboard" });
+    } catch {
+      toast.error("Falha ao iniciar login social");
+    }
   };
 
   const loginMicrosoft = async () => {
-    await signIn.social({ provider: "microsoft", callbackURL: "/dashboard" });
+    try {
+      await signIn.social({ provider: "microsoft", callbackURL: "/dashboard" });
+    } catch {
+      toast.error("Falha ao iniciar login social");
+    }
   };
 
   return (
