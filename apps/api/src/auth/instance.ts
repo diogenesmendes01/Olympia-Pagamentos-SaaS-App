@@ -34,6 +34,16 @@ export const auth = betterAuth({
       });
     },
   },
+  socialProviders: {
+    ...(config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET
+      ? {
+          google: {
+            clientId: config.GOOGLE_CLIENT_ID,
+            clientSecret: config.GOOGLE_CLIENT_SECRET,
+          },
+        }
+      : {}),
+  },
   advanced: {
     cookiePrefix: "olympia",
     useSecureCookies: config.NODE_ENV === "production",
