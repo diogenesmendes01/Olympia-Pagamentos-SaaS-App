@@ -273,7 +273,15 @@ function Card3D({ children, className = "", style = {} }: any) {
 /* ══════════════════════════════════════════════════
    ANIMATED STAT COUNTER
 ══════════════════════════════════════════════════ */
-function StatNum({ end, suffix = "" }: { end: number; suffix?: string }) {
+function StatNum({
+  end,
+  suffix = "",
+  prefix = "",
+}: {
+  end: number;
+  suffix?: string;
+  prefix?: string;
+}) {
   const [n, setN] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
@@ -298,6 +306,7 @@ function StatNum({ end, suffix = "" }: { end: number; suffix?: string }) {
   }, [end]);
   return (
     <span ref={ref}>
+      {prefix}
       {n.toLocaleString("pt-BR")}
       {suffix}
     </span>
@@ -1286,6 +1295,7 @@ export function LandingPage() {
               {[
                 {
                   end: 85,
+                  prefix: "-",
                   suffix: "%",
                   label: "No tempo de auditoria e conciliação",
                   sub: "Com IA que cruza ERP, bancos e documentos em segundos",
@@ -1293,7 +1303,8 @@ export function LandingPage() {
                   color: "#22C55E",
                 },
                 {
-                  end: 0,
+                  end: 150,
+                  prefix: "-",
                   suffix: "h",
                   label: "Economizadas por mês em tarefas manuais",
                   sub: "A IA elimina o trabalho repetitivo do financeiro",
@@ -1301,9 +1312,10 @@ export function LandingPage() {
                   color: G,
                 },
                 {
-                  end: 41,
+                  end: 98,
+                  prefix: "+",
                   suffix: "%",
-                  label: "Mais precisão na previsão de fluxo de caixa",
+                  label: "De precisão na previsão de fluxo de caixa",
                   sub: "Modelos de IA que aprendem com seu histórico",
                   Icon: BarChart3,
                   color: "#60A5FA",
@@ -1333,7 +1345,7 @@ export function LandingPage() {
                       lineHeight: 1,
                     }}
                   >
-                    <StatNum end={s.end} suffix={s.suffix} />
+                    <StatNum end={s.end} suffix={s.suffix} prefix={s.prefix} />
                   </div>
                   <p
                     style={{
