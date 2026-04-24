@@ -13,8 +13,8 @@ vi.mock("../../queues/email.queue.js", () => ({
 
 import { buildApp } from "../../app.js";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function signupAndVerify(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   app: any,
   email: string,
   password = "password123",
