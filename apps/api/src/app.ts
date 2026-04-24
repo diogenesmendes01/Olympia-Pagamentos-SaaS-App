@@ -3,6 +3,7 @@ import cors from "@fastify/cors";
 import { config } from "./config.js";
 import { logger } from "./lib/logger.js";
 import { healthRoutes } from "./modules/health/routes.js";
+import { organizationRoutes } from "./modules/organizations/routes.js";
 import { authPlugin } from "./auth/plugin.js";
 
 export function buildApp() {
@@ -15,6 +16,7 @@ export function buildApp() {
 
   app.register(authPlugin);
   app.register(healthRoutes);
+  app.register(organizationRoutes);
 
   return app;
 }
