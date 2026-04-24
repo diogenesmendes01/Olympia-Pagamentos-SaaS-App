@@ -2,6 +2,7 @@ import { createBrowserRouter, redirect } from "react-router";
 import { MainLayout } from "./layouts/MainLayout";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
+import { SignupPage } from "./pages/SignupPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { ReceivablesPage } from "./pages/ReceivablesPage";
 import { PayablesPage } from "./pages/PayablesPage";
@@ -16,6 +17,7 @@ import { RequireAuth } from "./guards/RequireAuth";
 export const router = createBrowserRouter([
   { path: "/", Component: LandingPage },
   { path: "/login", Component: LoginPage },
+  { path: "/signup", Component: SignupPage },
   {
     element: <RequireAuth />,
     children: [
