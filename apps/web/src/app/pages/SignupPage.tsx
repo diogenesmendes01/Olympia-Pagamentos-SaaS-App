@@ -141,6 +141,8 @@ export function SignupPage() {
                   id="name"
                   type="text"
                   autoComplete="name"
+                  aria-invalid={!!errors.name}
+                  aria-describedby={errors.name ? "name-error" : undefined}
                   {...register("name")}
                   className="w-full rounded-xl border px-4 py-3 transition-all focus:outline-none"
                   style={{
@@ -164,6 +166,7 @@ export function SignupPage() {
                 />
                 {errors.name && (
                   <p
+                    id="name-error"
                     style={{
                       fontFamily: "'Inter', sans-serif",
                       fontSize: 12,
@@ -195,6 +198,8 @@ export function SignupPage() {
                   id="email"
                   type="email"
                   autoComplete="email"
+                  aria-invalid={!!errors.email}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                   {...register("email")}
                   className="w-full rounded-xl border px-4 py-3 transition-all focus:outline-none"
                   style={{
@@ -218,6 +223,7 @@ export function SignupPage() {
                 />
                 {errors.email && (
                   <p
+                    id="email-error"
                     style={{
                       fontFamily: "'Inter', sans-serif",
                       fontSize: 12,
@@ -250,6 +256,10 @@ export function SignupPage() {
                     id="password"
                     type={showPass ? "text" : "password"}
                     autoComplete="new-password"
+                    aria-invalid={!!errors.password}
+                    aria-describedby={
+                      errors.password ? "password-error" : undefined
+                    }
                     {...register("password")}
                     className="w-full rounded-xl border px-4 py-3 pr-11 transition-all focus:outline-none"
                     style={{
@@ -291,6 +301,7 @@ export function SignupPage() {
                 </div>
                 {errors.password && (
                   <p
+                    id="password-error"
                     style={{
                       fontFamily: "'Inter', sans-serif",
                       fontSize: 12,
