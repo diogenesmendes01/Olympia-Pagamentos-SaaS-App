@@ -58,6 +58,36 @@ describe("auth — email/password", () => {
   });
 });
 
+describe("auth — magic link", () => {
+  it("magic link — pede link → captura token → autentica", async () => {
+    capturedEmails.length = 0;
+    const app = buildApp();
+
+    // Usuário precisa existir primeiro (magic link não cria)
+    await app.inject({
+      method: "POST",
+      url: "/api/auth/sign-up/email",
+      payload: {
+        name: "Magic",
+        email: "magic@test.com",
+        password: "password123",
+      },
+    });
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/api/auth/sign-in/magic-link",
+      payload: { email: "magic@test.com" },
+    });
+    expect(res.statusCode).toBe(200);
+
+    const linkJob = capturedEmails.find((j) => j.type === "magicLink");
+    expect(linkJob).toBeDefined();
+
+    await app.close();
+  });
+});
+
 describe("auth — fluxo completo signup + verify + login", () => {
   it("captura token do email e verifica", async () => {
     capturedEmails.length = 0;

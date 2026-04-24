@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { magicLink } from "better-auth/plugins";
 import { db } from "../db/client.js";
 import { config } from "../config.js";
 import { enqueueEmail } from "../queues/email.queue.js";
@@ -53,6 +54,17 @@ export const auth = betterAuth({
         }
       : {}),
   },
+  plugins: [
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        await enqueueEmail({
+          type: "magicLink",
+          to: email,
+          linkUrl: url,
+        });
+      },
+    }),
+  ],
   advanced: {
     cookiePrefix: "olympia",
     useSecureCookies: config.NODE_ENV === "production",
