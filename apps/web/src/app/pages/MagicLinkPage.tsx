@@ -12,7 +12,6 @@ import {
 const C = {
   primary: "#1F3A5F",
   hover: "#274872",
-  gold: "#C8A96B",
   ivory: "#F4EFE6",
 };
 

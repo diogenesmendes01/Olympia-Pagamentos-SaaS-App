@@ -6,7 +6,6 @@ import { useSession } from "../../lib/auth";
 const C = {
   primary: "#1F3A5F",
   hover: "#274872",
-  gold: "#C8A96B",
   ivory: "#F4EFE6",
 };
 
@@ -40,12 +39,16 @@ export function VerifyEmailPage() {
     e.preventDefault();
     if (!email) return;
     try {
-      await fetch("/api/auth/send-verification-email", {
+      const res = await fetch("/api/auth/send-verification-email", {
         method: "POST",
         credentials: "include",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ email, callbackURL: "/dashboard" }),
       });
+      if (!res.ok) {
+        toast.error("Falha ao reenviar email");
+        return;
+      }
       setState("sent");
     } catch {
       toast.error("Falha ao reenviar email");
