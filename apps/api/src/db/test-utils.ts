@@ -1,11 +1,13 @@
 import { pool } from "./client.js";
 
 const TABLES_TO_TRUNCATE = [
+  "invitation",
+  "member",
+  "organization",
   "session",
   "account",
   "verification",
   "user",
-  // Task F1 adiciona: "invitation", "member", "organization"
 ];
 
 export async function resetDb() {

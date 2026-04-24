@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { magicLink } from "better-auth/plugins";
+import { magicLink, organization } from "better-auth/plugins";
 import { db } from "../db/client.js";
 import { config } from "../config.js";
 import { enqueueEmail } from "../queues/email.queue.js";
@@ -55,6 +55,23 @@ export const auth = betterAuth({
       : {}),
   },
   plugins: [
+    organization({
+      allowUserToCreateOrganization: true,
+      organizationLimit: 10,
+      invitationExpiresIn: 60 * 60 * 24 * 7, // 7 dias
+      sendInvitationEmail: async ({ id, email, inviter, organization }) => {
+        // Better Auth 1.6.8 não gera o URL do convite — construímos a partir
+        // do WEB_ORIGIN + o id da invitation (a rota do front faz o accept).
+        const inviteUrl = `${config.WEB_ORIGIN}/accept-invitation?id=${id}`;
+        await enqueueEmail({
+          type: "orgInvite",
+          to: email,
+          inviterName: inviter.user.name,
+          organizationName: organization.name,
+          inviteUrl,
+        });
+      },
+    }),
     magicLink({
       sendMagicLink: async ({ email, url }) => {
         await enqueueEmail({

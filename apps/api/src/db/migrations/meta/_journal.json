@@ -8,6 +8,13 @@
       "when": 1777048613437,
       "tag": "0000_red_shooting_star",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1777053823231,
+      "tag": "0001_wise_deadpool",
+      "breakpoints": true
     }
   ]
 }
