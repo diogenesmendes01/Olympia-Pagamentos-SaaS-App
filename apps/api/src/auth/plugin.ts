@@ -32,10 +32,18 @@ export const authPlugin: FastifyPluginAsync = async (app) => {
 
   app.decorateRequest("auth", null);
   app.addHook("preHandler", async (req) => {
-    const session = await auth.api.getSession({
-      headers: fromNodeHeaders(req.headers),
-    });
-    // @ts-expect-error — decorated acima
-    req.auth = session;
+    // Se getSession falhar (DB fora do ar, cookie inválido), seta null em vez
+    // de 500 — health/ready/rotas públicas precisam continuar respondendo.
+    try {
+      const session = await auth.api.getSession({
+        headers: fromNodeHeaders(req.headers),
+      });
+      // @ts-expect-error — decorated acima
+      req.auth = session;
+    } catch (err) {
+      req.log.warn({ err }, "getSession falhou no preHandler");
+      // @ts-expect-error — decorated acima
+      req.auth = null;
+    }
   });
 };
