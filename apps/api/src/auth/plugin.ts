@@ -1,8 +1,15 @@
 import type { FastifyPluginAsync } from "fastify";
+import fp from "fastify-plugin";
 import { fromNodeHeaders } from "better-auth/node";
 import { auth } from "./instance.js";
 
-export const authPlugin: FastifyPluginAsync = async (app) => {
+// IMPORTANTE: wrap com fastify-plugin (`fp`) pra escapar do encapsulamento
+// padrão do Fastify. Sem isso, o `decorateRequest("auth")` e o
+// `addHook("preHandler")` ficam visíveis só neste plugin e seus filhos —
+// plugins irmãos (organizationRoutes, invitationRoutes registrados em app.ts)
+// não enxergam `req.auth`, e qualquer rota deles que dependa da sessão
+// recebe `req.auth = undefined` → 401 mesmo com cookie válido.
+const authPluginAsync: FastifyPluginAsync = async (app) => {
   // Better Auth parseia o body por conta própria; evita double-parse por Fastify
   app.addContentTypeParser(
     "application/json",
@@ -47,3 +54,8 @@ export const authPlugin: FastifyPluginAsync = async (app) => {
     }
   });
 };
+
+export const authPlugin = fp(authPluginAsync, {
+  name: "olympia-auth",
+  fastify: "5.x",
+});

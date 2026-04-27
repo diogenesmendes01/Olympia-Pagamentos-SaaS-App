@@ -73,11 +73,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Migrate DB (test only)
+        if: matrix.task == 'test'
+        run: pnpm db:migrate
+
       - name: Run ${{ matrix.task }}
         run: |
           case "${{ matrix.task }}" in
             lint) pnpm lint ;;
             typecheck) pnpm typecheck ;;
-            test) pnpm test -- --run ;;
+            # `pnpm test -- --run` quebra: o `--` é consumido pelo pnpm e o
+            # `--run` chega no Turbo como flag dele (rejeitado). Pra forçar o
+            # passthrough, chamar Turbo direto e usar SEU separador `--`.
+            test) pnpm turbo run test -- --run ;;
             build) pnpm build ;;
           esac

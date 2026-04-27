@@ -12,7 +12,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest"
+    "test": "vitest --passWithNoTests"
   },
   "dependencies": {
     "zod": "^3.24.0"
