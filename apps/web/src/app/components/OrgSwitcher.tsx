@@ -15,7 +15,6 @@ import { PRIMARY, GOLD } from "../styles/tokens";
 interface Org {
   id: string;
   name: string;
-  slug: string;
 }
 
 const C = {
@@ -27,6 +26,7 @@ const C = {
 export function OrgSwitcher() {
   const { data } = useSession();
   const [orgs, setOrgs] = useState<Org[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,13 +39,16 @@ export function OrgSwitcher() {
         if (cancelled) return;
         if (res.error) {
           toast.error("Falha ao carregar organizações");
+          setLoading(false);
           return;
         }
         setOrgs(res.data ?? []);
+        setLoading(false);
       })
       .catch(() => {
         if (cancelled) return;
         toast.error("Falha ao carregar organizações");
+        setLoading(false);
       });
     return () => {
       cancelled = true;
@@ -96,21 +99,27 @@ export function OrgSwitcher() {
         <ChevronDown className="h-3.5 w-3.5" style={{ color: "#94A3B8" }} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        {orgs.length === 0 ? (
+        {loading ? (
+          <DropdownMenuItem disabled>Carregando...</DropdownMenuItem>
+        ) : orgs.length === 0 ? (
           <DropdownMenuItem disabled>Nenhuma organização</DropdownMenuItem>
         ) : (
-          orgs.map((o) => (
-            <DropdownMenuItem
-              key={o.id}
-              onSelect={() => {
-                void switchOrg(o.id);
-              }}
-              className={o.id === active?.id ? "font-bold" : ""}
-            >
-              <Building2 className="h-4 w-4" style={{ color: C.gold }} />
-              <span className="truncate">{o.name}</span>
-            </DropdownMenuItem>
-          ))
+          orgs.map((o) => {
+            const isActive = o.id === active?.id;
+            return (
+              <DropdownMenuItem
+                key={o.id}
+                onSelect={() => {
+                  void switchOrg(o.id);
+                }}
+                aria-current={isActive ? "true" : undefined}
+                className={isActive ? "font-bold" : ""}
+              >
+                <Building2 className="h-4 w-4" style={{ color: C.gold }} />
+                <span className="truncate">{o.name}</span>
+              </DropdownMenuItem>
+            );
+          })
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
