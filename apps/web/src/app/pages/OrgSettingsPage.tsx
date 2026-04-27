@@ -64,6 +64,14 @@ function isMemberRow(value: unknown): value is MemberRow {
   );
 }
 
+// Pega um campo string do entity de org que o servidor devolveu (resposta de
+// `organization.update`). Defensivo contra shapes que mudam em patches da BA.
+function extractOrgField(data: unknown, key: "name" | "slug"): string | null {
+  if (!data || typeof data !== "object") return null;
+  const v = (data as Record<string, unknown>)[key];
+  return typeof v === "string" ? v : null;
+}
+
 // `organization.list()` retorna array direto de orgs (ver OrgSwitcher).
 function findActiveOrg(data: unknown, activeId: string): OrgInfo | null {
   if (!Array.isArray(data)) return null;
@@ -171,10 +179,13 @@ export function OrgSettingsPage() {
         toast.error(res.error.message ?? "Falha ao atualizar organização");
         return;
       }
-      // Atualiza estado local — refetch via listOrganizations seria possível
-      // mas como já temos o feedback do submit, basta refletir os values.
-      setOrg({ id: activeOrgId, name: values.name, slug: values.slug });
-      reset({ name: values.name, slug: values.slug, cnpj: "" });
+      // Prefere o entity que o servidor devolveu (BA pode normalizar slug,
+      // trim de espaços etc.). Fallback pros valores do form se a resposta
+      // não trouxer os campos.
+      const nameOnServer = extractOrgField(res.data, "name") ?? values.name;
+      const slugOnServer = extractOrgField(res.data, "slug") ?? values.slug;
+      setOrg({ id: activeOrgId, name: nameOnServer, slug: slugOnServer });
+      reset({ name: nameOnServer, slug: slugOnServer, cnpj: "" });
       toast.success("Organização atualizada");
     } catch {
       toast.error("Erro de conexão. Tente novamente.");
@@ -216,11 +227,14 @@ export function OrgSettingsPage() {
         role: "admin",
       });
       if (demoteRes.error) {
-        // Estado parcial: o alvo já é owner mas nós ainda somos owner.
-        // Avisa o usuário pra ele poder repetir/concluir manualmente.
+        // Estado parcial: o alvo já é owner mas nós também continuamos owner.
+        // Avisa o usuário com uma toast persistente (Infinity) explicando o
+        // estado e dando uma instrução acionável.
         toast.error(
-          demoteRes.error.message ??
-            "Ownership promovido, mas falha ao rebaixar usuário atual",
+          "Ownership transferido, mas falha ao rebaixar você para admin. " +
+            "A organização tem dois owners agora — peça ao novo owner para " +
+            "rebaixar você, ou tente novamente mais tarde.",
+          { duration: Infinity },
         );
         return;
       }
@@ -248,10 +262,22 @@ export function OrgSettingsPage() {
       }
       toast.success("Organização deletada");
       setConfirmDelete(false);
-      // Após delete, BA limpa activeOrganizationId; força refetch e manda
-      // o usuário pro onboarding.
+      // Após delete, BA limpa activeOrganizationId. Se o usuário ainda
+      // pertence a outras orgs, ativa a primeira disponível e manda pro
+      // /dashboard. Senão, vai pro onboarding.
       await authClient.getSession({ query: { disableCookieCache: true } });
-      navigate("/onboarding/organization");
+      const listRes = await organization.list();
+      const remaining =
+        Array.isArray(listRes.data) && listRes.data.length > 0
+          ? (listRes.data[0] as { id?: unknown }).id
+          : null;
+      if (typeof remaining === "string") {
+        await organization.setActive({ organizationId: remaining });
+        await authClient.getSession({ query: { disableCookieCache: true } });
+        navigate("/dashboard");
+      } else {
+        navigate("/onboarding/organization");
+      }
     } catch {
       toast.error("Erro de conexão. Tente novamente.");
     } finally {
@@ -301,7 +327,9 @@ export function OrgSettingsPage() {
   const transferBusy = busy === "transfer";
   const deleteBusy = busy === "delete";
   const anyBusy = busy !== null || isSubmitting;
-  const deleteConfirmed = deleteTyped === org.name;
+  // Trim pra tolerar espaços colados acidentalmente; mantém case-sensitive
+  // (convenção do GitHub/Vercel pra type-to-confirm).
+  const deleteConfirmed = deleteTyped.trim() === org.name;
 
   return (
     <div className="space-y-5 p-5 lg:p-6">
