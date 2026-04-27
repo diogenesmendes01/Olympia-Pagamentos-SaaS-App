@@ -3,6 +3,7 @@ import { MainLayout } from "./layouts/MainLayout";
 import { DashboardPage } from "./pages/DashboardPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { IntegrationsPage } from "./pages/IntegrationsPage";
+import { InvitationPage } from "./pages/InvitationPage";
 import { InvoicesPage } from "./pages/InvoicesPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
   { path: "/forgot-password", Component: ForgotPasswordPage },
   { path: "/reset-password", Component: ResetPasswordPage },
   { path: "/magic-link", Component: MagicLinkPage },
+  { path: "/invitation/:id", Component: InvitationPage },
   {
     element: <RequireSession />,
     children: [
