@@ -9,6 +9,7 @@ import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MagicLinkPage } from "./pages/MagicLinkPage";
 import { OrgOnboardingPage } from "./pages/OrgOnboardingPage";
+import { OrgSettingsPage } from "./pages/OrgSettingsPage";
 import { PayablesPage } from "./pages/PayablesPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ReceivablesPage } from "./pages/ReceivablesPage";
@@ -50,6 +51,12 @@ export const router = createBrowserRouter([
           {
             element: <RequireOrgRole roles={["owner", "admin"]} />,
             children: [{ path: "users", Component: UsersPage }],
+          },
+          {
+            element: <RequireOrgRole roles={["owner"]} />,
+            children: [
+              { path: "settings/organization", Component: OrgSettingsPage },
+            ],
           },
           { path: "reports", Component: ReportsPage },
           { path: "integrations", Component: IntegrationsPage },
