@@ -1,70 +1,260 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Plus, Trash2, Users, X } from "lucide-react";
+import { toast } from "sonner";
+import { organization, useSession } from "../../lib/auth";
 import {
-  Plus,
-  Search,
-  Shield,
-  CheckCircle,
-  XCircle,
-  MoreHorizontal,
-  Mail,
-  Smartphone,
-  Lock,
-  Eye,
-  Trash2,
-  Activity,
-  LogOut,
-  AlertTriangle,
-  Users,
-  UserCheck,
-  ShieldCheck,
-  UserMinus,
-  FileText,
-} from "lucide-react";
-import {
-  PRIMARY as P,
-  PRIMARY_HOVER as PH,
-  GOLD as G,
-  SUCCESS,
-  SUCCESS_BG,
+  PRIMARY,
+  PRIMARY_HOVER,
+  PRIMARY_SOFT,
+  GOLD_SOFT,
+  GOLD_TEXT,
   DANGER,
   DANGER_BG,
 } from "../styles/tokens";
-import { users, auditLog } from "../data/mockData";
-import { toast } from "sonner";
 
-const roleConfig: Record<string, { bg: string; text: string; desc: string }> = {
-  Administrador: { bg: "#EEF3F8", text: P, desc: "Acesso total ao sistema" },
-  Financeiro: { bg: "#F5F1FF", text: "#6B4BAF", desc: "Tudo exceto usuários" },
-  Operacional: {
-    bg: SUCCESS_BG,
-    text: SUCCESS,
-    desc: "Recebíveis e pagáveis + relatórios",
-  },
-  Visualizador: { bg: "#F1F5F9", text: "#64748B", desc: "Apenas leitura" },
-  "Contador Externo": {
-    bg: "#FDF8EE",
-    text: G,
-    desc: "Relatórios fiscais + leitura",
-  },
-};
+// ── Tipos ─────────────────────────────────────────────────────────────────
+type OrgRole = "owner" | "admin" | "member";
+type AssignableRole = "admin" | "member";
 
+interface MemberRow {
+  id: string;
+  userId: string;
+  role: string;
+  createdAt: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string | null;
+  };
+}
+
+interface InvitationRow {
+  id: string;
+  email: string;
+  role: string;
+  status: string;
+  inviterId: string;
+  expiresAt: string;
+  createdAt: string;
+}
+
+// `listMembers` (BA 1.6.8) retorna `{ members, total }`; `listInvitations`
+// retorna um array. Defendemos contra ambos os formatos pra evitar `any` casts.
+function extractMembers(data: unknown): MemberRow[] {
+  if (Array.isArray(data)) {
+    return data.filter(isMemberRow);
+  }
+  if (data && typeof data === "object" && "members" in data) {
+    const inner = data.members;
+    if (Array.isArray(inner)) {
+      return inner.filter(isMemberRow);
+    }
+  }
+  return [];
+}
+
+function extractInvitations(data: unknown): InvitationRow[] {
+  if (Array.isArray(data)) {
+    return data.filter(isInvitationRow);
+  }
+  if (data && typeof data === "object" && "invitations" in data) {
+    const inner = data.invitations;
+    if (Array.isArray(inner)) {
+      return inner.filter(isInvitationRow);
+    }
+  }
+  return [];
+}
+
+function isMemberRow(value: unknown): value is MemberRow {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.id === "string" &&
+    typeof v.userId === "string" &&
+    typeof v.role === "string" &&
+    typeof v.user === "object" &&
+    v.user !== null
+  );
+}
+
+function isInvitationRow(value: unknown): value is InvitationRow {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.id === "string" &&
+    typeof v.email === "string" &&
+    typeof v.role === "string" &&
+    typeof v.status === "string"
+  );
+}
+
+function isAssignableRole(value: string): value is AssignableRole {
+  return value === "admin" || value === "member";
+}
+
+// ── Estilo dos badges de role ─────────────────────────────────────────────
+const roleBadge: Record<OrgRole, { bg: string; text: string; label: string }> =
+  {
+    owner: { bg: GOLD_SOFT, text: GOLD_TEXT, label: "Owner" },
+    admin: { bg: PRIMARY_SOFT, text: PRIMARY, label: "Admin" },
+    member: { bg: "#F1F5F9", text: "#64748B", label: "Membro" },
+  };
+
+function roleStyles(role: string): { bg: string; text: string; label: string } {
+  if (role === "owner" || role === "admin" || role === "member") {
+    return roleBadge[role];
+  }
+  // Role custom não-padrão da BA — mostra como genérica.
+  return { bg: "#F1F5F9", text: "#64748B", label: role };
+}
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// ── Página ────────────────────────────────────────────────────────────────
 export function UsersPage() {
-  const [search, setSearch] = useState("");
+  const { data: session } = useSession();
+  const [members, setMembers] = useState<MemberRow[]>([]);
+  const [invites, setInvites] = useState<InvitationRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<string | null>(null);
   const [showInvite, setShowInvite] = useState(false);
-  const [activeTab, setActiveTab] = useState<"users" | "audit" | "sessions">(
-    "users",
-  );
-  const [openMenu, setOpenMenu] = useState<number | null>(null);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState("Financeiro");
-  const [inviteExpiry, setInviteExpiry] = useState("7");
+  const [confirm, setConfirm] = useState<
+    | { kind: "removeMember"; member: MemberRow }
+    | { kind: "cancelInvite"; invite: InvitationRow }
+    | null
+  >(null);
 
-  const filtered = users.filter(
-    (u) =>
-      u.nome.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase()) ||
-      u.role.toLowerCase().includes(search.toLowerCase()),
-  );
+  // Refetch sem toggle de loading global — usado depois de mutations.
+  // setState calls vivem dentro de .then/.catch (assíncronos), satisfazendo
+  // react-hooks/set-state-in-effect.
+  function refresh(): void {
+    Promise.all([organization.listMembers(), organization.listInvitations()])
+      .then(([mRes, iRes]) => {
+        if (mRes.error) {
+          toast.error(mRes.error.message ?? "Falha ao carregar membros");
+        }
+        if (iRes.error) {
+          toast.error(iRes.error.message ?? "Falha ao carregar convites");
+        }
+        setMembers(extractMembers(mRes.data));
+        // BA 1.6.8 não suporta filtro por status no endpoint; filtramos client-side.
+        setInvites(
+          extractInvitations(iRes.data).filter((i) => i.status === "pending"),
+        );
+      })
+      .catch(() => {
+        toast.error("Erro de conexão. Tente novamente.");
+      });
+  }
+
+  // Carga inicial — `loading` começa true; só baixamos para false aqui.
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([organization.listMembers(), organization.listInvitations()])
+      .then(([mRes, iRes]) => {
+        if (cancelled) return;
+        if (mRes.error) {
+          toast.error(mRes.error.message ?? "Falha ao carregar membros");
+        }
+        if (iRes.error) {
+          toast.error(iRes.error.message ?? "Falha ao carregar convites");
+        }
+        setMembers(extractMembers(mRes.data));
+        setInvites(
+          extractInvitations(iRes.data).filter((i) => i.status === "pending"),
+        );
+        setLoading(false);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        toast.error("Erro de conexão. Tente novamente.");
+        setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // ── Mutações ────────────────────────────────────────────────────────────
+  async function handleInvite(email: string, role: AssignableRole) {
+    setBusyId("invite");
+    try {
+      const res = await organization.inviteMember({ email, role });
+      if (res.error) {
+        toast.error(res.error.message ?? "Falha ao convidar usuário");
+        return;
+      }
+      toast.success(`Convite enviado para ${email}`);
+      setShowInvite(false);
+      refresh();
+    } catch {
+      toast.error("Erro de conexão. Tente novamente.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleUpdateRole(memberId: string, role: AssignableRole) {
+    setBusyId(memberId);
+    try {
+      const res = await organization.updateMemberRole({ memberId, role });
+      if (res.error) {
+        toast.error(res.error.message ?? "Falha ao atualizar role");
+        return;
+      }
+      toast.success("Permissão atualizada");
+      refresh();
+    } catch {
+      toast.error("Erro de conexão. Tente novamente.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleRemoveMember(member: MemberRow) {
+    setBusyId(member.id);
+    try {
+      const res = await organization.removeMember({
+        memberIdOrEmail: member.id,
+      });
+      if (res.error) {
+        toast.error(res.error.message ?? "Falha ao remover membro");
+        return;
+      }
+      toast.success(`${member.user.name} foi removido`);
+      setConfirm(null);
+      refresh();
+    } catch {
+      toast.error("Erro de conexão. Tente novamente.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function handleCancelInvite(invite: InvitationRow) {
+    setBusyId(invite.id);
+    try {
+      const res = await organization.cancelInvitation({
+        invitationId: invite.id,
+      });
+      if (res.error) {
+        toast.error(res.error.message ?? "Falha ao cancelar convite");
+        return;
+      }
+      toast.success("Convite cancelado");
+      setConfirm(null);
+      refresh();
+    } catch {
+      toast.error("Erro de conexão. Tente novamente.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────
+  const currentUserId = session?.user?.id;
 
   return (
     <div className="space-y-5 p-5 lg:p-6">
@@ -76,7 +266,7 @@ export function UsersPage() {
               fontFamily: "'Montserrat', sans-serif",
               fontSize: 21,
               fontWeight: 800,
-              color: P,
+              color: PRIMARY,
             }}
           >
             Gestão de Usuários
@@ -88,1005 +278,827 @@ export function UsersPage() {
               color: "#64748B",
             }}
           >
-            Controle de acesso, perfis e auditoria
+            Membros da organização e convites pendentes
           </p>
         </div>
         <button
+          type="button"
           onClick={() => {
             setShowInvite(true);
           }}
           className="flex items-center gap-1.5 rounded-xl px-4 py-2 text-white transition-all"
           style={{
-            background: P,
+            background: PRIMARY,
             fontFamily: "'Inter', sans-serif",
             fontSize: 12.5,
             fontWeight: 700,
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = PH)}
-          onMouseLeave={(e) => (e.currentTarget.style.background = P)}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = PRIMARY_HOVER;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = PRIMARY;
+          }}
         >
           <Plus className="h-3.5 w-3.5" />
-          Convidar Usuário
+          Convidar usuário
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {[
-          {
-            label: "Total de Usuários",
-            value: users.length,
-            color: P,
-            Icon: Users,
-          },
-          {
-            label: "Ativos",
-            value: users.filter((u) => u.status === "ativo").length,
-            color: SUCCESS,
-            Icon: UserCheck,
-          },
-          {
-            label: "Com MFA",
-            value: users.filter((u) => u.mfa).length,
-            color: "#6B4BAF",
-            Icon: ShieldCheck,
-          },
-          {
-            label: "Inativos",
-            value: users.filter((u) => u.status === "inativo").length,
-            color: "#94A3B8",
-            Icon: UserMinus,
-          },
-        ].map((s) => (
-          <div
-            key={s.label}
-            className="flex items-center gap-3 rounded-2xl bg-white p-4"
-            style={{ border: "1px solid #E2E8F0" }}
-          >
-            <div
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl"
-              style={{ background: `${s.color}14` }}
-            >
-              <s.Icon className="h-5 w-5" style={{ color: s.color }} />
-            </div>
-            <div>
-              <p
-                style={{
-                  fontFamily: "'Montserrat', sans-serif",
-                  fontSize: 22,
-                  fontWeight: 800,
-                  color: s.color,
-                }}
-              >
-                {s.value}
-              </p>
-              <p
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 12,
-                  color: "#64748B",
-                }}
-              >
-                {s.label}
-              </p>
-            </div>
-          </div>
-        ))}
+      <div aria-live="polite" className="sr-only">
+        {loading ? "Carregando membros..." : ""}
       </div>
 
-      {/* Tabs */}
-      <div
+      {/* Membros */}
+      <section
+        aria-labelledby="members-heading"
         className="overflow-hidden rounded-2xl bg-white"
         style={{ border: "1px solid #E2E8F0" }}
       >
-        <div className="flex border-b" style={{ borderColor: "#F1F5F9" }}>
-          {(
-            [
-              { id: "users", label: "Usuários" },
-              { id: "audit", label: "Auditoria" },
-              { id: "sessions", label: "Sessões Ativas" },
-            ] as const
-          ).map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => {
-                setActiveTab(tab.id);
+        <header
+          className="flex items-center gap-2 border-b px-5 py-3.5"
+          style={{ borderColor: "#F1F5F9" }}
+        >
+          <Users className="h-4 w-4" style={{ color: PRIMARY }} />
+          <h2
+            id="members-heading"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 13.5,
+              fontWeight: 700,
+              color: PRIMARY,
+            }}
+          >
+            Membros{" "}
+            <span style={{ color: "#94A3B8", fontWeight: 500 }}>
+              ({members.length})
+            </span>
+          </h2>
+        </header>
+
+        {loading ? (
+          <p
+            className="px-5 py-8 text-center"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 13,
+              color: "#64748B",
+            }}
+          >
+            Carregando...
+          </p>
+        ) : members.length === 0 ? (
+          <p
+            className="px-5 py-8 text-center"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 13,
+              color: "#64748B",
+            }}
+          >
+            Nenhum membro nesta organização.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead style={{ background: "#F8FAFC" }}>
+                <tr>
+                  <th
+                    scope="col"
+                    className="px-5 py-2.5 text-left"
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      color: "#64748B",
+                      letterSpacing: "0.04em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Nome
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-5 py-2.5 text-left"
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      color: "#64748B",
+                      letterSpacing: "0.04em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Permissão
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-5 py-2.5 text-right"
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      color: "#64748B",
+                      letterSpacing: "0.04em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Ações
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map((member) => {
+                  const styles = roleStyles(member.role);
+                  const isOwner = member.role === "owner";
+                  const isSelf = member.userId === currentUserId;
+                  const isBusy = busyId === member.id;
+                  const canChangeRole =
+                    !isOwner && isAssignableRole(member.role);
+                  return (
+                    <tr
+                      key={member.id}
+                      className="border-t"
+                      style={{ borderColor: "#F1F5F9" }}
+                    >
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-3">
+                          <div
+                            aria-hidden="true"
+                            className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
+                            style={{
+                              background: PRIMARY_SOFT,
+                              color: PRIMARY,
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: 12,
+                              fontWeight: 700,
+                            }}
+                          >
+                            {member.user.name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="min-w-0">
+                            <p
+                              style={{
+                                fontFamily: "'Inter', sans-serif",
+                                fontSize: 13.5,
+                                fontWeight: 600,
+                                color: "#1E293B",
+                              }}
+                            >
+                              {member.user.name}
+                              {isSelf && (
+                                <span
+                                  style={{
+                                    fontFamily: "'Inter', sans-serif",
+                                    fontSize: 10.5,
+                                    color: "#94A3B8",
+                                    fontWeight: 500,
+                                    marginLeft: 6,
+                                  }}
+                                >
+                                  (você)
+                                </span>
+                              )}
+                            </p>
+                            <p
+                              style={{
+                                fontFamily: "'Inter', sans-serif",
+                                fontSize: 12,
+                                color: "#64748B",
+                              }}
+                            >
+                              {member.user.email}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3">
+                        {canChangeRole ? (
+                          <label
+                            className="sr-only"
+                            htmlFor={`role-${member.id}`}
+                          >
+                            Permissão de {member.user.name}
+                          </label>
+                        ) : null}
+                        {canChangeRole ? (
+                          <select
+                            id={`role-${member.id}`}
+                            disabled={isBusy}
+                            value={member.role}
+                            onChange={(e) => {
+                              const next = e.target.value;
+                              if (isAssignableRole(next)) {
+                                void handleUpdateRole(member.id, next);
+                              }
+                            }}
+                            className="rounded-lg border px-2.5 py-1.5 transition-colors focus:outline-none"
+                            style={{
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: 12.5,
+                              color: styles.text,
+                              background: styles.bg,
+                              borderColor: "transparent",
+                              fontWeight: 600,
+                              cursor: isBusy ? "not-allowed" : "pointer",
+                              opacity: isBusy ? 0.6 : 1,
+                            }}
+                          >
+                            <option value="admin">Admin</option>
+                            <option value="member">Membro</option>
+                          </select>
+                        ) : (
+                          <span
+                            className="inline-block rounded-lg px-2.5 py-1"
+                            style={{
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: 12.5,
+                              fontWeight: 600,
+                              background: styles.bg,
+                              color: styles.text,
+                            }}
+                          >
+                            {styles.label}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-5 py-3 text-right">
+                        {isOwner ? (
+                          <span
+                            style={{
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: 11.5,
+                              color: "#94A3B8",
+                            }}
+                          >
+                            Owner não removível
+                          </span>
+                        ) : isSelf ? (
+                          <span
+                            style={{
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: 11.5,
+                              color: "#94A3B8",
+                            }}
+                          >
+                            —
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled={isBusy}
+                            aria-label={`Remover ${member.user.name}`}
+                            onClick={() => {
+                              setConfirm({ kind: "removeMember", member });
+                            }}
+                            className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 transition-colors"
+                            style={{
+                              fontFamily: "'Inter', sans-serif",
+                              fontSize: 12,
+                              fontWeight: 600,
+                              color: DANGER,
+                              background: isBusy ? "#F1F5F9" : DANGER_BG,
+                              opacity: isBusy ? 0.6 : 1,
+                            }}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            Remover
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* Convites pendentes */}
+      <section
+        aria-labelledby="invites-heading"
+        className="overflow-hidden rounded-2xl bg-white"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
+        <header
+          className="flex items-center gap-2 border-b px-5 py-3.5"
+          style={{ borderColor: "#F1F5F9" }}
+        >
+          <h2
+            id="invites-heading"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 13.5,
+              fontWeight: 700,
+              color: PRIMARY,
+            }}
+          >
+            Convites pendentes{" "}
+            <span style={{ color: "#94A3B8", fontWeight: 500 }}>
+              ({invites.length})
+            </span>
+          </h2>
+        </header>
+
+        {loading ? (
+          <p
+            className="px-5 py-8 text-center"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 13,
+              color: "#64748B",
+            }}
+          >
+            Carregando...
+          </p>
+        ) : invites.length === 0 ? (
+          <p
+            className="px-5 py-8 text-center"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 13,
+              color: "#64748B",
+            }}
+          >
+            Nenhum convite pendente.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead style={{ background: "#F8FAFC" }}>
+                <tr>
+                  <th
+                    scope="col"
+                    className="px-5 py-2.5 text-left"
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      color: "#64748B",
+                      letterSpacing: "0.04em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    E-mail
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-5 py-2.5 text-left"
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      color: "#64748B",
+                      letterSpacing: "0.04em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Permissão
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-5 py-2.5 text-left"
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      color: "#64748B",
+                      letterSpacing: "0.04em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Expira em
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-5 py-2.5 text-right"
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 11.5,
+                      fontWeight: 700,
+                      color: "#64748B",
+                      letterSpacing: "0.04em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Ações
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {invites.map((invite) => {
+                  const styles = roleStyles(invite.role);
+                  const isBusy = busyId === invite.id;
+                  const expires = new Date(invite.expiresAt);
+                  const expiresLabel = Number.isNaN(expires.getTime())
+                    ? "—"
+                    : expires.toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      });
+                  return (
+                    <tr
+                      key={invite.id}
+                      className="border-t"
+                      style={{ borderColor: "#F1F5F9" }}
+                    >
+                      <td
+                        className="px-5 py-3"
+                        style={{
+                          fontFamily: "'Inter', sans-serif",
+                          fontSize: 13,
+                          color: "#1E293B",
+                        }}
+                      >
+                        {invite.email}
+                      </td>
+                      <td className="px-5 py-3">
+                        <span
+                          className="inline-block rounded-lg px-2.5 py-1"
+                          style={{
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: 12.5,
+                            fontWeight: 600,
+                            background: styles.bg,
+                            color: styles.text,
+                          }}
+                        >
+                          {styles.label}
+                        </span>
+                      </td>
+                      <td
+                        className="px-5 py-3"
+                        style={{
+                          fontFamily: "'Inter', sans-serif",
+                          fontSize: 12.5,
+                          color: "#64748B",
+                        }}
+                      >
+                        {expiresLabel}
+                      </td>
+                      <td className="px-5 py-3 text-right">
+                        <button
+                          type="button"
+                          disabled={isBusy}
+                          aria-label={`Cancelar convite para ${invite.email}`}
+                          onClick={() => {
+                            setConfirm({ kind: "cancelInvite", invite });
+                          }}
+                          className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 transition-colors"
+                          style={{
+                            fontFamily: "'Inter', sans-serif",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: DANGER,
+                            background: isBusy ? "#F1F5F9" : DANGER_BG,
+                            opacity: isBusy ? 0.6 : 1,
+                          }}
+                        >
+                          <X className="h-3.5 w-3.5" />
+                          Cancelar
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* Modal de convite */}
+      {showInvite && (
+        <InviteDialog
+          busy={busyId === "invite"}
+          onClose={() => {
+            setShowInvite(false);
+          }}
+          onSubmit={handleInvite}
+        />
+      )}
+
+      {/* Modal de confirmação destrutiva */}
+      {confirm?.kind === "removeMember" && (
+        <ConfirmDialog
+          title="Remover membro"
+          description={`Tem certeza que deseja remover ${confirm.member.user.name} da organização? Eles perderão acesso imediato.`}
+          confirmLabel="Remover"
+          busy={busyId === confirm.member.id}
+          onCancel={() => {
+            setConfirm(null);
+          }}
+          onConfirm={() => {
+            void handleRemoveMember(confirm.member);
+          }}
+        />
+      )}
+      {confirm?.kind === "cancelInvite" && (
+        <ConfirmDialog
+          title="Cancelar convite"
+          description={`Cancelar o convite para ${confirm.invite.email}?`}
+          confirmLabel="Cancelar convite"
+          busy={busyId === confirm.invite.id}
+          onCancel={() => {
+            setConfirm(null);
+          }}
+          onConfirm={() => {
+            void handleCancelInvite(confirm.invite);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// ── Componentes auxiliares ────────────────────────────────────────────────
+
+interface InviteDialogProps {
+  busy: boolean;
+  onClose: () => void;
+  onSubmit: (email: string, role: AssignableRole) => Promise<void>;
+}
+
+function InviteDialog({ busy, onClose, onSubmit }: InviteDialogProps) {
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState<AssignableRole>("member");
+  const [error, setError] = useState<string | null>(null);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = email.trim();
+    if (!EMAIL_REGEX.test(trimmed)) {
+      setError("Informe um e-mail válido.");
+      return;
+    }
+    setError(null);
+    void onSubmit(trimmed, role);
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      style={{ background: "rgba(15, 23, 42, 0.45)" }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="invite-title"
+      aria-describedby="invite-desc"
+    >
+      <div
+        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+        style={{ border: "1px solid #E2E8F0" }}
+      >
+        <h2
+          id="invite-title"
+          style={{
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: 18,
+            fontWeight: 800,
+            color: PRIMARY,
+            marginBottom: 4,
+          }}
+        >
+          Convidar usuário
+        </h2>
+        <p
+          id="invite-desc"
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 13,
+            color: "#64748B",
+            marginBottom: 18,
+          }}
+        >
+          O usuário receberá um e-mail com o link de convite.
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <div>
+            <label
+              htmlFor="invite-email"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12.5,
+                fontWeight: 600,
+                color: "#374151",
+                display: "block",
+                marginBottom: 6,
               }}
-              className="px-5 py-3.5 transition-colors"
+            >
+              E-mail
+            </label>
+            <input
+              id="invite-email"
+              type="email"
+              required
+              autoComplete="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+              aria-invalid={!!error}
+              aria-describedby={error ? "invite-email-error" : undefined}
+              className="w-full rounded-xl border px-4 py-2.5 transition-all focus:outline-none"
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontSize: 13.5,
+                color: "#1E293B",
+                background: "#FAFAF9",
+                borderColor: error ? "#DC2626" : "#DDD8D0",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = PRIMARY;
+                e.currentTarget.style.boxShadow = `0 0 0 3px rgba(31,58,95,0.1)`;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = error
+                  ? "#DC2626"
+                  : "#DDD8D0";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+              placeholder="usuario@empresa.com.br"
+            />
+            {error && (
+              <p
+                id="invite-email-error"
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 12,
+                  color: "#DC2626",
+                  marginTop: 6,
+                }}
+              >
+                {error}
+              </p>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor="invite-role"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 12.5,
                 fontWeight: 600,
-                color: activeTab === tab.id ? P : "#94A3B8",
-                borderBottom:
-                  activeTab === tab.id
-                    ? `2.5px solid ${P}`
-                    : "2.5px solid transparent",
-                background: "transparent",
+                color: "#374151",
+                display: "block",
+                marginBottom: 6,
               }}
             >
-              {tab.label}
+              Permissão
+            </label>
+            <select
+              id="invite-role"
+              value={role}
+              onChange={(e) => {
+                const next = e.target.value;
+                if (isAssignableRole(next)) {
+                  setRole(next);
+                }
+              }}
+              className="w-full rounded-xl border px-4 py-2.5 transition-all focus:outline-none"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 13.5,
+                color: "#1E293B",
+                background: "#FAFAF9",
+                borderColor: "#DDD8D0",
+              }}
+            >
+              <option value="member">Membro — acesso padrão</option>
+              <option value="admin">Admin — gerencia membros e convites</option>
+            </select>
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={busy}
+              className="rounded-xl px-4 py-2 transition-colors"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#64748B",
+                background: "#F1F5F9",
+                opacity: busy ? 0.6 : 1,
+              }}
+            >
+              Cancelar
             </button>
-          ))}
-        </div>
-
-        {activeTab === "users" && (
-          <div>
-            <div className="border-b p-4" style={{ borderColor: "#F8FAFC" }}>
-              <div
-                className="flex items-center gap-2 rounded-xl border px-3 py-2"
-                style={{ background: "#F8FAFC", borderColor: "#E2E8F0" }}
-              >
-                <Search className="h-4 w-4" style={{ color: "#94A3B8" }} />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                  }}
-                  placeholder="Buscar por nome, e-mail ou perfil..."
-                  className="flex-1 bg-transparent focus:outline-none"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 13,
-                    color: "#374151",
-                  }}
-                />
-              </div>
-            </div>
-            <div className="divide-y" style={{ borderColor: "#F8FAFC" }}>
-              {filtered.map((user) => {
-                const rc = roleConfig[user.role];
-                return (
-                  <div
-                    key={user.id}
-                    className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-slate-50"
-                  >
-                    <div
-                      className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-sm"
-                      style={{
-                        background:
-                          user.status === "inativo"
-                            ? "#F1F5F9"
-                            : "rgba(31,58,95,0.08)",
-                        border:
-                          user.status === "inativo"
-                            ? "1px solid #E2E8F0"
-                            : `1px solid rgba(200,169,107,0.4)`,
-                        color: user.status === "inativo" ? "#94A3B8" : P,
-                        fontWeight: 700,
-                        fontFamily: "'Inter', sans-serif",
-                      }}
-                    >
-                      {user.avatar}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p
-                          style={{
-                            fontFamily: "'Inter', sans-serif",
-                            fontSize: 13.5,
-                            fontWeight: 600,
-                            color:
-                              user.status === "inativo" ? "#94A3B8" : "#1E293B",
-                          }}
-                        >
-                          {user.nome}
-                        </p>
-                        {user.status === "inativo" && (
-                          <span
-                            style={{
-                              fontFamily: "'Inter', sans-serif",
-                              fontSize: 10,
-                              background: "#F1F5F9",
-                              color: "#94A3B8",
-                              padding: "1px 6px",
-                              borderRadius: 4,
-                              fontWeight: 700,
-                            }}
-                          >
-                            INATIVO
-                          </span>
-                        )}
-                      </div>
-                      <p
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                          fontSize: 12,
-                          color: "#64748B",
-                        }}
-                      >
-                        {user.email}
-                      </p>
-                    </div>
-                    <div className="hidden sm:block">
-                      <span
-                        className="rounded-xl px-2.5 py-1 text-xs font-semibold"
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                          background: rc.bg,
-                          color: rc.text,
-                        }}
-                      >
-                        {user.role}
-                      </span>
-                      <p
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                          fontSize: 10.5,
-                          color: "#94A3B8",
-                          marginTop: 2,
-                        }}
-                      >
-                        {rc.desc}
-                      </p>
-                    </div>
-                    <div className="hidden flex-col items-center gap-1 lg:flex">
-                      {user.mfa ? (
-                        <span
-                          className="flex items-center gap-1 rounded-lg px-2 py-0.5"
-                          style={{ background: SUCCESS_BG }}
-                        >
-                          <Shield
-                            className="h-3 w-3"
-                            style={{ color: SUCCESS }}
-                          />
-                          <span
-                            style={{
-                              fontFamily: "'Inter', sans-serif",
-                              fontSize: 10.5,
-                              color: SUCCESS,
-                              fontWeight: 700,
-                            }}
-                          >
-                            MFA Ativo
-                          </span>
-                        </span>
-                      ) : (
-                        <span
-                          className="flex items-center gap-1 rounded-lg px-2 py-0.5"
-                          style={{ background: DANGER_BG }}
-                        >
-                          <AlertTriangle
-                            className="h-3 w-3"
-                            style={{ color: DANGER }}
-                          />
-                          <span
-                            style={{
-                              fontFamily: "'Inter', sans-serif",
-                              fontSize: 10.5,
-                              color: DANGER,
-                              fontWeight: 700,
-                            }}
-                          >
-                            Sem MFA
-                          </span>
-                        </span>
-                      )}
-                    </div>
-                    <div className="hidden text-right lg:block">
-                      <p
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                          fontSize: 11.5,
-                          color: "#64748B",
-                        }}
-                      >
-                        Último acesso
-                      </p>
-                      <p
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                          fontSize: 12,
-                          fontWeight: 600,
-                          color: "#374151",
-                        }}
-                      >
-                        {user.ultimoAcesso}
-                      </p>
-                    </div>
-                    <div className="relative">
-                      <button
-                        onClick={() => {
-                          setOpenMenu(openMenu === user.id ? null : user.id);
-                        }}
-                        className="rounded-lg p-1.5 hover:bg-slate-100"
-                      >
-                        <MoreHorizontal
-                          className="h-4 w-4"
-                          style={{ color: "#94A3B8" }}
-                        />
-                      </button>
-                      {openMenu === user.id && (
-                        <div
-                          className="absolute right-0 z-10 mt-1 w-52 overflow-hidden rounded-2xl bg-white py-1 shadow-xl"
-                          style={{ border: "1px solid #E2E8F0" }}
-                        >
-                          {[
-                            {
-                              icon: Eye,
-                              label: "Ver Perfil",
-                              action: () => {
-                                setOpenMenu(null);
-                                toast.info("Abrindo perfil");
-                              },
-                            },
-                            {
-                              icon: Mail,
-                              label: "Reenviar Convite",
-                              action: () => {
-                                setOpenMenu(null);
-                                toast.success("Convite reenviado!");
-                              },
-                            },
-                            {
-                              icon: Lock,
-                              label: "Resetar Senha",
-                              action: () => {
-                                setOpenMenu(null);
-                                toast.success("Link enviado");
-                              },
-                            },
-                            {
-                              icon: Shield,
-                              label: "Forçar MFA",
-                              action: () => {
-                                setOpenMenu(null);
-                                toast.info("MFA configurado");
-                              },
-                            },
-                            {
-                              icon: LogOut,
-                              label: "Desconectar Sessões",
-                              action: () => {
-                                setOpenMenu(null);
-                                toast.warning("Sessões encerradas");
-                              },
-                            },
-                            {
-                              icon: Trash2,
-                              label: "Desativar Conta",
-                              action: () => {
-                                setOpenMenu(null);
-                                toast.error("Conta desativada");
-                              },
-                              danger: true,
-                            },
-                          ].map((item) => (
-                            <button
-                              key={item.label}
-                              onClick={item.action}
-                              className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left hover:bg-slate-50"
-                            >
-                              <item.icon
-                                className="h-3.5 w-3.5"
-                                style={{
-                                  color: (item as any).danger
-                                    ? DANGER
-                                    : "#94A3B8",
-                                }}
-                              />
-                              <span
-                                style={{
-                                  fontFamily: "'Inter', sans-serif",
-                                  fontSize: 12.5,
-                                  color: (item as any).danger
-                                    ? DANGER
-                                    : "#374151",
-                                }}
-                              >
-                                {item.label}
-                              </span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {activeTab === "audit" && (
-          <div>
-            <div
-              className="flex items-center justify-between border-b px-5 py-3"
-              style={{ borderColor: "#F8FAFC" }}
+            <button
+              type="submit"
+              disabled={busy}
+              className="rounded-xl px-4 py-2 text-white transition-colors"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 13,
+                fontWeight: 700,
+                background: busy ? "#94A3B8" : PRIMARY,
+              }}
+              onMouseEnter={(e) => {
+                if (!busy) e.currentTarget.style.background = PRIMARY_HOVER;
+              }}
+              onMouseLeave={(e) => {
+                if (!busy) e.currentTarget.style.background = PRIMARY;
+              }}
             >
-              <p
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: "#374151",
-                }}
-              >
-                Registro de Auditoria
-              </p>
-              <button
-                onClick={() => toast.info("Exportando logs...")}
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 12,
-                  color: P,
-                  fontWeight: 600,
-                }}
-              >
-                Exportar CSV
-              </button>
-            </div>
-            <div className="divide-y" style={{ borderColor: "#F8FAFC" }}>
-              {auditLog.map((log) => (
-                <div
-                  key={log.id}
-                  className="flex items-start gap-4 px-5 py-4 hover:bg-slate-50"
-                >
-                  <div
-                    className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl"
-                    style={{ background: "#EEF2F9" }}
-                  >
-                    <Activity className="h-4 w-4" style={{ color: P }} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 12.5,
-                        fontWeight: 600,
-                        color: "#374151",
-                      }}
-                    >
-                      {log.acao}
-                    </p>
-                    <p
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 11.5,
-                        color: "#94A3B8",
-                      }}
-                    >
-                      Por{" "}
-                      <span style={{ color: P, fontWeight: 600 }}>
-                        {log.usuario}
-                      </span>{" "}
-                      · IP: {log.ip}
-                    </p>
-                  </div>
-                  <p
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: 11.5,
-                      color: "#94A3B8",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {log.horario}
-                  </p>
-                </div>
-              ))}
-            </div>
+              {busy ? "Enviando..." : "Enviar convite"}
+            </button>
           </div>
-        )}
-
-        {activeTab === "sessions" && (
-          <div>
-            <div
-              className="border-b px-5 py-3"
-              style={{ borderColor: "#F8FAFC" }}
-            >
-              <p
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 12,
-                  color: "#64748B",
-                }}
-              >
-                Sessões ativas de Rafael Oliveira
-              </p>
-            </div>
-            {[
-              {
-                device: 'MacBook Pro 16" (Safari)',
-                ip: "177.52.34.12",
-                location: "São Paulo, SP",
-                time: "Agora",
-                current: true,
-              },
-              {
-                device: "iPhone 15 Pro (App iOS)",
-                ip: "189.32.54.21",
-                location: "São Paulo, SP",
-                time: "2h atrás",
-                current: false,
-              },
-              {
-                device: "Windows PC (Chrome)",
-                ip: "201.18.45.67",
-                location: "Campinas, SP",
-                time: "Ontem 14:32",
-                current: false,
-              },
-            ].map((s, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-4 border-t px-5 py-4 hover:bg-slate-50"
-                style={{ borderColor: "#F8FAFC" }}
-              >
-                <div
-                  className="flex h-8 w-8 items-center justify-center rounded-xl"
-                  style={{ background: s.current ? "#EEF2F9" : "#F8FAFC" }}
-                >
-                  <Smartphone
-                    className="h-4 w-4"
-                    style={{ color: s.current ? P : "#94A3B8" }}
-                  />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <p
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: "#374151",
-                      }}
-                    >
-                      {s.device}
-                    </p>
-                    {s.current && (
-                      <span
-                        style={{
-                          fontFamily: "'Inter', sans-serif",
-                          fontSize: 10,
-                          background: "#EEF2F9",
-                          color: P,
-                          padding: "1px 6px",
-                          borderRadius: 4,
-                          fontWeight: 700,
-                        }}
-                      >
-                        ATUAL
-                      </span>
-                    )}
-                  </div>
-                  <p
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: 11.5,
-                      color: "#94A3B8",
-                    }}
-                  >
-                    {s.ip} · {s.location}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: 12,
-                      color: "#64748B",
-                    }}
-                  >
-                    {s.time}
-                  </p>
-                  {!s.current && (
-                    <button
-                      onClick={() => toast.warning("Sessão encerrada")}
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 11,
-                        color: DANGER,
-                        fontWeight: 600,
-                      }}
-                    >
-                      Encerrar
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        </form>
       </div>
+    </div>
+  );
+}
 
-      {/* Roles table */}
+interface ConfirmDialogProps {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  busy: boolean;
+  onCancel: () => void;
+  onConfirm: () => void;
+}
+
+function ConfirmDialog({
+  title,
+  description,
+  confirmLabel,
+  busy,
+  onCancel,
+  onConfirm,
+}: ConfirmDialogProps) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      style={{ background: "rgba(15, 23, 42, 0.45)" }}
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="confirm-title"
+      aria-describedby="confirm-desc"
+    >
       <div
-        className="overflow-hidden rounded-2xl bg-white"
+        className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl"
         style={{ border: "1px solid #E2E8F0" }}
       >
-        <div className="border-b px-5 py-4" style={{ borderColor: "#F1F5F9" }}>
-          <h3
+        <h2
+          id="confirm-title"
+          style={{
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: 17,
+            fontWeight: 800,
+            color: PRIMARY,
+            marginBottom: 6,
+          }}
+        >
+          {title}
+        </h2>
+        <p
+          id="confirm-desc"
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 13,
+            color: "#64748B",
+            marginBottom: 18,
+            lineHeight: 1.5,
+          }}
+        >
+          {description}
+        </p>
+        <div className="flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={busy}
+            className="rounded-xl px-4 py-2 transition-colors"
             style={{
-              fontFamily: "'Montserrat', sans-serif",
-              fontSize: 14.5,
-              fontWeight: 800,
-              color: P,
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#64748B",
+              background: "#F1F5F9",
+              opacity: busy ? 0.6 : 1,
             }}
           >
-            Perfis de Acesso
-          </h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr
-                style={{
-                  background: "#F8FAFC",
-                  borderBottom: "1px solid #F1F5F9",
-                }}
-              >
-                {[
-                  "Perfil",
-                  "Recebíveis",
-                  "Pagamentos",
-                  "Relatórios",
-                  "Usuários",
-                  "Billing",
-                  "Export. Fiscal",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-4 py-3 text-left"
-                    style={{
-                      fontFamily: "'Inter', sans-serif",
-                      fontSize: 10.5,
-                      fontWeight: 700,
-                      color: "#94A3B8",
-                      letterSpacing: "0.08em",
-                    }}
-                  >
-                    {h.toUpperCase()}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                [
-                  "Administrador",
-                  "total",
-                  "total",
-                  "total",
-                  "total",
-                  "total",
-                  "total",
-                ],
-                [
-                  "Financeiro",
-                  "total",
-                  "total",
-                  "total",
-                  "none",
-                  "none",
-                  "total",
-                ],
-                [
-                  "Operacional",
-                  "total",
-                  "write",
-                  "read",
-                  "none",
-                  "none",
-                  "none",
-                ],
-                [
-                  "Visualizador",
-                  "read",
-                  "read",
-                  "read",
-                  "none",
-                  "none",
-                  "none",
-                ],
-                [
-                  "Contador Externo",
-                  "read",
-                  "read",
-                  "total",
-                  "none",
-                  "none",
-                  "total",
-                ],
-              ].map(([role, ...perms]) => (
-                <tr
-                  key={role}
-                  className="border-t hover:bg-slate-50"
-                  style={{ borderColor: "#F8FAFC" }}
-                >
-                  <td className="px-4 py-3">
-                    <span
-                      className="rounded-xl px-2.5 py-1 text-xs font-semibold"
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        background: roleConfig[role]?.bg,
-                        color: roleConfig[role]?.text,
-                      }}
-                    >
-                      {role}
-                    </span>
-                  </td>
-                  {perms.map((p, i) => (
-                    <td key={i} className="px-4 py-3">
-                      {p === "total" && (
-                        <span
-                          className="inline-flex items-center gap-1"
-                          style={{ color: SUCCESS }}
-                        >
-                          <CheckCircle className="h-3.5 w-3.5" />
-                          <span
-                            style={{
-                              fontFamily: "'Inter', sans-serif",
-                              fontSize: 12,
-                            }}
-                          >
-                            Total
-                          </span>
-                        </span>
-                      )}
-                      {p === "write" && (
-                        <span
-                          className="inline-flex items-center gap-1"
-                          style={{ color: P }}
-                        >
-                          <CheckCircle className="h-3.5 w-3.5" />
-                          <span
-                            style={{
-                              fontFamily: "'Inter', sans-serif",
-                              fontSize: 12,
-                            }}
-                          >
-                            Criar
-                          </span>
-                        </span>
-                      )}
-                      {p === "read" && (
-                        <span
-                          className="inline-flex items-center gap-1"
-                          style={{ color: "#64748B" }}
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span
-                            style={{
-                              fontFamily: "'Inter', sans-serif",
-                              fontSize: 12,
-                            }}
-                          >
-                            Ver
-                          </span>
-                        </span>
-                      )}
-                      {p === "none" && (
-                        <span
-                          className="inline-flex items-center gap-1"
-                          style={{ color: "#CBD5E1" }}
-                        >
-                          <XCircle className="h-3.5 w-3.5" />
-                          <span
-                            style={{
-                              fontFamily: "'Inter', sans-serif",
-                              fontSize: 12,
-                              color: "#CBD5E1",
-                            }}
-                          >
-                            –
-                          </span>
-                        </span>
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            Voltar
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={busy}
+            className="rounded-xl px-4 py-2 text-white transition-colors"
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 13,
+              fontWeight: 700,
+              background: busy ? "#94A3B8" : DANGER,
+            }}
+          >
+            {busy ? "Processando..." : confirmLabel}
+          </button>
         </div>
       </div>
-
-      {/* Invite Modal */}
-      {showInvite && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl">
-            <div
-              className="flex items-center justify-between border-b px-6 py-4"
-              style={{ borderColor: "#F1F5F9" }}
-            >
-              <h3
-                style={{
-                  fontFamily: "'Montserrat', sans-serif",
-                  fontSize: 16,
-                  fontWeight: 800,
-                  color: P,
-                }}
-              >
-                Convidar Usuário
-              </h3>
-              <button
-                onClick={() => {
-                  setShowInvite(false);
-                }}
-                className="rounded-xl p-1.5 hover:bg-slate-100"
-              >
-                <XCircle className="h-5 w-5" style={{ color: "#94A3B8" }} />
-              </button>
-            </div>
-            <div className="space-y-4 p-6">
-              <div>
-                <label
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12.5,
-                    fontWeight: 600,
-                    color: "#374151",
-                    display: "block",
-                    marginBottom: 5,
-                  }}
-                >
-                  E-mail do Usuário
-                </label>
-                <input
-                  type="email"
-                  value={inviteEmail}
-                  onChange={(e) => {
-                    setInviteEmail(e.target.value);
-                  }}
-                  placeholder="usuario@empresa.com.br"
-                  className="w-full rounded-xl border px-4 py-2.5 transition-all focus:outline-none"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 13,
-                    background: "#F8FAFC",
-                    borderColor: "#E2E8F0",
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = P;
-                    e.currentTarget.style.boxShadow = `0 0 0 3px rgba(31,58,95,0.1)`;
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "#E2E8F0";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                />
-              </div>
-              <div>
-                <label
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12.5,
-                    fontWeight: 600,
-                    color: "#374151",
-                    display: "block",
-                    marginBottom: 5,
-                  }}
-                >
-                  Perfil de Acesso
-                </label>
-                <select
-                  value={inviteRole}
-                  onChange={(e) => {
-                    setInviteRole(e.target.value);
-                  }}
-                  className="w-full rounded-xl border px-4 py-2.5 focus:outline-none"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 13,
-                    background: "#F8FAFC",
-                    borderColor: "#E2E8F0",
-                  }}
-                >
-                  {Object.keys(roleConfig).map((r) => (
-                    <option key={r}>{r}</option>
-                  ))}
-                </select>
-                {inviteRole && (
-                  <div className="mt-1.5 flex items-start gap-1.5">
-                    <FileText
-                      className="mt-0.5 h-3.5 w-3.5 flex-shrink-0"
-                      style={{ color: "#94A3B8" }}
-                    />
-                    <p
-                      style={{
-                        fontFamily: "'Inter', sans-serif",
-                        fontSize: 11.5,
-                        color: "#64748B",
-                      }}
-                    >
-                      {roleConfig[inviteRole]?.desc}
-                    </p>
-                  </div>
-                )}
-              </div>
-              <div>
-                <label
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12.5,
-                    fontWeight: 600,
-                    color: "#374151",
-                    display: "block",
-                    marginBottom: 5,
-                  }}
-                >
-                  Expiração do Convite
-                </label>
-                <select
-                  value={inviteExpiry}
-                  onChange={(e) => {
-                    setInviteExpiry(e.target.value);
-                  }}
-                  className="w-full rounded-xl border px-4 py-2.5 focus:outline-none"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 13,
-                    background: "#F8FAFC",
-                    borderColor: "#E2E8F0",
-                  }}
-                >
-                  <option value="1">1 dia</option>
-                  <option value="7">7 dias</option>
-                  <option value="30">30 dias</option>
-                  <option value="0">Sem expiração</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="forceMfa"
-                  className="rounded"
-                  defaultChecked
-                  style={{ accentColor: P }}
-                />
-                <label
-                  htmlFor="forceMfa"
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 12.5,
-                    color: "#374151",
-                  }}
-                >
-                  Exigir MFA no primeiro acesso
-                </label>
-              </div>
-            </div>
-            <div className="flex gap-3 px-6 pb-6">
-              <button
-                onClick={() => {
-                  setShowInvite(false);
-                }}
-                className="flex-1 rounded-xl border py-2.5 hover:bg-slate-50"
-                style={{
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 13.5,
-                  borderColor: "#E2E8F0",
-                  color: "#64748B",
-                }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={() => {
-                  setShowInvite(false);
-                  toast.success(
-                    `Convite enviado para ${inviteEmail || "o usuário"}!`,
-                  );
-                  setInviteEmail("");
-                }}
-                className="flex-1 rounded-xl py-2.5 text-white transition-all"
-                style={{
-                  background: P,
-                  fontFamily: "'Inter', sans-serif",
-                  fontSize: 13.5,
-                  fontWeight: 700,
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = PH)}
-                onMouseLeave={(e) => (e.currentTarget.style.background = P)}
-              >
-                Enviar Convite
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

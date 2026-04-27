@@ -19,6 +19,7 @@ import { SignupPage } from "./pages/SignupPage";
 import { UsersPage } from "./pages/UsersPage";
 import { VerifyEmailPage } from "./pages/VerifyEmailPage";
 import { RequireAuth } from "./guards/RequireAuth";
+import { RequireOrgRole } from "./guards/RequireOrgRole";
 import { RequireSession } from "./guards/RequireSession";
 
 export const router = createBrowserRouter([
@@ -46,7 +47,10 @@ export const router = createBrowserRouter([
           { path: "receivables", Component: ReceivablesPage },
           { path: "payables", Component: PayablesPage },
           { path: "invoices", Component: InvoicesPage },
-          { path: "users", Component: UsersPage },
+          {
+            element: <RequireOrgRole roles={["owner", "admin"]} />,
+            children: [{ path: "users", Component: UsersPage }],
+          },
           { path: "reports", Component: ReportsPage },
           { path: "integrations", Component: IntegrationsPage },
           { path: "settings", Component: SettingsPage },
