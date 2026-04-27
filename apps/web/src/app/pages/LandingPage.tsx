@@ -165,8 +165,8 @@ function ParticleCanvas() {
 /* ══════════════════════════════════════════════════
    TYPING HEADLINE
 ══════════════════════════════════════════════════ */
-const LINE1 = "Boleto que reflete a confiança da sua empresa.";
-const LINE2 = "Controle financeiro sofisticado, estável e previsível.";
+const LINE1 = "Cobranças e tesouraria";
+const LINE2 = "automatizadas por IA";
 
 function TypingHeadline() {
   const [txt1, setTxt1] = useState("");
@@ -279,7 +279,15 @@ function Card3D({ children, className = "", style = {} }: any) {
 /* ══════════════════════════════════════════════════
    ANIMATED STAT COUNTER
 ══════════════════════════════════════════════════ */
-function StatNum({ end, suffix = "" }: { end: number; suffix?: string }) {
+function StatNum({
+  end,
+  suffix = "",
+  prefix = "",
+}: {
+  end: number;
+  suffix?: string;
+  prefix?: string;
+}) {
   const [n, setN] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
@@ -304,6 +312,7 @@ function StatNum({ end, suffix = "" }: { end: number; suffix?: string }) {
   }, [end]);
   return (
     <span ref={ref}>
+      {prefix}
       {n.toLocaleString("pt-BR")}
       {suffix}
     </span>
@@ -408,32 +417,32 @@ export function LandingPage() {
 
   const faqs = [
     {
-      q: "O boleto é registrado automaticamente?",
-      a: "Sim. Cada boleto emitido na plataforma já é registrado automaticamente no banco sacador, com código de barras, QR Code Pix (Bolepix) e todas as regras de juros, multa e desconto configuradas, em total conformidade com as normativas do Banco Central.",
+      q: "A IA da Olympia substitui meu time financeiro?",
+      a: "Não. Ela tira do seu time todo o trabalho repetitivo — conciliação, cobrança, auditoria — e libera as pessoas pra decisões estratégicas. Quem ganha é o time, que para de operar planilha e passa a usar inteligência.",
     },
     {
-      q: "Há taxa por boleto emitido?",
-      a: "Não. Você paga apenas a mensalidade do plano escolhido. No Pro e Enterprise a emissão de boletos e cobranças Pix é ilimitada, sem surpresas no final do mês.",
+      q: "Como a IA garante que não vai errar uma cobrança ou conciliação?",
+      a: "Cada operação passa por modelos treinados com milhões de transações reais e por uma camada de validação automática. Em caso de divergência, a IA não age sozinha: ela alerta o responsável antes de qualquer movimentação.",
     },
     {
-      q: "Funciona com qualquer banco?",
-      a: "Sim. Via Open Finance conectamos com as principais instituições financeiras do país — Itaú, Bradesco, Nubank, Banco do Brasil, Caixa, Santander, BTG e mais de 200 bancos homologados.",
+      q: "Preciso entender de IA pra usar a plataforma?",
+      a: "Não. A IA é nativa e invisível — você só vê os resultados: relatórios prontos, cobranças enviadas, conciliações fechadas e previsões de caixa atualizadas em tempo real.",
     },
     {
-      q: "Meu contador tem acesso?",
-      a: "Sim. Você pode convidar o contador como usuário com perfil 'Contador Externo' — ele tem acesso somente leitura ao dashboard, relatórios e pode exportar SPED, EFD e DCTF diretamente.",
+      q: "A Olympia conecta com meu ERP atual?",
+      a: "Sim. Temos integrações nativas com os principais ERPs do mercado (SAP, Totvs, Oracle, Omie, Conta Azul) e API aberta pra qualquer sistema. Conexão em minutos, sem reescrever nada.",
     },
     {
-      q: "A plataforma é segura?",
-      a: "Totalmente. Operamos em conformidade com a LGPD, certificação ISO 27001, criptografia AES-256 em repouso e TLS 1.3 em trânsito, além de autenticação MFA obrigatória para operações financeiras.",
+      q: "Meus dados financeiros estão seguros com IA?",
+      a: "Totalmente. Operamos em conformidade com a LGPD, certificação ISO 27001, criptografia AES-256 em repouso e TLS 1.3 em trânsito. A IA roda em ambiente isolado e nenhum dado da sua empresa treina modelos de terceiros.",
     },
     {
-      q: "Como funciona o Pix Automático recorrente?",
-      a: "Com um único consentimento do seu cliente (via Open Finance), você agenda débitos recorrentes — ideal para mensalidades e assinaturas — sem precisar emitir um boleto novo a cada ciclo.",
+      q: "Quanto tempo leva pra ver resultado?",
+      a: "Os primeiros ganhos aparecem na primeira semana — conciliações que levavam horas passam a ser instantâneas. Em 30 dias, a maioria dos clientes reduz mais de 80% do tempo gasto no financeiro.",
     },
     {
       q: "Posso cancelar a qualquer momento?",
-      a: "Sim, sem fidelidade e sem multa. Todos os seus dados são exportáveis em CSV/Excel e JSON via API antes de encerrar a conta.",
+      a: "Sim, sem fidelidade e sem multa. Você testa por 30 dias com IA completa liberada e, se quiser sair, exporta todos os dados em CSV/Excel e JSON via API antes de encerrar a conta.",
     },
   ];
 
@@ -678,9 +687,11 @@ export function LandingPage() {
                     maxWidth: 520,
                   }}
                 >
-                  Emita boleto registrado com Bolepix, receba com a segurança de
-                  um banco privado e tenha fluxo de caixa em tempo real. A
-                  plataforma brasileira que une tradição e tecnologia de ponta.
+                  Conecte seu ERP aos bancos via API e deixe nossa IA nativa
+                  cuidar de tudo: auditoria financeira automática, conciliação
+                  instantânea, previsão de fluxo de caixa e cobranças
+                  inteligentes. Mais agilidade. Zero erro manual. Auditoria
+                  confiável.
                 </p>
 
                 {/* CTAs */}
@@ -690,7 +701,7 @@ export function LandingPage() {
                     className="ol-btn-gold flex items-center gap-2 rounded-xl px-7 py-4 text-base font-bold"
                     style={{ fontFamily: "'Inter', sans-serif", fontSize: 15 }}
                   >
-                    Criar minha conta grátis (30 dias ilimitados)
+                    Testar IA nas minhas cobranças agora
                     <ArrowRight className="h-4 w-4" />
                   </button>
                   <button
@@ -746,7 +757,7 @@ export function LandingPage() {
                         color: "rgba(200,215,235,0.7)",
                       }}
                     >
-                      +15.347 empresas já confiam na Olympia
+                      +15.347 empresas já aceleraram o financeiro com IA
                     </p>
                   </div>
                 </div>
@@ -947,8 +958,9 @@ export function LandingPage() {
                   marginBottom: 10,
                 }}
               >
-                Chega de boleto que se perde e<br />
-                controle financeiro improvisado
+                Chega de planilhas, erros e auditorias
+                <br />
+                que tomam dias
               </h2>
             </div>
             <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-3">
@@ -970,15 +982,15 @@ export function LandingPage() {
                     fontFamily: "'Inter', sans-serif",
                   }}
                 >
-                  Sem Olympia Pagamentos
+                  Sem Olympia
                 </p>
                 <ul className="space-y-3">
                   {[
-                    "Boleto manual",
-                    "Conciliação manual no banco",
+                    "Conciliação manual e lenta",
+                    "Auditoria financeira demorada e sujeita a erro humano",
+                    "Fluxo de caixa sem previsão confiável",
+                    "Cobranças perdidas por falta de agilidade",
                     "Horas perdidas toda semana",
-                    "Inadimplência elevada",
-                    "Fluxo de caixa imprevisível",
                   ].map((t) => (
                     <li key={t} className="flex items-center gap-2">
                       <X
@@ -1044,15 +1056,15 @@ export function LandingPage() {
                     fontFamily: "'Inter', sans-serif",
                   }}
                 >
-                  Com Olympia Pagamentos
+                  Com Olympia + IA
                 </p>
                 <ul className="space-y-3">
                   {[
-                    "Boleto registrado com elegância em 8 segundos",
-                    "Bolepix – pagamento instantâneo via PIX",
-                    "Conciliação automática e precisa",
-                    "Redução de até 68% na inadimplência",
-                    "Fluxo de caixa previsível e sob controle",
+                    "Auditoria financeira automática com IA em segundos",
+                    "Conciliação instantânea via IA + Open Finance",
+                    "Previsão de caixa com 95%+ de precisão",
+                    "Cobranças automáticas e inteligentes",
+                    "Redução de até 85% no tempo de auditoria e reconciliação",
                   ].map((t) => (
                     <li key={t} className="flex items-start gap-2">
                       <CheckCircle
@@ -1110,9 +1122,9 @@ export function LandingPage() {
                   color: P,
                 }}
               >
-                Boleto + PIX: a combinação de
+                IA nativa que audita, agiliza e otimiza
                 <br />
-                tradição e eficiência
+                seu financeiro
               </h2>
             </div>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -1122,7 +1134,7 @@ export function LandingPage() {
                   color: "#00907A",
                   bg: "#F0FDFB",
                   title: "Boleto registrado com excelência",
-                  desc: "Juros, multa e desconto automáticos. Segunda via enviada por WhatsApp com a sofisticação que sua empresa merece.",
+                  desc: "Emissão automática via ERP com IA que valida dados em tempo real e registra instantaneamente.",
                   delay: "d1",
                 },
                 {
@@ -1130,7 +1142,7 @@ export function LandingPage() {
                   color: G,
                   bg: "#FDF8EE",
                   title: "Bolepix – pagamento instantâneo",
-                  desc: "Seu cliente paga o boleto com PIX em segundos. Você recebe no mesmo dia, com a segurança de quem valoriza o tempo.",
+                  desc: "PIX automático gerado pela IA com conciliação imediata e zero intervenção manual.",
                   delay: "d2",
                 },
                 {
@@ -1138,7 +1150,7 @@ export function LandingPage() {
                   color: "#22C55E",
                   bg: "#F0FDF4",
                   title: "Régua de cobrança inteligente",
-                  desc: "Lembretes automáticos por WhatsApp, e-mail e SMS. Cobrança refinada, sem pressão desnecessária.",
+                  desc: "IA analisa o perfil do cliente e envia lembretes personalizados no momento ideal (WhatsApp, e-mail, SMS).",
                   delay: "d3",
                 },
                 {
@@ -1146,7 +1158,7 @@ export function LandingPage() {
                   color: P,
                   bg: "#EEF2F9",
                   title: "Conciliação automática",
-                  desc: "Tudo se reconcilia sozinho via Open Finance e CNAB. Nunca mais perca tempo com comprovantes.",
+                  desc: "IA cruza ERP, bancos e documentos em tempo real com 99,9% de acerto automático.",
                   delay: "d4",
                 },
               ].map((c) => (
@@ -1203,9 +1215,9 @@ export function LandingPage() {
                   marginBottom: 10,
                 }}
               >
-                Uma plataforma completa, projetada
+                Uma plataforma completa com IA para quem quer
                 <br />
-                com o mesmo rigor de um grande banco
+                velocidade e auditoria impecável
               </h2>
             </div>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -1215,7 +1227,7 @@ export function LandingPage() {
                   color: "#00907A",
                   bg: "#F0FDFB",
                   title: "Boleto + Bolepix",
-                  desc: "Emissão ilimitada, registro automático e pagamento instantâneo.",
+                  desc: "IA que emite, registra e concilia automaticamente com máxima eficiência.",
                   badge: "Destaque",
                   delay: "d1",
                 },
@@ -1224,7 +1236,7 @@ export function LandingPage() {
                   color: G,
                   bg: "#FDF8EE",
                   title: "PIX Cobrança e Pix Automático",
-                  desc: "Cobranças recorrentes com consentimento único. Perfeito para mensalidades.",
+                  desc: "Cobranças recorrentes com consentimento único e IA que gerencia todo o ciclo.",
                   badge: null,
                   delay: "d2",
                 },
@@ -1233,7 +1245,7 @@ export function LandingPage() {
                   color: "#6B4BAF",
                   bg: "#F5F1FF",
                   title: "Contas a Pagar com aprovação",
-                  desc: "Pagamentos em lote com workflow sofisticado de aprovação.",
+                  desc: "IA sugere pagamentos, detecta duplicidades e aprova em lote com workflow seguro.",
                   badge: null,
                   delay: "d3",
                 },
@@ -1242,7 +1254,7 @@ export function LandingPage() {
                   color: P,
                   bg: "#EEF2F9",
                   title: "Dashboard de Fluxo de Caixa",
-                  desc: "Previsão inteligente para 30, 60 e 90 dias.",
+                  desc: "Visão completa com previsões automáticas geradas pela IA em tempo real.",
                   badge: null,
                   delay: "d1",
                 },
@@ -1251,7 +1263,7 @@ export function LandingPage() {
                   color: "#0891B2",
                   bg: "#F0FDFE",
                   title: "Open Finance + CNAB",
-                  desc: "Conecte todos os seus bancos em um único clique.",
+                  desc: "Conexão direta com bancos via Open Finance e IA que processa CNAB sozinho.",
                   badge: null,
                   delay: "d2",
                 },
@@ -1260,7 +1272,7 @@ export function LandingPage() {
                   color: "#22C55E",
                   bg: "#F0FDF4",
                   title: "Portal do Cliente",
-                  desc: "Seu cliente acessa, paga e baixa documentos com um clique.",
+                  desc: "Autoatendimento inteligente com IA que responde dúvidas e facilita a quitação.",
                   badge: null,
                   delay: "d3",
                 },
@@ -1362,32 +1374,35 @@ export function LandingPage() {
                   color: "#FFFFFF",
                 }}
               >
-                Resultados construídos com excelência
+                Resultados que a IA está entregando
               </h2>
             </div>
             <div className="grid grid-cols-1 gap-7 md:grid-cols-3">
               {[
                 {
-                  end: 68,
+                  end: 85,
+                  prefix: "-",
                   suffix: "%",
-                  label: "Menos inadimplência",
-                  sub: "Média dos clientes em 60 dias",
+                  label: "No tempo de auditoria e conciliação",
+                  sub: "Com IA que cruza ERP, bancos e documentos em segundos",
                   Icon: TrendingUp,
                   color: "#22C55E",
                 },
                 {
-                  end: 18,
+                  end: 150,
+                  prefix: "-",
                   suffix: "h",
-                  label: "Economizadas por mês em conciliação",
-                  sub: "Automação completa via Open Finance",
+                  label: "Economizadas por mês em tarefas manuais",
+                  sub: "A IA elimina o trabalho repetitivo do financeiro",
                   Icon: Clock,
                   color: G,
                 },
                 {
-                  end: 42,
+                  end: 98,
+                  prefix: "+",
                   suffix: "%",
-                  label: "Mais previsibilidade no fluxo de caixa",
-                  sub: "Com projeção inteligente de 90 dias",
+                  label: "De precisão na previsão de fluxo de caixa",
+                  sub: "Modelos de IA que aprendem com seu histórico",
                   Icon: BarChart3,
                   color: "#60A5FA",
                 },
@@ -1419,7 +1434,7 @@ export function LandingPage() {
                       lineHeight: 1,
                     }}
                   >
-                    <StatNum end={s.end} suffix={s.suffix} />
+                    <StatNum end={s.end} suffix={s.suffix} prefix={s.prefix} />
                   </div>
                   <p
                     style={{
@@ -1453,8 +1468,9 @@ export function LandingPage() {
                   fontStyle: "italic",
                 }}
               >
-                "Em poucos dias, a Olympia Pagamentos elevou o padrão do nosso
-                controle financeiro."
+                "A IA da Olympia audita nossos recebíveis sozinha e devolveu 3
+                dias úteis da nossa equipe financeira por mês. É absurdo o
+                quanto agiliza tudo."
               </p>
               <p
                 style={{
@@ -1464,7 +1480,7 @@ export function LandingPage() {
                   marginTop: 5,
                 }}
               >
-                — Depoimentos de empresas que valorizam precisão e sofisticação
+                — Ana Clara Mendes, Sócia – Mendes Contabilidade, Campinas/SP
               </p>
             </div>
           </div>
@@ -1637,9 +1653,9 @@ export function LandingPage() {
                   marginBottom: 10,
                 }}
               >
-                Três passos simples para um controle
+                Três passos para colocar IA
                 <br />
-                financeiro de alto padrão
+                no seu financeiro
               </h2>
             </div>
 
@@ -1649,22 +1665,23 @@ export function LandingPage() {
                 {
                   n: "01",
                   Icon: Building2,
-                  title: "Cadastre sua empresa com CNPJ",
+                  title: "Cadastre sua empresa com CNPJ e conecte seu ERP",
                   sub: "Validação automática em segundos",
                   delay: "d1",
                 },
                 {
                   n: "02",
                   Icon: FileText,
-                  title: "Crie seu primeiro boleto ou PIX",
-                  sub: "Com regras de juros, multa e Bolepix",
+                  title:
+                    "Ative a IA e configure as regras de auditoria e automação",
+                  sub: "Setup guiado, sem fricção",
                   delay: "d2",
                 },
                 {
                   n: "03",
                   Icon: CheckCircle,
-                  title: "Receba e acompanhe tudo em tempo real",
-                  sub: "Com a tranquilidade que seu negócio merece",
+                  title: "Acompanhe tudo em tempo real — a IA cuida do resto",
+                  sub: "Você ganha tempo, previsibilidade e paz no financeiro",
                   delay: "d3",
                 },
               ].map((s) => (
@@ -1756,6 +1773,23 @@ export function LandingPage() {
                 <br />
                 controle e sofisticação
               </h2>
+              <p
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: 16,
+                  lineHeight: 1.6,
+                  color: "#475569",
+                  marginTop: 18,
+                  maxWidth: 680,
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                }}
+              >
+                Escolha o plano ideal e coloque IA nativa para trabalhar no seu
+                financeiro. Auditoria automática, conciliação instantânea e
+                previsão de caixa com precisão que só a inteligência artificial
+                entrega.
+              </p>
             </div>
 
             <div className="ol-reveal grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -1786,7 +1820,7 @@ export function LandingPage() {
                       lineHeight: 1,
                     }}
                   >
-                    R$ 0
+                    R$ 197
                   </span>
                   <span
                     style={{
@@ -1807,13 +1841,13 @@ export function LandingPage() {
                     marginBottom: 22,
                   }}
                 >
-                  Para começar a explorar
+                  Perfeito para quem está começando a automatizar
                 </p>
                 <ul className="mb-8 space-y-3">
                   {[
-                    "Até 50 boletos/Pix por mês",
-                    "Conciliação automática",
-                    "Dashboard básico",
+                    "Até 300 cobranças/mês",
+                    "IA básica de conciliação e auditoria",
+                    "Dashboard de fluxo de caixa",
                     "Suporte por e-mail",
                   ].map((f) => (
                     <li key={f} className="flex items-center gap-2">
@@ -1890,7 +1924,7 @@ export function LandingPage() {
                       lineHeight: 1,
                     }}
                   >
-                    R$ 89
+                    R$ 497
                   </span>
                   <span
                     style={{
@@ -1907,23 +1941,20 @@ export function LandingPage() {
                   style={{
                     fontFamily: "'Inter', sans-serif",
                     fontSize: 12.5,
-                    color: "#22C55E",
-                    fontWeight: 700,
+                    color: "#475569",
                     marginBottom: 22,
                   }}
                 >
-                  30 dias grátis para testar
+                  IA completa para empresas que querem velocidade e controle
+                  total
                 </p>
                 <ul className="mb-8 space-y-3">
                   {[
-                    "Boletos e PIX ilimitados",
-                    "Bolepix + Pix Automático",
-                    "Contas a Pagar completo",
-                    "Relatórios avançados",
-                    "Régua de cobrança automática",
-                    "NF-e / NFS-e automática",
-                    "Até 5 usuários",
-                    "Suporte prioritário",
+                    "Cobranças ilimitadas",
+                    "IA avançada de auditoria, régua inteligente e previsões",
+                    "Conciliação automática com 99,9% de acerto",
+                    "Workflow de aprovação de pagamentos",
+                    "Suporte prioritário + assistente IA",
                   ].map((f) => (
                     <li key={f} className="flex items-center gap-2">
                       <CheckCircle
@@ -1978,28 +2009,29 @@ export function LandingPage() {
                       lineHeight: 1.2,
                     }}
                   >
-                    A partir de R$ 249
+                    Sob consulta
                   </span>
                 </div>
                 <p
                   style={{
                     fontFamily: "'Inter', sans-serif",
-                    fontSize: 14,
-                    color: "#6B8BAF",
+                    fontSize: 13,
+                    color: "rgba(200,215,235,0.75)",
                     paddingBottom: 0,
                     marginBottom: 22,
+                    lineHeight: 1.5,
                   }}
                 >
-                  /mês
+                  IA dedicada, integrações sob medida e SLA premium para grandes
+                  operações
                 </p>
                 <ul className="mb-8 space-y-3">
                   {[
-                    "Tudo do Pro + multi-empresa",
-                    "Integrações personalizadas (SAP, Totvs)",
-                    "White label",
-                    "Gerente de contas dedicado",
-                    "SLA 99,95% garantido",
-                    "SSO + MFA avançado",
+                    "Tudo do Pro + IA personalizada para seu negócio",
+                    "Integrações sob medida (SAP, Totvs, Oracle)",
+                    "Multi-empresa e multi-CNPJ ilimitados",
+                    "Gerente de contas dedicado + onboarding IA",
+                    "SLA 99,95% garantido + SSO/MFA avançado",
                   ].map((f) => (
                     <li key={f} className="flex items-center gap-2">
                       <CheckCircle
@@ -2050,8 +2082,8 @@ export function LandingPage() {
                 color: "#94A3B8",
               }}
             >
-              30 dias grátis no Pro e Enterprise · Sem contrato anual · Cancele
-              quando quiser
+              Garantia: Teste grátis por 30 dias. Cancele quando quiser. Sem
+              multa.
             </p>
           </div>
         </section>
@@ -2171,9 +2203,9 @@ export function LandingPage() {
                 marginBottom: 16,
               }}
             >
-              Pronto para elevar o padrão do
+              Pronto para colocar IA pra cuidar
               <br />
-              controle financeiro da sua empresa?
+              do seu financeiro?
             </h2>
             <p
               style={{
@@ -2183,8 +2215,8 @@ export function LandingPage() {
                 marginBottom: 36,
               }}
             >
-              Crie sua conta em 5 minutos com CNPJ e emita seu primeiro Bolepix
-              ainda hoje. Sem cartão, sem burocracia.
+              Crie sua conta em 5 minutos e veja a IA da Olympia operar em tempo
+              real. Sem cartão. Sem burocracia. Resultado já no primeiro dia.
             </p>
             <div className="flex flex-col justify-center gap-3 sm:flex-row">
               <button
@@ -2192,7 +2224,8 @@ export function LandingPage() {
                 className="ol-btn-gold inline-flex items-center justify-center gap-2 rounded-xl px-8 py-4 text-base font-bold"
                 style={{ fontFamily: "'Inter', sans-serif", fontSize: 15 }}
               >
-                Criar conta grátis agora <ArrowRight className="h-4 w-4" />
+                Ativar IA no meu financeiro agora{" "}
+                <ArrowRight className="h-4 w-4" />
               </button>
               <button
                 onClick={() => {
@@ -2274,8 +2307,9 @@ export function LandingPage() {
                     maxWidth: 240,
                   }}
                 >
-                  Plataforma financeira completa para PMEs brasileiras. Boleto,
-                  Pix, fluxo de caixa e conciliação em um só lugar.
+                  Plataforma SaaS com IA nativa para automação financeira:
+                  cobranças, conciliação, auditoria e previsão de caixa em um só
+                  lugar.
                 </p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {[
