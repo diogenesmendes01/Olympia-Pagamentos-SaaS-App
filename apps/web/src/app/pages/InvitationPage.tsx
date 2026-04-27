@@ -97,7 +97,7 @@ export function InvitationPage() {
       let cancelled = false;
       organization
         .acceptInvitation({ invitationId: id })
-        .then(({ error }) => {
+        .then(async ({ error }) => {
           if (cancelled) return;
           if (error) {
             const msg = error.message ?? "Falha ao aceitar convite";
@@ -107,6 +107,11 @@ export function InvitationPage() {
             setStatus("error");
             return;
           }
+          // Força refetch da sessão pra RequireAuth ver o novo
+          // activeOrganizationId no próximo render — evita flash de redirect
+          // pra /onboarding/organization (mesmo padrão de OrgOnboardingPage).
+          await authClient.getSession({ query: { disableCookieCache: true } });
+          if (cancelled) return;
           navigate("/dashboard", { replace: true });
         })
         .catch(() => {
