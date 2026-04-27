@@ -21,11 +21,24 @@ export function VerifyEmailPage() {
   useEffect(() => {
     const token = params.get("token");
     if (!token) return;
-    const url = `/api/auth/verify-email?token=${encodeURIComponent(token)}&callbackURL=/dashboard`;
+    // Se o usuário entrou no signup via um convite, a SignupPage persistiu
+    // o id em sessionStorage. Após verificar o email com sucesso, manda ele
+    // pra /invitation/<id> pra completar o accept ao invés de /dashboard
+    // (que redirecionaria pra /onboarding/organization e criaria org nova).
+    const pendingInvitation = sessionStorage.getItem(
+      "olympia_pending_invitation",
+    );
+    const callback = pendingInvitation
+      ? `/invitation/${pendingInvitation}`
+      : "/dashboard";
+    const url = `/api/auth/verify-email?token=${encodeURIComponent(token)}&callbackURL=${encodeURIComponent(callback)}`;
     fetch(url, { credentials: "include" })
       .then((res) => {
         if (res.ok || res.redirected) {
-          navigate("/dashboard");
+          if (pendingInvitation) {
+            sessionStorage.removeItem("olympia_pending_invitation");
+          }
+          navigate(callback);
         } else {
           setState("error");
         }

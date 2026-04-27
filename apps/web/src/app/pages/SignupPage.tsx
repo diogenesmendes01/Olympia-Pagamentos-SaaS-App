@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
@@ -16,10 +16,17 @@ const C = {
 
 export function SignupPage() {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  // Quando o signup vem do fluxo de convite (Branch 1 da InvitationPage):
+  // /signup?invitation=<id>&email=<encoded>. Pré-preenche o email e, depois
+  // do submit, manda o usuário de volta pra /invitation/:id pra completar
+  // o accept (depois que verificar o email).
+  const invitationId = params.get("invitation") ?? "";
+  const invitedEmail = params.get("email") ?? "";
   const [showPass, setShowPass] = useState(false);
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { name: "", email: invitedEmail, password: "" },
   });
 
   const {
@@ -34,6 +41,15 @@ export function SignupPage() {
       if (error) {
         toast.error(error.message ?? "Falha ao criar conta");
         return;
+      }
+      // Se viemos de um convite, persiste o id em sessionStorage pra que a
+      // VerifyEmailPage redirecione pra /invitation/<id> depois de verificar
+      // o email — sobrevive ao reload causado pelo clique do email link.
+      // Caso o usuário verifique em outro device, a chave é perdida e ele
+      // cai em /dashboard; pode re-clicar o link do convite manualmente
+      // (InvitationPage Branch 2 vai aceitar automaticamente).
+      if (invitationId) {
+        sessionStorage.setItem("olympia_pending_invitation", invitationId);
       }
       navigate("/verify-email");
     } catch {

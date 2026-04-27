@@ -61,8 +61,10 @@ export const auth = betterAuth({
       invitationExpiresIn: 60 * 60 * 24 * 7, // 7 dias
       sendInvitationEmail: async ({ id, email, inviter, organization }) => {
         // Better Auth 1.6.8 não gera o URL do convite — construímos a partir
-        // do WEB_ORIGIN + o id da invitation (a rota do front faz o accept).
-        const inviteUrl = `${config.WEB_ORIGIN}/accept-invitation?id=${id}`;
+        // do WEB_ORIGIN + o id da invitation. Path tem que casar com a rota
+        // registrada no front em apps/web/src/app/routes.tsx (`/invitation/:id`),
+        // senão o catch-all redireciona o usuário pra landing silenciosamente.
+        const inviteUrl = `${config.WEB_ORIGIN}/invitation/${id}`;
         await enqueueEmail({
           type: "orgInvite",
           to: email,
