@@ -19,35 +19,14 @@ SaaS de gestão financeira — contas a receber, contas a pagar, notas fiscais e
 - Node.js 20.x (ver `.nvmrc`)
 - pnpm 9.x
 
-## Setup
+## Rodando localmente
 
-```bash
-pnpm install
-pnpm dev
-```
-
-Abra `http://localhost:5173`.
-
-### Rotas protegidas
-
-O gate de autenticação na Fase 1 é mock via `localStorage`. Pra acessar rotas autenticadas:
-
-```js
-// DevTools console
-localStorage.setItem("olympia_auth", "true");
-```
-
-Depois, visite `/dashboard`, `/receivables`, `/payables`, `/invoices`, `/users`, `/reports`, `/integrations`, `/settings`, `/profile`.
-
-### Onboarding
-
-```js
-// DevTools console — dispara o fluxo Owner
-localStorage.setItem("olympia_onboarding", "owner");
-
-// Ou o fluxo de convidado
-localStorage.setItem("olympia_onboarding", "invited");
-```
+1. `docker compose up -d` (sobe Postgres, Redis, MailPit)
+2. `cp .env.example .env` e gere `BETTER_AUTH_SECRET` com `openssl rand -base64 32`
+3. `pnpm install`
+4. `pnpm db:migrate`
+5. `pnpm dev` (sobe web `:5173` + api `:3000` + worker)
+6. Acesse `http://localhost:5173`, crie uma conta, verifique o email em `http://localhost:8025`
 
 ## Scripts
 

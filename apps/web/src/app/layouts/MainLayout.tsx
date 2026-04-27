@@ -19,7 +19,6 @@ import {
   FileText,
   User,
 } from "lucide-react";
-import { currentUser } from "../data/mockData";
 import { toast } from "sonner";
 import {
   PRIMARY as P,
@@ -29,9 +28,17 @@ import {
   SUCCESS,
   WARNING,
 } from "../styles/tokens";
-import { OwnerOnboarding } from "../components/onboarding/OwnerOnboarding";
-import { InvitedOnboarding } from "../components/onboarding/InvitedOnboarding";
 import { OrgSwitcher } from "../components/OrgSwitcher";
+import { signOut, useSession } from "../../lib/auth";
+
+// Calcula iniciais (até 2) do nome do usuário pra avatar do header/sidebar.
+function computeInitials(name: string | undefined | null): string {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 const navItems = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -62,28 +69,26 @@ const C = {
 export function MainLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: session } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  // Onboarding state
-  const [onboarding, setOnboarding] = useState<"owner" | "invited" | null>(
-    () => {
-      const val = localStorage.getItem("olympia_onboarding");
-      if (val === "owner" || val === "invited") return val;
-      return null;
-    },
-  );
+  // RequireAuth (acima desta layout) garante session.user; o `?.` é só
+  // pra calar o TypeScript durante o instante entre o redirect do guard e
+  // o unmount.
+  const userName = session?.user?.name ?? "";
+  const userEmail = session?.user?.email ?? "";
+  const userInitials = computeInitials(userName);
 
-  const finishOnboarding = () => {
-    localStorage.removeItem("olympia_onboarding");
-    setOnboarding(null);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("olympia_auth");
-    toast.success("Sessão encerrada com sucesso");
-    void navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast.success("Sessão encerrada com sucesso");
+      void navigate("/login");
+    } catch {
+      toast.error("Falha ao encerrar sessão. Tente novamente.");
+    }
   };
 
   return (
@@ -307,7 +312,7 @@ export function MainLayout() {
                 fontFamily: "'Inter', sans-serif",
               }}
             >
-              {currentUser.avatar}
+              {userInitials}
             </div>
             <div className="min-w-0 flex-1">
               <p
@@ -319,7 +324,7 @@ export function MainLayout() {
                 }}
                 className="truncate"
               >
-                {currentUser.name}
+                {userName}
               </p>
               <p
                 style={{
@@ -327,11 +332,17 @@ export function MainLayout() {
                   fontSize: 10,
                   color: C.sidebarText,
                 }}
+                className="truncate"
               >
-                {currentUser.role}
+                {userEmail}
               </p>
             </div>
-            <button onClick={handleLogout} title="Sair">
+            <button
+              onClick={() => {
+                void handleLogout();
+              }}
+              title="Sair"
+            >
               <LogOut style={{ width: 15, height: 15, color: C.sidebarText }} />
             </button>
           </div>
@@ -525,7 +536,7 @@ export function MainLayout() {
                     fontSize: 11,
                   }}
                 >
-                  {currentUser.avatar}
+                  {userInitials}
                 </div>
                 <div className="hidden text-left sm:block">
                   <p
@@ -536,10 +547,13 @@ export function MainLayout() {
                       fontFamily: "'Inter', sans-serif",
                     }}
                   >
-                    {currentUser.name}
+                    {userName}
                   </p>
-                  <p style={{ fontSize: 10.5, color: "#64748B" }}>
-                    {currentUser.role}
+                  <p
+                    style={{ fontSize: 10.5, color: "#64748B" }}
+                    className="truncate"
+                  >
+                    {userEmail}
                   </p>
                 </div>
                 <ChevronDown
@@ -563,10 +577,10 @@ export function MainLayout() {
                         color: "#1E293B",
                       }}
                     >
-                      {currentUser.name}
+                      {userName}
                     </p>
                     <p style={{ fontSize: 11, color: "#64748B" }}>
-                      {currentUser.email}
+                      {userEmail}
                     </p>
                   </div>
                   {[
@@ -596,7 +610,9 @@ export function MainLayout() {
                   ))}
                   <div className="border-t" style={{ borderColor: "#F1F5F9" }}>
                     <button
-                      onClick={handleLogout}
+                      onClick={() => {
+                        void handleLogout();
+                      }}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-red-50"
                     >
                       <LogOut className="h-4 w-4" style={{ color: DANGER }} />
@@ -617,14 +633,6 @@ export function MainLayout() {
           <Outlet />
         </main>
       </div>
-
-      {/* Onboarding overlays */}
-      {onboarding === "owner" && (
-        <OwnerOnboarding onComplete={finishOnboarding} />
-      )}
-      {onboarding === "invited" && (
-        <InvitedOnboarding onComplete={finishOnboarding} />
-      )}
     </div>
   );
 }
