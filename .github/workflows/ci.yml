@@ -53,9 +53,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Não passar `version:` aqui — o pnpm/action-setup@v4 mais recente
+      # rejeita conflito entre essa flag e o `packageManager` do package.json
+      # ("Multiple versions of pnpm specified"). Deixa a action ler do
+      # package.json (packageManager: pnpm@9.15.0).
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
