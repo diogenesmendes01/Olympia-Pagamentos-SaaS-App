@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Plus, Trash2, Users, X } from "lucide-react";
 import { toast } from "sonner";
 import { organization, useSession } from "../../lib/auth";
@@ -126,54 +126,72 @@ export function UsersPage() {
     | null
   >(null);
 
+  // Guard contra setState pós-unmount E contra refresh stale (refresh #N
+  // resolvendo depois de refresh #N+1). refreshGenRef incrementa a cada chamada
+  // e o resolver só aceita seu próprio gen.
+  const mountedRef = useRef(true);
+  const refreshGenRef = useRef(0);
+
   // Refetch sem toggle de loading global — usado depois de mutations.
   // setState calls vivem dentro de .then/.catch (assíncronos), satisfazendo
-  // react-hooks/set-state-in-effect.
+  // react-hooks/set-state-in-effect. Partial-success: cada lista só é
+  // sobrescrita quando seu fetch retornar sem error — evita clobber de
+  // dados válidos com [] em falha de uma das chamadas.
   function refresh(): void {
+    refreshGenRef.current += 1;
+    const gen = refreshGenRef.current;
     Promise.all([organization.listMembers(), organization.listInvitations()])
       .then(([mRes, iRes]) => {
+        if (!mountedRef.current || gen !== refreshGenRef.current) return;
         if (mRes.error) {
           toast.error(mRes.error.message ?? "Falha ao carregar membros");
+        } else {
+          setMembers(extractMembers(mRes.data));
         }
         if (iRes.error) {
           toast.error(iRes.error.message ?? "Falha ao carregar convites");
+        } else {
+          // BA 1.6.8 não suporta filtro por status no endpoint; filtramos client-side.
+          setInvites(
+            extractInvitations(iRes.data).filter((i) => i.status === "pending"),
+          );
         }
-        setMembers(extractMembers(mRes.data));
-        // BA 1.6.8 não suporta filtro por status no endpoint; filtramos client-side.
-        setInvites(
-          extractInvitations(iRes.data).filter((i) => i.status === "pending"),
-        );
       })
       .catch(() => {
+        if (!mountedRef.current || gen !== refreshGenRef.current) return;
         toast.error("Erro de conexão. Tente novamente.");
       });
   }
 
   // Carga inicial — `loading` começa true; só baixamos para false aqui.
   useEffect(() => {
-    let cancelled = false;
+    mountedRef.current = true;
+    refreshGenRef.current += 1;
+    const gen = refreshGenRef.current;
     Promise.all([organization.listMembers(), organization.listInvitations()])
       .then(([mRes, iRes]) => {
-        if (cancelled) return;
+        if (!mountedRef.current || gen !== refreshGenRef.current) return;
         if (mRes.error) {
           toast.error(mRes.error.message ?? "Falha ao carregar membros");
+        } else {
+          setMembers(extractMembers(mRes.data));
         }
         if (iRes.error) {
           toast.error(iRes.error.message ?? "Falha ao carregar convites");
+        } else {
+          setInvites(
+            extractInvitations(iRes.data).filter((i) => i.status === "pending"),
+          );
         }
-        setMembers(extractMembers(mRes.data));
-        setInvites(
-          extractInvitations(iRes.data).filter((i) => i.status === "pending"),
-        );
         setLoading(false);
       })
       .catch(() => {
-        if (cancelled) return;
+        if (!mountedRef.current || gen !== refreshGenRef.current) return;
         toast.error("Erro de conexão. Tente novamente.");
         setLoading(false);
       });
     return () => {
-      cancelled = true;
+      mountedRef.current = false;
     };
   }, []);
 
