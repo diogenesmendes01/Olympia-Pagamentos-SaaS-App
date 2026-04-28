@@ -66,9 +66,10 @@ describe("invitations", () => {
     const inviteJob = capturedEmails.find((j) => j.type === "orgInvite");
     expect(inviteJob).toBeDefined();
 
-    // F1 construiu inviteUrl com query param `?id=<id>`, não path segment.
-    // Spec original usava pathname.split("/").pop() — não funciona com nosso formato.
-    const inviteId = new URL(inviteJob!.inviteUrl).searchParams.get("id");
+    // inviteUrl segue o formato `${WEB_ORIGIN}/invitation/<id>` (path
+    // segment), igual à rota registrada em apps/web/src/app/routes.tsx.
+    // Extrai o id via pathname.
+    const inviteId = new URL(inviteJob!.inviteUrl).pathname.split("/").pop();
 
     const memberCookie = await signupAndVerify(app, "member@test.com");
     const accept = await app.inject({
