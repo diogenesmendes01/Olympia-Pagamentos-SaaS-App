@@ -33,29 +33,35 @@ export function buildApp() {
     skipOnError: true, // se Redis cair, não bloqueia API; só perde rate limit
   });
 
-  // Aplica rate limit estrito nas rotas de auth via hook global. O
-  // path matcher cobre o subset de endpoints do Better Auth que aceita
-  // password/credential — sign-in, sign-up, reset, magic-link.
-  app.addHook("onRoute", (routeOpts) => {
-    const url = routeOpts.url;
-    const isAuthMutation =
-      typeof url === "string" &&
-      (url.startsWith("/api/auth/sign-in") ||
-        url.startsWith("/api/auth/sign-up") ||
-        url.startsWith("/api/auth/forget-password") ||
-        url.startsWith("/api/auth/request-password-reset") ||
-        url.startsWith("/api/auth/reset-password") ||
-        url.startsWith("/api/auth/sign-in/magic-link") ||
-        url.startsWith("/api/auth/magic-link"));
-    if (!isAuthMutation) return;
-    routeOpts.config = {
-      ...routeOpts.config,
-      rateLimit: {
-        max: 10, // 10 tentativas/IP/15min em endpoints sensíveis
-        timeWindow: "15 minutes",
-      },
-    };
-  });
+  // Aplica rate limit estrito nas rotas de auth — SÓ em produção. Em
+  // dev e test, integration tests fazem vários signin/signup em sequência
+  // que estouram o limite de 10/15min e batem 403, falsando o resultado
+  // dos testes. allowList global ("127.0.0.1") cobre o local-loopback do
+  // navegador em dev; em test, light-my-request inject também é loopback,
+  // mas o per-route RL não herda allowList em todas as versões — então
+  // simplificamos pulando o hook fora de prod.
+  if (config.NODE_ENV === "production") {
+    app.addHook("onRoute", (routeOpts) => {
+      const url = routeOpts.url;
+      const isAuthMutation =
+        typeof url === "string" &&
+        (url.startsWith("/api/auth/sign-in") ||
+          url.startsWith("/api/auth/sign-up") ||
+          url.startsWith("/api/auth/forget-password") ||
+          url.startsWith("/api/auth/request-password-reset") ||
+          url.startsWith("/api/auth/reset-password") ||
+          url.startsWith("/api/auth/sign-in/magic-link") ||
+          url.startsWith("/api/auth/magic-link"));
+      if (!isAuthMutation) return;
+      routeOpts.config = {
+        ...routeOpts.config,
+        rateLimit: {
+          max: 10, // 10 tentativas/IP/15min em endpoints sensíveis
+          timeWindow: "15 minutes",
+        },
+      };
+    });
+  }
 
   app.register(authPlugin);
   app.register(healthRoutes);
