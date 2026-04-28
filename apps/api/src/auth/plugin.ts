@@ -22,13 +22,20 @@ const authPluginAsync: FastifyPluginAsync = async (app) => {
       req.url,
       `${req.protocol}://${req.headers.host ?? "localhost"}`,
     );
+    // req.body chega tipado como `unknown` por default no Fastify v5;
+    // narrow defensivo pra string antes de mandar pro Better Auth (que
+    // espera body raw como string). Evita o cast direto pra
+    // `string | undefined` que mascararia tipos não-string vindos de
+    // outros content-type parsers no futuro.
+    const rawBody: unknown = req.body;
+    const bodyAsString = typeof rawBody === "string" ? rawBody : undefined;
     const webRequest = new Request(url.toString(), {
       method: req.method,
       headers: fromNodeHeaders(req.headers),
       body:
         req.method === "GET" || req.method === "HEAD"
           ? undefined
-          : (req.body as string | undefined),
+          : bodyAsString,
     });
 
     const response = await auth.handler(webRequest);
