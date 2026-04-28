@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation, useSearchParams } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -15,8 +15,29 @@ const C = {
   ivory: "#F4EFE6",
 };
 
+function isSafeInternalPath(path: string): boolean {
+  return (
+    typeof path === "string" && path.startsWith("/") && !path.startsWith("//")
+  );
+}
+
 export function MagicLinkPage() {
   const [sent, setSent] = useState(false);
+  const location = useLocation();
+  const [params] = useSearchParams();
+
+  // Mesmo padrão da LoginPage: respeita state.from dos guards e ?from=
+  // da query string (vindo da InvitationPage Branch 3 ou deep link).
+  const stateFrom =
+    typeof (location.state as { from?: { pathname?: string } } | null)?.from
+      ?.pathname === "string"
+      ? (location.state as { from: { pathname: string } }).from.pathname
+      : null;
+  const queryFrom = params.get("from");
+  const callbackURL =
+    (stateFrom && isSafeInternalPath(stateFrom) && stateFrom) ||
+    (queryFrom && isSafeInternalPath(queryFrom) && queryFrom) ||
+    "/dashboard";
 
   const form = useForm<MagicLinkInput>({
     resolver: zodResolver(magicLinkSchema),
@@ -33,7 +54,7 @@ export function MagicLinkPage() {
     try {
       const { error } = await signIn.magicLink({
         email: values.email,
-        callbackURL: "/dashboard",
+        callbackURL,
       });
       if (error) {
         toast.error(error.message ?? "Falha ao enviar link");

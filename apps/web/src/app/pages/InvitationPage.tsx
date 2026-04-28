@@ -167,7 +167,12 @@ export function InvitationPage() {
           onSwitch={async () => {
             try {
               await signOut();
-              navigate(`/login?email=${encodeURIComponent(invite.email)}`, {
+              // Adiciona ?from=/invitation/<id> pra que LoginPage retorne
+              // pro flow de accept após o usuário entrar com a conta certa
+              // (LoginPage lê esse query param e usa como callbackURL).
+              const from = encodeURIComponent(`/invitation/${id}`);
+              const emailParam = encodeURIComponent(invite.email);
+              navigate(`/login?email=${emailParam}&from=${from}`, {
                 replace: true,
               });
             } catch {

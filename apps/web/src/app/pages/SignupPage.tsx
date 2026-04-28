@@ -37,17 +37,20 @@ export function SignupPage() {
 
   async function onSubmit(values: SignupInput) {
     try {
-      const { error } = await signUp.email(values);
+      // Passa callbackURL pro Better Auth — esse é o destino que o BA
+      // embute no LINK de verify-email enviado por email. Sem isso, o
+      // fallback é "/", e quem entrou via convite verifica o email e
+      // cai na landing ao invés de retomar o accept-invitation.
+      // Mantém sessionStorage como redundância pra usuários que voltam
+      // pra VerifyEmailPage manualmente (sem clicar o link do email).
+      const callbackURL = invitationId
+        ? `/invitation/${invitationId}`
+        : "/dashboard";
+      const { error } = await signUp.email({ ...values, callbackURL });
       if (error) {
         toast.error(error.message ?? "Falha ao criar conta");
         return;
       }
-      // Se viemos de um convite, persiste o id em sessionStorage pra que a
-      // VerifyEmailPage redirecione pra /invitation/<id> depois de verificar
-      // o email — sobrevive ao reload causado pelo clique do email link.
-      // Caso o usuário verifique em outro device, a chave é perdida e ele
-      // cai em /dashboard; pode re-clicar o link do convite manualmente
-      // (InvitationPage Branch 2 vai aceitar automaticamente).
       if (invitationId) {
         sessionStorage.setItem("olympia_pending_invitation", invitationId);
       }

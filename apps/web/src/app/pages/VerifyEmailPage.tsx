@@ -51,12 +51,21 @@ export function VerifyEmailPage() {
   async function resend(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
+    // Mesmo callbackURL que o signup: preserva o fluxo de convite se a
+    // chave existir em sessionStorage. Sem isso, resend reenviava o
+    // email com callbackURL=/dashboard mesmo pra usuários convidados.
+    const pendingInvitation = sessionStorage.getItem(
+      "olympia_pending_invitation",
+    );
+    const callbackURL = pendingInvitation
+      ? `/invitation/${pendingInvitation}`
+      : "/dashboard";
     try {
       const res = await fetch("/api/auth/send-verification-email", {
         method: "POST",
         credentials: "include",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, callbackURL: "/dashboard" }),
+        body: JSON.stringify({ email, callbackURL }),
       });
       if (!res.ok) {
         toast.error("Falha ao reenviar email");

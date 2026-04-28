@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { signIn } from "../../lib/auth";
@@ -12,12 +12,41 @@ const C = {
   ivory: "#F4EFE6",
 };
 
+// Resolve o destino pós-login. Os guards (RequireAuth/RequireSession)
+// passam `from` via location.state quando redirecionam pra cá. A
+// InvitationPage Branch 3 manda usuário trocar de conta com
+// `?from=/invitation/<id>` na query — usado pra retomar o fluxo de
+// convite após login. Fallback: /dashboard.
+function isSafeInternalPath(path: string): boolean {
+  // Aceita só paths internos (começam com "/" e não com "//"). Bloqueia
+  // open redirect via "//evil.com" ou "https://evil.com".
+  return (
+    typeof path === "string" && path.startsWith("/") && !path.startsWith("//")
+  );
+}
+
 export function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [params] = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // location.state é injetado pelo Navigate dos guards: { from: location }
+  // (apps/web/src/app/guards/RequireAuth.tsx:11). InvitationPage.tsx:170
+  // usa query string ?from=<path> porque o redirect dela não preserva state.
+  const stateFrom =
+    typeof (location.state as { from?: { pathname?: string } } | null)?.from
+      ?.pathname === "string"
+      ? (location.state as { from: { pathname: string } }).from.pathname
+      : null;
+  const queryFrom = params.get("from");
+  const redirectTo =
+    (stateFrom && isSafeInternalPath(stateFrom) && stateFrom) ||
+    (queryFrom && isSafeInternalPath(queryFrom) && queryFrom) ||
+    "/dashboard";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +67,7 @@ export function LoginPage() {
         toast.error(error.message ?? "Falha no login");
         return;
       }
-      navigate("/dashboard");
+      navigate(redirectTo, { replace: true });
     } catch {
       toast.error("Erro de conexão. Tente novamente.");
     } finally {
@@ -48,7 +77,7 @@ export function LoginPage() {
 
   const loginGoogle = async () => {
     try {
-      await signIn.social({ provider: "google", callbackURL: "/dashboard" });
+      await signIn.social({ provider: "google", callbackURL: redirectTo });
     } catch {
       toast.error("Falha ao iniciar login social");
     }
@@ -56,7 +85,7 @@ export function LoginPage() {
 
   const loginMicrosoft = async () => {
     try {
-      await signIn.social({ provider: "microsoft", callbackURL: "/dashboard" });
+      await signIn.social({ provider: "microsoft", callbackURL: redirectTo });
     } catch {
       toast.error("Falha ao iniciar login social");
     }
