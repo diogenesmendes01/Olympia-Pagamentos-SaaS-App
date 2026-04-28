@@ -1,5 +1,9 @@
-dist/
 node_modules/
+dist/
+build/
 coverage/
 pnpm-lock.yaml
-.husky/_/
+.turbo/
+pgdata/
+redisdata/
+apps/*/dist/

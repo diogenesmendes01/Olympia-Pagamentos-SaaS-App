@@ -13,26 +13,80 @@ jobs:
       fail-fast: false
       matrix:
         task: [lint, typecheck, test, build]
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: olympia
+          POSTGRES_PASSWORD: olympia
+          POSTGRES_DB: olympia_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U olympia -d olympia_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://olympia:olympia@localhost:5432/olympia_test
+      DATABASE_URL_TEST: postgresql://olympia:olympia@localhost:5432/olympia_test
+      REDIS_URL: redis://localhost:6379
+      BETTER_AUTH_SECRET: ci-secret-at-least-32-chars-long-placeholder
+      BETTER_AUTH_URL: http://localhost:3000
+      WEB_ORIGIN: http://localhost:5173
+      SMTP_HOST: localhost
+      SMTP_PORT: 1025
+      SMTP_FROM: ci@olympia.local
+      NODE_ENV: test
+
     steps:
       - uses: actions/checkout@v4
 
+      # Não passar `version:` aqui — o pnpm/action-setup@v4 mais recente
+      # rejeita conflito entre essa flag e o `packageManager` do package.json
+      # ("Multiple versions of pnpm specified"). Deixa a action ler do
+      # package.json (packageManager: pnpm@9.15.0).
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
 
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-${{ matrix.task }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ matrix.task }}-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Migrate DB (test only)
+        if: matrix.task == 'test'
+        run: pnpm db:migrate
 
       - name: Run ${{ matrix.task }}
         run: |
           case "${{ matrix.task }}" in
             lint) pnpm lint ;;
             typecheck) pnpm typecheck ;;
-            test) pnpm test -- --run ;;
+            # `pnpm test -- --run` quebra: o `--` é consumido pelo pnpm e o
+            # `--run` chega no Turbo como flag dele (rejeitado). Pra forçar o
+            # passthrough, chamar Turbo direto e usar SEU separador `--`.
+            test) pnpm turbo run test -- --run ;;
             build) pnpm build ;;
           esac

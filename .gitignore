@@ -33,3 +33,10 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Turborepo
+.turbo/
+
+# Docker volumes
+pgdata/
+redisdata/
