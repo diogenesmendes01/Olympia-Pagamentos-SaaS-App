@@ -542,7 +542,11 @@ export function LoginPage() {
 
               <div className="mt-5 text-center">
                 <Link
-                  to="/magic-link"
+                  to={
+                    redirectTo !== "/dashboard"
+                      ? `/magic-link?from=${encodeURIComponent(redirectTo)}`
+                      : "/magic-link"
+                  }
                   style={{
                     fontFamily: "'Inter', sans-serif",
                     fontSize: 12.5,
