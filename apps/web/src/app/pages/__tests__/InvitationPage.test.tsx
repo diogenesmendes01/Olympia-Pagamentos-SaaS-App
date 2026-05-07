@@ -137,7 +137,9 @@ describe("InvitationPage — Branch 3 (email diverge)", () => {
     expect(
       await screen.findByText(/Convite para outra conta/i),
     ).toBeInTheDocument();
-    expect(screen.getByText(/bob@olympia.dev/)).toBeInTheDocument();
+    // Email do convite aparece em vários lugares (texto + aria-label do
+    // botão de switch). Confirmamos que pelo menos 1 ocorrência existe.
+    expect(screen.getAllByText(/bob@olympia.dev/).length).toBeGreaterThan(0);
     expect(screen.getByText(/alice@olympia.dev/)).toBeInTheDocument();
     expect(mockAcceptInvitation).not.toHaveBeenCalled();
   });

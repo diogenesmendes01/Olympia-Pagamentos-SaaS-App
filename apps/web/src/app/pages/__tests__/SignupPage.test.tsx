@@ -44,7 +44,7 @@ describe("SignupPage", () => {
 
     await user.type(screen.getByLabelText(/Nome completo/i), "Alice");
     await user.type(screen.getByLabelText(/E-mail/i), "alice@olympia.dev");
-    await user.type(screen.getByLabelText(/Senha/i), "secret12345");
+    await user.type(screen.getByLabelText("Senha"), "secret12345");
     await user.click(screen.getByRole("button", { name: /Criar conta/i }));
 
     await waitFor(() => {
@@ -81,7 +81,7 @@ describe("SignupPage", () => {
     expect(screen.getByLabelText(/E-mail/i)).toHaveValue("bob@olympia.dev");
 
     await user.type(screen.getByLabelText(/Nome completo/i), "Bob");
-    await user.type(screen.getByLabelText(/Senha/i), "secret12345");
+    await user.type(screen.getByLabelText("Senha"), "secret12345");
     await user.click(screen.getByRole("button", { name: /Criar conta/i }));
 
     await waitFor(() => {
@@ -111,7 +111,7 @@ describe("SignupPage", () => {
 
     await user.type(screen.getByLabelText(/Nome completo/i), "Alice");
     await user.type(screen.getByLabelText(/E-mail/i), "alice@olympia.dev");
-    await user.type(screen.getByLabelText(/Senha/i), "secret12345");
+    await user.type(screen.getByLabelText("Senha"), "secret12345");
     await user.click(screen.getByRole("button", { name: /Criar conta/i }));
 
     await waitFor(() => {
@@ -129,7 +129,7 @@ describe("SignupPage", () => {
 
     await user.type(screen.getByLabelText(/Nome completo/i), "Alice");
     await user.type(screen.getByLabelText(/E-mail/i), "alice@olympia.dev");
-    await user.type(screen.getByLabelText(/Senha/i), "short");
+    await user.type(screen.getByLabelText("Senha"), "short");
     await user.click(screen.getByRole("button", { name: /Criar conta/i }));
 
     expect(mockSignUpEmail).not.toHaveBeenCalled();
