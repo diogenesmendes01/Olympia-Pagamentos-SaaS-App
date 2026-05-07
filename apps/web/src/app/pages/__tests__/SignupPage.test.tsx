@@ -28,8 +28,10 @@ beforeEach(() => {
 });
 
 describe("SignupPage", () => {
-  test("signup feliz sem invite usa callbackURL=/dashboard e navega pra /verify-email", async () => {
-    mockSignUpEmail.mockResolvedValueOnce(okResponse);
+  // Self-service signup foi convertido em lead capture (PR #7): chegando
+  // direto em /signup sem ?invitation= o submit NÃO chama signUp.email,
+  // só renderiza estado "Obrigado pelo interesse" e bloqueia o flow.
+  test("submit sem ?invitation= mostra 'Obrigado pelo interesse' e NÃO chama signUp.email", async () => {
     const user = userEvent.setup();
     renderWithRoute(<SignupPage />, {
       path: "/signup",
@@ -47,19 +49,11 @@ describe("SignupPage", () => {
     await user.type(screen.getByLabelText("Senha"), "secret12345");
     await user.click(screen.getByRole("button", { name: /Criar conta/i }));
 
-    await waitFor(() => {
-      expect(mockSignUpEmail).toHaveBeenCalledWith({
-        name: "Alice",
-        email: "alice@olympia.dev",
-        password: "secret12345",
-        callbackURL: "/dashboard",
-      });
-    });
-    await waitFor(() => {
-      expect(screen.getByTestId("nav-sentinel")).toHaveTextContent(
-        "verify-email",
-      );
-    });
+    expect(
+      await screen.findByText(/Obrigado pelo interesse/i),
+    ).toBeInTheDocument();
+    expect(mockSignUpEmail).not.toHaveBeenCalled();
+    expect(screen.queryByTestId("nav-sentinel")).toBeNull();
     expect(sessionStorage.getItem("olympia_pending_invitation")).toBeNull();
   });
 
@@ -95,12 +89,12 @@ describe("SignupPage", () => {
     expect(sessionStorage.getItem("olympia_pending_invitation")).toBe("inv-42");
   });
 
-  test("erro do BA exibe toast e não navega", async () => {
+  test("erro do BA no flow de invite exibe toast e não navega", async () => {
     mockSignUpEmail.mockResolvedValueOnce(errResponse("Email já cadastrado"));
     const user = userEvent.setup();
     renderWithRoute(<SignupPage />, {
       path: "/signup",
-      initialEntry: "/signup",
+      initialEntry: "/signup?invitation=inv-42&email=bob%40olympia.dev",
       extraRoutes: [
         {
           path: "/verify-email",
@@ -109,8 +103,7 @@ describe("SignupPage", () => {
       ],
     });
 
-    await user.type(screen.getByLabelText(/Nome completo/i), "Alice");
-    await user.type(screen.getByLabelText(/E-mail/i), "alice@olympia.dev");
+    await user.type(screen.getByLabelText(/Nome completo/i), "Bob");
     await user.type(screen.getByLabelText("Senha"), "secret12345");
     await user.click(screen.getByRole("button", { name: /Criar conta/i }));
 
@@ -118,6 +111,7 @@ describe("SignupPage", () => {
       expect(mockToastError).toHaveBeenCalledWith("Email já cadastrado");
     });
     expect(screen.queryByTestId("nav-sentinel")).toBeNull();
+    expect(sessionStorage.getItem("olympia_pending_invitation")).toBeNull();
   });
 
   test("validação client-side bloqueia submit (senha < 8)", async () => {
@@ -136,5 +130,7 @@ describe("SignupPage", () => {
     expect(
       await screen.findByText(/Senha precisa ter ao menos 8 caracteres/i),
     ).toBeInTheDocument();
+    // Não deve mostrar a mensagem de "Obrigado" (validação bloqueou antes)
+    expect(screen.queryByText(/Obrigado pelo interesse/i)).toBeNull();
   });
 });
