@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { Building2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { organization, useSession } from "../../lib/auth";
+import { queryKeys } from "../../lib/queryClient";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -24,36 +25,25 @@ const C = {
 };
 
 export function OrgSwitcher() {
-  const { data } = useSession();
-  const [orgs, setOrgs] = useState<Org[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: sessionData } = useSession();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    // Guard: só carrega orgs se o usuário tem sessão ativa.
-    if (!data?.user) return;
-    let cancelled = false;
-    organization
-      .list()
-      .then((res) => {
-        if (cancelled) return;
-        if (res.error) {
-          toast.error("Falha ao carregar organizações");
-          setLoading(false);
-          return;
-        }
-        setOrgs(res.data ?? []);
-        setLoading(false);
-      })
-      .catch(() => {
-        if (cancelled) return;
+  // org-list é uma query separada (não é org-scoped) porque mostra TODAS as
+  // orgs do user. Não invalidamos junto na troca de org pra evitar refetch
+  // desnecessário (lista de orgs do user não muda quando ele troca a ativa).
+  const { data: orgs = [], isPending: loading } = useQuery<Org[]>({
+    queryKey: queryKeys.orgList(),
+    queryFn: async () => {
+      const res = await organization.list();
+      if (res.error) {
         toast.error("Falha ao carregar organizações");
-        setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [data?.user]);
+        throw new Error(res.error.message ?? "Falha ao carregar organizações");
+      }
+      return res.data ?? [];
+    },
+    enabled: !!sessionData?.user,
+  });
 
   async function switchOrg(id: string) {
     try {
@@ -62,14 +52,18 @@ export function OrgSwitcher() {
         toast.error("Falha ao trocar de organização");
         return;
       }
-      // força refetch de tudo org-scoped (invoices, receivables, users, etc.)
-      window.location.reload();
+      // Invalida tudo que é org-scoped (chave começa com "org"). Mantém
+      // session/org-list intactas — o useSession do BA já refresca via
+      // cookie/cache, e org-list não muda só porque a ativa mudou.
+      await queryClient.invalidateQueries({
+        predicate: (q) => q.queryKey[0] === "org",
+      });
     } catch {
       toast.error("Falha ao trocar de organização");
     }
   }
 
-  const activeOrgId = data?.session?.activeOrganizationId;
+  const activeOrgId = sessionData?.session?.activeOrganizationId;
   const active = orgs.find((o) => o.id === activeOrgId);
 
   return (

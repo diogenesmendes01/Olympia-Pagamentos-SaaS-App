@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Plus, Trash2, Users, X } from "lucide-react";
 import { toast } from "sonner";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { organization, useSession } from "../../lib/auth";
+import { queryKeys } from "../../lib/queryClient";
 import {
   PRIMARY,
   PRIMARY_HOVER,
@@ -115,9 +117,8 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // ── Página ────────────────────────────────────────────────────────────────
 export function UsersPage() {
   const { data: session } = useSession();
-  const [members, setMembers] = useState<MemberRow[]>([]);
-  const [invites, setInvites] = useState<InvitationRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const activeOrgId = session?.session?.activeOrganizationId;
   const [busyId, setBusyId] = useState<string | null>(null);
   const [showInvite, setShowInvite] = useState(false);
   const [confirm, setConfirm] = useState<
@@ -126,149 +127,158 @@ export function UsersPage() {
     | null
   >(null);
 
-  // Guard contra setState pós-unmount E contra refresh stale (refresh #N
-  // resolvendo depois de refresh #N+1). refreshGenRef incrementa a cada chamada
-  // e o resolver só aceita seu próprio gen.
-  const mountedRef = useRef(true);
-  const refreshGenRef = useRef(0);
+  // ── Queries ─────────────────────────────────────────────────────────────
+  // Cada lista vira sua própria query — BA 1.6.8 não suporta filtro por status
+  // no endpoint, então filtramos client-side no select. Errors do BA viram
+  // throw no queryFn pra que o React Query trate como falha + toast.
+  const membersQuery = useQuery<MemberRow[]>({
+    queryKey: queryKeys.orgMembers(activeOrgId),
+    queryFn: async () => {
+      const res = await organization.listMembers();
+      if (res.error) {
+        toast.error(res.error.message ?? "Falha ao carregar membros");
+        throw new Error(res.error.message ?? "Falha ao carregar membros");
+      }
+      return extractMembers(res.data);
+    },
+    enabled: !!activeOrgId,
+  });
 
-  // Refetch sem toggle de loading global — usado depois de mutations.
-  // setState calls vivem dentro de .then/.catch (assíncronos), satisfazendo
-  // react-hooks/set-state-in-effect. Partial-success: cada lista só é
-  // sobrescrita quando seu fetch retornar sem error — evita clobber de
-  // dados válidos com [] em falha de uma das chamadas.
-  function refresh(): void {
-    refreshGenRef.current += 1;
-    const gen = refreshGenRef.current;
-    Promise.all([organization.listMembers(), organization.listInvitations()])
-      .then(([mRes, iRes]) => {
-        if (!mountedRef.current || gen !== refreshGenRef.current) return;
-        if (mRes.error) {
-          toast.error(mRes.error.message ?? "Falha ao carregar membros");
-        } else {
-          setMembers(extractMembers(mRes.data));
-        }
-        if (iRes.error) {
-          toast.error(iRes.error.message ?? "Falha ao carregar convites");
-        } else {
-          // BA 1.6.8 não suporta filtro por status no endpoint; filtramos client-side.
-          setInvites(
-            extractInvitations(iRes.data).filter((i) => i.status === "pending"),
-          );
-        }
-      })
-      .catch(() => {
-        if (!mountedRef.current || gen !== refreshGenRef.current) return;
-        toast.error("Erro de conexão. Tente novamente.");
-      });
+  const invitesQuery = useQuery<InvitationRow[]>({
+    queryKey: queryKeys.orgInvitations(activeOrgId),
+    queryFn: async () => {
+      const res = await organization.listInvitations();
+      if (res.error) {
+        toast.error(res.error.message ?? "Falha ao carregar convites");
+        throw new Error(res.error.message ?? "Falha ao carregar convites");
+      }
+      return extractInvitations(res.data).filter((i) => i.status === "pending");
+    },
+    enabled: !!activeOrgId,
+  });
+
+  const members = membersQuery.data ?? [];
+  const invites = invitesQuery.data ?? [];
+  const loading = membersQuery.isPending || invitesQuery.isPending;
+
+  function invalidateOrgQueries() {
+    void queryClient.invalidateQueries({
+      queryKey: queryKeys.orgMembers(activeOrgId),
+    });
+    void queryClient.invalidateQueries({
+      queryKey: queryKeys.orgInvitations(activeOrgId),
+    });
   }
 
-  // Carga inicial — `loading` começa true; só baixamos para false aqui.
-  useEffect(() => {
-    mountedRef.current = true;
-    refreshGenRef.current += 1;
-    const gen = refreshGenRef.current;
-    Promise.all([organization.listMembers(), organization.listInvitations()])
-      .then(([mRes, iRes]) => {
-        if (!mountedRef.current || gen !== refreshGenRef.current) return;
-        if (mRes.error) {
-          toast.error(mRes.error.message ?? "Falha ao carregar membros");
-        } else {
-          setMembers(extractMembers(mRes.data));
-        }
-        if (iRes.error) {
-          toast.error(iRes.error.message ?? "Falha ao carregar convites");
-        } else {
-          setInvites(
-            extractInvitations(iRes.data).filter((i) => i.status === "pending"),
-          );
-        }
-        setLoading(false);
-      })
-      .catch(() => {
-        if (!mountedRef.current || gen !== refreshGenRef.current) return;
-        toast.error("Erro de conexão. Tente novamente.");
-        setLoading(false);
-      });
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
-  // ── Mutações ────────────────────────────────────────────────────────────
-  async function handleInvite(email: string, role: AssignableRole) {
-    setBusyId("invite");
-    try {
-      const res = await organization.inviteMember({ email, role });
+  // ── Mutations ───────────────────────────────────────────────────────────
+  // BA pode resolver com `{ error: ... }` em vez de rejeitar — checamos em
+  // onSuccess. `setBusyId` mantém feedback granular por linha (necessário
+  // pra desabilitar UI específica enquanto a mutation está em vôo).
+  const inviteMutation = useMutation({
+    mutationFn: (vars: { email: string; role: AssignableRole }) =>
+      organization.inviteMember(vars),
+    onMutate: () => {
+      setBusyId("invite");
+    },
+    onSettled: () => {
+      setBusyId(null);
+    },
+    onSuccess: (res, vars) => {
       if (res.error) {
         toast.error(res.error.message ?? "Falha ao convidar usuário");
         return;
       }
-      toast.success(`Convite enviado para ${email}`);
+      toast.success(`Convite enviado para ${vars.email}`);
       setShowInvite(false);
-      refresh();
-    } catch {
+      invalidateOrgQueries();
+    },
+    onError: () => {
       toast.error("Erro de conexão. Tente novamente.");
-    } finally {
-      setBusyId(null);
-    }
-  }
+    },
+  });
 
-  async function handleUpdateRole(memberId: string, role: AssignableRole) {
-    setBusyId(memberId);
-    try {
-      const res = await organization.updateMemberRole({ memberId, role });
+  const updateRoleMutation = useMutation({
+    mutationFn: (vars: { memberId: string; role: AssignableRole }) =>
+      organization.updateMemberRole(vars),
+    onMutate: (vars) => {
+      setBusyId(vars.memberId);
+    },
+    onSettled: () => {
+      setBusyId(null);
+    },
+    onSuccess: (res) => {
       if (res.error) {
         toast.error(res.error.message ?? "Falha ao atualizar role");
         return;
       }
       toast.success("Permissão atualizada");
-      refresh();
-    } catch {
+      invalidateOrgQueries();
+    },
+    onError: () => {
       toast.error("Erro de conexão. Tente novamente.");
-    } finally {
-      setBusyId(null);
-    }
-  }
+    },
+  });
 
-  async function handleRemoveMember(member: MemberRow) {
-    setBusyId(member.id);
-    try {
-      const res = await organization.removeMember({
-        memberIdOrEmail: member.id,
-      });
+  const removeMemberMutation = useMutation({
+    mutationFn: (member: MemberRow) =>
+      organization.removeMember({ memberIdOrEmail: member.id }),
+    onMutate: (member) => {
+      setBusyId(member.id);
+    },
+    onSettled: () => {
+      setBusyId(null);
+    },
+    onSuccess: (res, member) => {
       if (res.error) {
         toast.error(res.error.message ?? "Falha ao remover membro");
         return;
       }
       toast.success(`${member.user.name} foi removido`);
       setConfirm(null);
-      refresh();
-    } catch {
+      invalidateOrgQueries();
+    },
+    onError: () => {
       toast.error("Erro de conexão. Tente novamente.");
-    } finally {
-      setBusyId(null);
-    }
-  }
+    },
+  });
 
-  async function handleCancelInvite(invite: InvitationRow) {
-    setBusyId(invite.id);
-    try {
-      const res = await organization.cancelInvitation({
-        invitationId: invite.id,
-      });
+  const cancelInviteMutation = useMutation({
+    mutationFn: (invite: InvitationRow) =>
+      organization.cancelInvitation({ invitationId: invite.id }),
+    onMutate: (invite) => {
+      setBusyId(invite.id);
+    },
+    onSettled: () => {
+      setBusyId(null);
+    },
+    onSuccess: (res) => {
       if (res.error) {
         toast.error(res.error.message ?? "Falha ao cancelar convite");
         return;
       }
       toast.success("Convite cancelado");
       setConfirm(null);
-      refresh();
-    } catch {
+      invalidateOrgQueries();
+    },
+    onError: () => {
       toast.error("Erro de conexão. Tente novamente.");
-    } finally {
-      setBusyId(null);
-    }
+    },
+  });
+
+  function handleInvite(email: string, role: AssignableRole) {
+    inviteMutation.mutate({ email, role });
+  }
+
+  function handleUpdateRole(memberId: string, role: AssignableRole) {
+    updateRoleMutation.mutate({ memberId, role });
+  }
+
+  function handleRemoveMember(member: MemberRow) {
+    removeMemberMutation.mutate(member);
+  }
+
+  function handleCancelInvite(invite: InvitationRow) {
+    cancelInviteMutation.mutate(invite);
   }
 
   // ── Render ──────────────────────────────────────────────────────────────
@@ -507,7 +517,7 @@ export function UsersPage() {
                             onChange={(e) => {
                               const next = e.target.value;
                               if (isAssignableRole(next)) {
-                                void handleUpdateRole(member.id, next);
+                                handleUpdateRole(member.id, next);
                               }
                             }}
                             className="rounded-lg border px-2.5 py-1.5 transition-colors focus:outline-none"
@@ -809,7 +819,7 @@ export function UsersPage() {
             setConfirm(null);
           }}
           onConfirm={() => {
-            void handleRemoveMember(confirm.member);
+            handleRemoveMember(confirm.member);
           }}
         />
       )}
@@ -823,7 +833,7 @@ export function UsersPage() {
             setConfirm(null);
           }}
           onConfirm={() => {
-            void handleCancelInvite(confirm.invite);
+            handleCancelInvite(confirm.invite);
           }}
         />
       )}
@@ -836,7 +846,7 @@ export function UsersPage() {
 interface InviteDialogProps {
   busy: boolean;
   onClose: () => void;
-  onSubmit: (email: string, role: AssignableRole) => Promise<void>;
+  onSubmit: (email: string, role: AssignableRole) => void;
 }
 
 function InviteDialog({ busy, onClose, onSubmit }: InviteDialogProps) {
@@ -852,7 +862,7 @@ function InviteDialog({ busy, onClose, onSubmit }: InviteDialogProps) {
       return;
     }
     setError(null);
-    void onSubmit(trimmed, role);
+    onSubmit(trimmed, role);
   }
 
   return (
