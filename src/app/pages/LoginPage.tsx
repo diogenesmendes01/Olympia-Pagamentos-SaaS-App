@@ -20,6 +20,7 @@ export function LoginPage() {
   const [mfaStep, setMfaStep] = useState(false);
   const [mfaCode, setMfaCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [interestSubmitted, setInterestSubmitted] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,18 +46,6 @@ export function LoginPage() {
     setLoading(false);
     localStorage.setItem("olympia_auth", "true");
     toast.success(`Autenticado via ${provider}.`);
-    navigate("/dashboard");
-  };
-
-  const handleDemoFirstLogin = async (type: "owner" | "invited") => {
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 700));
-    setLoading(false);
-    localStorage.setItem("olympia_auth", "true");
-    localStorage.setItem("olympia_onboarding", type);
-    toast.success(
-      type === "owner" ? "Novo acesso como Dono detectado." : "Acesso por convite detectado.",
-    );
     navigate("/dashboard");
   };
 
@@ -612,7 +601,63 @@ export function LoginPage() {
                 </>
               )}
 
-              {tab === "register" && (
+              {tab === "register" && interestSubmitted && (
+                <div className="py-6 text-center">
+                  <div
+                    className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full"
+                    style={{
+                      background: "rgba(34,197,94,0.12)",
+                      border: "1.5px solid rgba(34,197,94,0.4)",
+                    }}
+                  >
+                    <CheckCircle2 className="h-7 w-7" style={{ color: "#22C55E" }} />
+                  </div>
+                  <h2
+                    style={{
+                      fontFamily: "'Montserrat', sans-serif",
+                      fontSize: 20,
+                      fontWeight: 800,
+                      color: C.primary,
+                      marginBottom: 10,
+                    }}
+                  >
+                    Obrigado pelo interesse!
+                  </h2>
+                  <p
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 13.5,
+                      color: "#64748B",
+                      lineHeight: 1.6,
+                      marginBottom: 22,
+                    }}
+                  >
+                    Um de nossos especialistas entrará em contato.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInterestSubmitted(false);
+                      setCnpj("");
+                      setTab("login");
+                    }}
+                    className="rounded-xl px-5 py-2.5"
+                    style={{
+                      background: C.primary,
+                      color: "#FFFFFF",
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: 13,
+                      fontWeight: 600,
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = C.hover)}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = C.primary)}
+                  >
+                    Voltar
+                  </button>
+                </div>
+              )}
+
+              {tab === "register" && !interestSubmitted && (
                 <>
                   <h2
                     style={{
@@ -639,7 +684,7 @@ export function LoginPage() {
                     className="space-y-3.5"
                     onSubmit={(e) => {
                       e.preventDefault();
-                      handleSocialLogin("cadastro");
+                      setInterestSubmitted(true);
                     }}
                   >
                     {[
@@ -770,61 +815,6 @@ export function LoginPage() {
           >
             🔒 Criptografia AES-256 · Conformidade LGPD · SOC 2 Type II
           </p>
-
-          {/* Demo first-login shortcuts */}
-          <div className="mt-4 border-t pt-4" style={{ borderColor: "#E8E3DA" }}>
-            <p
-              style={{
-                fontFamily: "'Inter', sans-serif",
-                fontSize: 11,
-                color: "#9B8F83",
-                textAlign: "center",
-                marginBottom: 10,
-              }}
-            >
-              ⚡ Demos de primeiro acesso
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => handleDemoFirstLogin("owner")}
-                className="rounded-xl border px-3 py-2 text-left transition-all hover:shadow-sm"
-                style={{ borderColor: "#DDD8D0", background: "rgba(31,58,95,0.04)" }}
-              >
-                <p
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 11.5,
-                    fontWeight: 700,
-                    color: "#1F3A5F",
-                  }}
-                >
-                  🏢 Dono de Empresa
-                </p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10.5, color: "#9B8F83" }}>
-                  1º acesso com onboarding
-                </p>
-              </button>
-              <button
-                onClick={() => handleDemoFirstLogin("invited")}
-                className="rounded-xl border px-3 py-2 text-left transition-all hover:shadow-sm"
-                style={{ borderColor: "#DDD8D0", background: "rgba(31,58,95,0.04)" }}
-              >
-                <p
-                  style={{
-                    fontFamily: "'Inter', sans-serif",
-                    fontSize: 11.5,
-                    fontWeight: 700,
-                    color: "#1F3A5F",
-                  }}
-                >
-                  👤 Usuário Convidado
-                </p>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 10.5, color: "#9B8F83" }}>
-                  Aceitar convite de empresa
-                </p>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
