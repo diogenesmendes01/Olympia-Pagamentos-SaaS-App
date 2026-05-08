@@ -8,6 +8,10 @@ import { config } from "./config.js";
 // orquestrador que use healthcheck TCP/HTTP) exige uma porta exposta. Subimos
 // um servidor mínimo com /health pra satisfazer o healthcheck — sem
 // dependência extra, usando o `http` nativo do Node.
+//
+// Usamos `config.PORT` direto: o Coolify injeta PORT a partir do "Ports
+// Exposes" do service. Assim o worker escuta exatamente onde o orquestrador
+// vai sondar — sem a complexidade de uma porta separada.
 function startHealthServer(isReady: () => boolean): Server {
   const server = createServer((req, res) => {
     if (req.url === "/health" || req.url === "/") {
@@ -19,9 +23,9 @@ function startHealthServer(isReady: () => boolean): Server {
     res.writeHead(404);
     res.end();
   });
-  server.listen(config.WORKER_HEALTH_PORT, config.HOST, () => {
+  server.listen(config.PORT, config.HOST, () => {
     logger.info(
-      { port: config.WORKER_HEALTH_PORT },
+      { port: config.PORT, host: config.HOST },
       "Worker health endpoint pronto",
     );
   });
